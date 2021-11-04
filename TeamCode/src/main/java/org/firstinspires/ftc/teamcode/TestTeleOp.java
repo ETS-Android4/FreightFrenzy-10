@@ -53,8 +53,10 @@ import com.qualcomm.robotcore.util.Range;
 @TeleOp(name="Pushbot: Teleop Tank", group="Pushbot")
 public class TestTeleOp extends OpMode{
 
-    DcMotor driveLeft;
-    DcMotor driveRight;
+    DcMotor driveFrontLeft;
+    DcMotor driveFrontRight;
+    DcMotor driveBackLeft;
+    DcMotor driveBackRight;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -64,8 +66,10 @@ public class TestTeleOp extends OpMode{
         /* Initialize the hardware variables.*/
 
 
-         driveLeft = this.hardwareMap.get(DcMotor.class, "driveLeft");
-         driveRight = this.hardwareMap.get(DcMotor.class, "driveRight");
+         driveFrontLeft = this.hardwareMap.get(DcMotor.class, "driveFrontLeft");
+         driveFrontRight = this.hardwareMap.get(DcMotor.class, "driveFrontRight");
+        driveBackLeft = this.hardwareMap.get(DcMotor.class, "driveBackLeft");
+        driveBackRight = this.hardwareMap.get(DcMotor.class, "driveBackRight");
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Say", "Hi there hello!");
@@ -81,24 +85,16 @@ public class TestTeleOp extends OpMode{
         left = -gamepad1.left_stick_y;
         right = -gamepad1.right_stick_y;
 
-        driveLeft.setPower(left);
-        driveRight.setPower(right);
 
-/* MAYBE SINGLE JOYSTICK CONTROL
-
-double forward;
-double sides;
-
-forward = -gamepad1.right_stick_y;
-sides = -gamepad1.right_stick_x;
-
-        driveLeft.setPower(forward);
-        driveRight.setPower(forward);
-
-        driveLeft.setPower(sides);
-        driveRight.setPower(sides*-1);
-
- */
+        if((left >0 && right>0) || (left<0 && right < 0)) {
+            driveFrontLeft.setPower(left);
+            driveBackLeft.setPower(left);
+            driveFrontRight.setPower(right);
+            driveBackRight.setPower(right);
+        } else {
+            driveBackLeft.setPower(left);
+            driveBackRight.setPower(right);
+        }
 
 
 
