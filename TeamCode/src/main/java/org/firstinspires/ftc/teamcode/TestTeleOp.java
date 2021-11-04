@@ -57,6 +57,7 @@ public class TestTeleOp extends OpMode{
     DcMotor driveFrontRight;
     DcMotor driveBackLeft;
     DcMotor driveBackRight;
+    DcMotor intakeMotor;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -71,6 +72,8 @@ public class TestTeleOp extends OpMode{
         driveBackLeft = this.hardwareMap.get(DcMotor.class, "driveBackLeft");
         driveBackRight = this.hardwareMap.get(DcMotor.class, "driveBackRight");
 
+        intakeMotor = this.hardwareMap.get(DcMotor.class, "intakeMotor");
+
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Say", "Hi there hello!");
     }
@@ -81,7 +84,7 @@ public class TestTeleOp extends OpMode{
         double left;
         double right;
 
-        // Run wheels in tank mode (note: The joystick goes negative when pushed forwards, so negate it)
+        //wheel controls
         left = -gamepad1.left_stick_y;
         right = -gamepad1.right_stick_y;
 
@@ -97,6 +100,23 @@ public class TestTeleOp extends OpMode{
         }
 
 
+        //intake motor
+
+        double rightTrigger;
+
+        rightTrigger = gamepad1.right_trigger;
+
+        intakeMotor.setPower(rightTrigger);
+
+
+        /*  A-BUTTON INTAKE
+        boolean aPress;
+
+        aPress = gamepad1.a;
+
+        if(aPress==true){
+            intakeMotor.setPower(1);
+        }  */
 
 
         // Send telemetry message to signify robot running;
