@@ -32,7 +32,9 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
 /**
@@ -59,6 +61,9 @@ public class TestTeleOp extends OpMode{
     DcMotor driveBackRight;
     DcMotor intakeMotor;
     DcMotor linearSlide;
+    CRServo duckWheel;
+    Servo hopper;
+    int targetPosition = 0;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -76,9 +81,17 @@ public class TestTeleOp extends OpMode{
         intakeMotor = this.hardwareMap.get(DcMotor.class, "intakeMotor");
 
         linearSlide = this.hardwareMap.get(DcMotor.class, "linearSlide");
+        linearSlide.setTargetPosition(0);
+        linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        duckWheel = this.hardwareMap.get(CRServo.class, "duckWheel");
+
+        hopper = this.hardwareMap.get(Servo.class, "hopper");
+
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Say", "Hi there hello!");
+
     }
 
 //linear slide goes to 4.8 ish
@@ -88,8 +101,8 @@ public class TestTeleOp extends OpMode{
         double right;
 
         //wheel controls
-        left = (gamepad1.left_stick_y)*0.3;
-        right = (-gamepad1.right_stick_y)*0.3;
+        left = (gamepad1.left_stick_y)*0.6;
+        right = (-gamepad1.right_stick_y)*0.6;
 
 
 
@@ -101,22 +114,15 @@ public class TestTeleOp extends OpMode{
 
 
         //intake motor
+        boolean intakePress;
 
-        double rightTrigger;
+        intakePress = gamepad1.right_bumper;
 
-        rightTrigger = gamepad1.right_trigger;
-
-        intakeMotor.setPower(rightTrigger);
-
-
-        /*  A-BUTTON INTAKE
-        boolean aPress;
-
-        aPress = gamepad1.a;
-
-        if(aPress==true){
+        if(intakePress){
             intakeMotor.setPower(1);
-        }  */
+        } else {
+            intakeMotor.setPower(0);
+        }
 
 
         // Send telemetry message to signify robot running;
@@ -126,24 +132,54 @@ public class TestTeleOp extends OpMode{
 
 
         //linear slide
-        double tR = 4.8;  //total rotation
+        double tR = -5.8;  //total rotation
         double rotationScale = 537.7;
-        boolean slideUp = gamepad1.dpad_up;
-        boolean slideDown = gamepad1.dpad_down;
-        int targetPosition = 0;
+        boolean slideUp = gamepad1.y;
+        boolean slideDown = gamepad1.x;
 
-        if(slideUp == true){
-            if(targetPosition < tR * rotationScale){
-                targetPosition+=50;
+        if(slideUp){
+            if(targetPosition > tR * rotationScale){
+                targetPosition-=10;
             }
             linearSlide.setTargetPosition(targetPosition);
+            linearSlide.setPower(.5);
         }
 
-        if(slideDown == true){
-            if(targetPosition > 0){
-                targetPosition-=50;
+        if(slideDown){
+            if(targetPosition < 0){
+                targetPosition+=10;
             }
             linearSlide.setTargetPosition(targetPosition);
+            linearSlide.setPower(.5);
+        }
+
+        //duck wheel
+
+        double duckSpinLeft = gamepad1.left_trigger;
+        double duckSpinRight = gamepad1.right_trigger;
+
+        if(duckSpinLeft>0 && duckSpinRight == 0) {
+            duckWheel.setPower(duckSpinLeft);
+        } else if(duckSpinLeft == 0 && duckSpinRight > 0) {
+            duckWheel.setPower(-duckSpinRight);
+        } else {
+            duckWheel.setPower(0);
+        }
+
+        //hopper rotation
+
+        double defaultPosition = 0.2;
+        boolean aPress = gamepad1.a;
+
+
+        if(aPress){
+            hopper.setPosition(0.7);
+        } else if(intakePress){
+            hopper.setPosition(0.002);
+        } else if(slideUp || slideDown){
+           hopper.setPosition(0.4);
+        } else {
+            hopper.setPosition(defaultPosition);
         }
     }
 
