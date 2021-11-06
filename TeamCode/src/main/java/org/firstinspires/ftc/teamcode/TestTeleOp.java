@@ -168,16 +168,14 @@ public class TestTeleOp extends OpMode{
 
         //hopper rotation
 
-        double defaultPosition = 0.2;
+        double defaultPosition = 0.4;
         boolean aPress = gamepad1.a;
 
 
         if(aPress){
             hopper.setPosition(0.7);
         } else if(intakePress){
-            hopper.setPosition(0.002);
-        } else if(slideUp || slideDown){
-           hopper.setPosition(0.4);
+            hopper.setPosition(0);
         } else {
             hopper.setPosition(defaultPosition);
         }
