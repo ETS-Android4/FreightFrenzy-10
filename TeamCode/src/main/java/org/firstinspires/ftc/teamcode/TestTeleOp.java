@@ -63,6 +63,7 @@ public class TestTeleOp extends OpMode{
     DcMotor linearSlide;
     CRServo duckWheel;
     Servo hopper;
+    double hopperPosition;
     int targetPosition = 0;
 
     /*
@@ -87,6 +88,7 @@ public class TestTeleOp extends OpMode{
         duckWheel = this.hardwareMap.get(CRServo.class, "duckWheel");
 
         hopper = this.hardwareMap.get(Servo.class, "hopper");
+        hopper.scaleRange(0.185,1.0);
 
 
         // Send telemetry message to signify robot waiting;
@@ -120,15 +122,16 @@ public class TestTeleOp extends OpMode{
 
         if(intakePress){
             intakeMotor.setPower(1);
+            this.hopperPosition = 0;
         } else {
             intakeMotor.setPower(0);
+            this.hopperPosition = 0.5;
         }
 
 
         // Send telemetry message to signify robot running;
         telemetry.addData("left",  "%.2f", left);
         telemetry.addData("right", "%.2f", right);
-        telemetry.update();
 
 
         //linear slide
@@ -168,17 +171,14 @@ public class TestTeleOp extends OpMode{
 
         //hopper rotation
 
-        double defaultPosition = 0.4;
         boolean aPress = gamepad1.a;
 
 
         if(aPress){
-            hopper.setPosition(0.7);
-        } else if(intakePress){
-            hopper.setPosition(0);
-        } else {
-            hopper.setPosition(defaultPosition);
+            this.hopperPosition = 1.0;
         }
+
+        this.hopper.setPosition(this.hopperPosition);
     }
 
     /*
