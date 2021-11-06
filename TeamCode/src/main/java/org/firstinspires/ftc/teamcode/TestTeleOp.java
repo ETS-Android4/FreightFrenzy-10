@@ -88,7 +88,7 @@ public class TestTeleOp extends OpMode{
         double right;
 
         //wheel controls
-        left = (-gamepad1.left_stick_y)*0.3;
+        left = (gamepad1.left_stick_y)*0.3;
         right = (-gamepad1.right_stick_y)*0.3;
 
 
