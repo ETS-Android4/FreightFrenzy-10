@@ -92,15 +92,12 @@ public class TestTeleOp extends OpMode{
         right = (-gamepad1.right_stick_y)*0.3;
 
 
-        if((left >0 && right>0) || (left<0 && right < 0)) {
+
             driveFrontLeft.setPower(left);
             driveBackLeft.setPower(left);
             driveFrontRight.setPower(right);
             driveBackRight.setPower(right);
-        } else {
-            driveBackLeft.setPower(left);
-            driveBackRight.setPower(right);
-        }
+
 
 
         //intake motor
