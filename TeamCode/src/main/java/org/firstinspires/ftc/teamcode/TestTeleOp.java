@@ -58,6 +58,7 @@ public class TestTeleOp extends OpMode{
     DcMotor driveBackLeft;
     DcMotor driveBackRight;
     DcMotor intakeMotor;
+    DcMotor linearSlide;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -74,11 +75,13 @@ public class TestTeleOp extends OpMode{
 
         intakeMotor = this.hardwareMap.get(DcMotor.class, "intakeMotor");
 
+        linearSlide = this.hardwareMap.get(DcMotor.class, "linearSlide");
+
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Say", "Hi there hello!");
     }
 
-
+//linear slide goes to 4.8 ish
     @Override
     public void loop() {
         double left;
@@ -123,6 +126,28 @@ public class TestTeleOp extends OpMode{
         telemetry.addData("left",  "%.2f", left);
         telemetry.addData("right", "%.2f", right);
         telemetry.update();
+
+
+        //linear slide
+        double tR = 4.8;  //total rotation
+        double rotationScale = 537.7;
+        boolean slideUp = gamepad1.dpad_up;
+        boolean slideDown = gamepad1.dpad_down;
+        int targetPosition = 0;
+
+        if(slideUp == true){
+            if(targetPosition < tR * rotationScale){
+                targetPosition+=50;
+            }
+            linearSlide.setTargetPosition(targetPosition);
+        }
+
+        if(slideDown == true){
+            if(targetPosition > 0){
+                targetPosition-=50;
+            }
+            linearSlide.setTargetPosition(targetPosition);
+        }
     }
 
     /*
