@@ -37,6 +37,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+
 /**
  * This file provides basic Telop driving for a Pushbot robot.
  * The code is structured as an Iterative OpMode
@@ -63,8 +68,14 @@ public class TestTeleOp extends OpMode{
     DcMotor linearSlide;
     CRServo duckWheel;
     Servo hopper;
+    OpenCvCamera fred;
+    SamplePipeline george;
     double hopperPosition;
     int targetPosition = 0;
+
+    public static final int WEBCAM_WIDTH = 320;
+    public static final int WEBCAM_HEIGHT = 240;
+    public static final OpenCvCameraRotation WEBCAM_ROTATION = OpenCvCameraRotation.UPRIGHT;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -90,6 +101,26 @@ public class TestTeleOp extends OpMode{
         hopper = this.hardwareMap.get(Servo.class, "hopper");
         hopper.scaleRange(0.185,1.0);
 
+        //fred is stack camera
+        //george is the pipeline
+
+        int stackCameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        this.fred = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), stackCameraMonitorViewId);
+        this.george = new SamplePipeline();
+        fred.setPipeline(george);
+        fred.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+        {
+            @Override
+            public void onOpened()
+            {
+                fred.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+            }
+
+            @Override
+            public void onError(int errorCode) {
+
+            }
+        });
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Say", "Hi there hello!");
@@ -118,7 +149,7 @@ public class TestTeleOp extends OpMode{
         //intake motor
         boolean intakePress;
 
-        intakePress = gamepad1.right_bumper;
+        intakePress = gamepad2.right_bumper;
 
         if(intakePress){
             intakeMotor.setPower(1);
@@ -137,8 +168,8 @@ public class TestTeleOp extends OpMode{
         //linear slide
         double tR = -5.8;  //total rotation
         double rotationScale = 537.7;
-        boolean slideUp = gamepad1.y;
-        boolean slideDown = gamepad1.x;
+        boolean slideUp = gamepad2.y;
+        boolean slideDown = gamepad2.x;
 
         if(slideUp){
             if(targetPosition > tR * rotationScale){
@@ -148,6 +179,10 @@ public class TestTeleOp extends OpMode{
             linearSlide.setPower(.5);
         }
 
+        // upper is -1750
+        // middle is -750
+        // bottom is 0
+
         if(slideDown){
             if(targetPosition < 0){
                 targetPosition+=10;
@@ -156,10 +191,12 @@ public class TestTeleOp extends OpMode{
             linearSlide.setPower(.5);
         }
 
+        this.telemetry.addData("linear slide",targetPosition);
+
         //duck wheel
 
-        double duckSpinLeft = gamepad1.left_trigger;
-        double duckSpinRight = gamepad1.right_trigger;
+        double duckSpinLeft = gamepad2.left_trigger;
+        double duckSpinRight = gamepad2.right_trigger;
 
         if(duckSpinLeft>0 && duckSpinRight == 0) {
             duckWheel.setPower(duckSpinLeft);
@@ -171,7 +208,7 @@ public class TestTeleOp extends OpMode{
 
         //hopper rotation
 
-        boolean aPress = gamepad1.a;
+        boolean aPress = gamepad2.a;
 
 
         if(aPress){
