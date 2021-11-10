@@ -67,6 +67,7 @@ public class TestTeleOp extends OpMode{
     DcMotor intakeMotor;
     DcMotor linearSlide;
     CRServo duckWheel;
+    Servo elementHolder;
     Servo hopper;
     OpenCvCamera fred;
     SamplePipeline george;
@@ -93,34 +94,37 @@ public class TestTeleOp extends OpMode{
         intakeMotor = this.hardwareMap.get(DcMotor.class, "intakeMotor");
 
         linearSlide = this.hardwareMap.get(DcMotor.class, "linearSlide");
-        linearSlide.setTargetPosition(0);
-        linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         duckWheel = this.hardwareMap.get(CRServo.class, "duckWheel");
+
+        elementHolder = this.hardwareMap.get(Servo.class,"elementHolder");
+        elementHolder.setPosition(0.25);
 
         hopper = this.hardwareMap.get(Servo.class, "hopper");
         hopper.scaleRange(0.185,1.0);
 
         //fred is stack camera
         //george is the pipeline
-
-        int stackCameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        this.fred = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), stackCameraMonitorViewId);
-        this.george = new SamplePipeline();
-        fred.setPipeline(george);
-        fred.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
-        {
-            @Override
-            public void onOpened()
-            {
-                fred.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
-            }
-
-            @Override
-            public void onError(int errorCode) {
-
-            }
-        });
+//
+//        int stackCameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+//        this.fred = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), stackCameraMonitorViewId);
+//        this.george = new SamplePipeline();
+//        fred.setPipeline(george);
+//        fred.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+//        {
+//            @Override
+//            public void onOpened()
+//            {
+//                fred.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+//            }
+//
+//            @Override
+//            public void onError(int errorCode) {
+//
+//            }
+//        });
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Say", "Hi there hello!");
@@ -170,28 +174,22 @@ public class TestTeleOp extends OpMode{
         double rotationScale = 537.7;
         boolean slideUp = gamepad2.y;
         boolean slideDown = gamepad2.x;
+        int currentPosition = linearSlide.getCurrentPosition();
+        double maxPosition = tR * rotationScale;
 
-        if(slideUp){
-            if(targetPosition > tR * rotationScale){
-                targetPosition-=10;
-            }
-            linearSlide.setTargetPosition(targetPosition);
-            linearSlide.setPower(.5);
+        if(slideUp && currentPosition > maxPosition){
+            linearSlide.setPower(-1);
+        } else if(slideDown && currentPosition < -200){
+            linearSlide.setPower(1);
+        } else{
+            linearSlide.setPower(0);
         }
+
+        telemetry.addData("linearSlide", currentPosition);
 
         // upper is -1750
         // middle is -750
         // bottom is 0
-
-        if(slideDown){
-            if(targetPosition < 0){
-                targetPosition+=10;
-            }
-            linearSlide.setTargetPosition(targetPosition);
-            linearSlide.setPower(.5);
-        }
-
-        this.telemetry.addData("linear slide",targetPosition);
 
         //duck wheel
 
