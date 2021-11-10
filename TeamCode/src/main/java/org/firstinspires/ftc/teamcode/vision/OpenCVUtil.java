@@ -12,6 +12,8 @@ import org.opencv.imgproc.Moments;
 import java.util.Collections;
 import java.util.List;
 
+import static org.firstinspires.ftc.teamcode.util.Constants.INVALID_DETECTION;
+
 // CV Helper Functions
 public class OpenCVUtil {
     // Draw a point

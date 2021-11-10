@@ -54,8 +54,6 @@ public class Detection {
         if (isValid()) {
             drawConvexHull(img, contour, color);
             drawPoint(img, centerPx, GREEN);
-//            drawPoint(img, bottomLeftPx, GREEN);
-//            drawPoint(img, bottomRightPx, GREEN);
         }
     }
 
@@ -64,8 +62,6 @@ public class Detection {
         if (isValid()) {
             fillConvexHull(img, contour, color);
             drawPoint(img, centerPx, GREEN);
-//            drawPoint(img, bottomLeftPx, GREEN);
-//            drawPoint(img, bottomRightPx, GREEN);
         }
     }
 
@@ -82,19 +78,21 @@ public class Detection {
 
     // Set the values of the current contour
     public void setContour(MatOfPoint contour) {
-        this.contour = contour;
+        if (contour != null) {
+            this.contour = contour;
 
-        double area;
-        if (contour != null && (area = Imgproc.contourArea(contour)) > minAreaPx && area < maxAreaPx) {
-            this.areaPx = area;
-            this.centerPx = getCenterOfContour(contour);
-            this.bottomLeftPx = getBottomLeftOfContour(contour);
-            this.bottomRightPx = getBottomRightOfContour(contour);
-        } else {
-            this.areaPx = INVALID_AREA;
-            this.centerPx = INVALID_POINT;
-            this.bottomLeftPx = INVALID_POINT;
-            this.bottomRightPx = INVALID_POINT;
+            double area;
+            if (contour != null && (area = Imgproc.contourArea(contour)) > minAreaPx && area < maxAreaPx) {
+                this.areaPx = area;
+                this.centerPx = getCenterOfContour(contour);
+                this.bottomLeftPx = getBottomLeftOfContour(contour);
+                this.bottomRightPx = getBottomRightOfContour(contour);
+            } else {
+                this.areaPx = INVALID_AREA;
+                this.centerPx = INVALID_POINT;
+                this.bottomLeftPx = INVALID_POINT;
+                this.bottomRightPx = INVALID_POINT;
+            }
         }
     }
 

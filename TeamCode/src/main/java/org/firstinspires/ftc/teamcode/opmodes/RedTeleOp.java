@@ -7,105 +7,87 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.controller.Controller;
+import org.firstinspires.ftc.teamcode.hardware.Robot;
+
+import static org.firstinspires.ftc.teamcode.util.MathUtil.clamp;
 
 @TeleOp(name = "Red TeleOp", group = "Competition")
 public class RedTeleOp extends OpMode {
-    private DcMotor frontLeft;
-    private DcMotor frontRight;
-    private DcMotor backLeft;
-    private DcMotor backRight;
+    Controller driver1;
+    Controller driver2;
 
-    private DcMotor intake;
-    private DcMotor slide;
-    private Servo hopper;
-    private CRServo ducky;
+    Robot robot;
 
     private int targetPos;
     private double servoPos;
 
-    Controller driver1;
-    Controller driver2;
-
-    // robot initialization
     @Override
     public void init() {
+        telemetry.addLine("Initializing Robot...");
+        telemetry.update();
+
         driver1 = new Controller(gamepad1);
         driver2 = new Controller(gamepad2);
 
-        // drive motors
-        frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
-        frontRight = hardwareMap.get(DcMotor.class, "frontRight");
-        backLeft = hardwareMap.get(DcMotor.class, "backLeft");
-        backRight = hardwareMap.get(DcMotor.class, "backRight");
+        robot = new Robot(hardwareMap);
+//        robot.camera.initBarcodeWebcam();
 
-        frontLeft.setDirection(DcMotor.Direction.REVERSE);
-        frontRight.setDirection(DcMotor.Direction.FORWARD);
-        backLeft.setDirection(DcMotor.Direction.REVERSE);
-        backRight.setDirection(DcMotor.Direction.FORWARD);
-
-        frontLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        // intake
-        intake = hardwareMap.get(DcMotor.class, "intake");
-
-        // drop off
         targetPos = 0;
         servoPos = 0.01;
 
-        slide = hardwareMap.get(DcMotor.class, "slide");
-        slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        slide.setTargetPosition(targetPos);
-        slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        slide.setPower(0.5);
+        robot.slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.slide.setTargetPosition(targetPos);
+        robot.slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.slide.setPower(0.5);
 
-        hopper = hardwareMap.get(Servo.class, "hopper");
-        hopper.setPosition(0.01);
-
-        // ducky
-        ducky = hardwareMap.get(CRServo.class, "ducky");
+        robot.hopper.setPosition(0.2);
     }
+
+//    @Override
+//    public void init_loop() {
+//        if (robot.camera.getFrameCount() > 0) {
+//            telemetry.addLine("Initialized");
+//            telemetry.update();
+//        }
+//    }
 
     @Override
     public void loop() {
         driver1.update();
         driver2.update();
 
-        // driver 1
+        // wheels
         double x = driver1.getLeftStick().getX();
         double y = driver1.getLeftStick().getY();
         double z = driver1.getRightStick().getX();
 
         setWheels(x, y, z);
 
-        // driver 2
-
         // intake
-        intake.setPower(driver2.getRightTrigger().getValue()*.75);
+        robot.intake.setPower(driver2.getRightTrigger().getValue()*.75);
 
         // slide
         targetPos -= driver2.getLeftStick().getY()*10;
-        targetPos = Math.min(0, (int)Math.max(-384.5*3.1, targetPos));
-        slide.setTargetPosition(targetPos);
+        targetPos = clamp(targetPos, -2400, 0);
+        robot.slide.setTargetPosition(targetPos);
 
         // hopper
-        if (-0.1 < driver2.getRightStick().getY() || driver2.getRightStick().getY() > 0.1) {
-            servoPos += driver2.getRightStick().getY()/2500;
-            servoPos = Math.max(Math.min(.99,servoPos), 0.01);
-            hopper.setPosition(servoPos);
+        if (driver2.getRightStick().getY() < -0.1 || 0.1 < driver2.getRightStick().getY()) {
+            servoPos += driver2.getRightStick().getY()/500.0;
+            servoPos = clamp(servoPos, 0.01, 0.99);
+            robot.hopper.setPosition(servoPos);
         }
 
         // ducky
         if (driver2.getA().isPressed()) {
-            ducky.setPower(-1);
+            robot.ducky.setPower(-1);
         } else if (driver2.getB().isPressed()) {
-            ducky.setPower(1);
+            robot.ducky.setPower(1);
         } else {
-            ducky.setPower(0);
+            robot.ducky.setPower(0);
         }
 
+        // telemetry
         telemetry.addData("servo pos", servoPos);
         telemetry.addData("slide pos", targetPos);
         telemetry.update();
@@ -129,7 +111,7 @@ public class RedTeleOp extends OpMode {
         }
 
         // actually set the motor powers
-        frontLeft.setPower(flPower); frontRight.setPower(frPower);
-        backLeft.setPower(blPower);  backRight.setPower(brPower);
+        robot.frontLeft.setPower(flPower); robot.frontRight.setPower(frPower);
+        robot.backLeft.setPower(blPower);  robot.backRight.setPower(brPower);
     }
 }

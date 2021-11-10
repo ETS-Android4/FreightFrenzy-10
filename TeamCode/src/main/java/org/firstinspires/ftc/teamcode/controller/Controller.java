@@ -54,8 +54,8 @@ public class Controller {
     }
 
     public void update() {
-        leftStick.update(gamepad.left_stick_x, gamepad.left_stick_y);
-        rightStick.update(gamepad.right_stick_x, gamepad.right_stick_y);
+        leftStick.update(gamepad.left_stick_x, -gamepad.left_stick_y);
+        rightStick.update(gamepad.right_stick_x, -gamepad.right_stick_y);
 
         dLeft.update(gamepad.dpad_left);
         dRight.update(gamepad.dpad_right);
