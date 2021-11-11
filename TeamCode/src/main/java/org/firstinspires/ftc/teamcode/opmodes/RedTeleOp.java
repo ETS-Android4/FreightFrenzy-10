@@ -1,16 +1,31 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.controller.Controller;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 
+import static org.firstinspires.ftc.teamcode.util.Configurables.DRIVE_SPEED;
+import static org.firstinspires.ftc.teamcode.util.Configurables.HOPPER_DROP_HIGH;
+import static org.firstinspires.ftc.teamcode.util.Configurables.HOPPER_DROP_LOW;
+import static org.firstinspires.ftc.teamcode.util.Configurables.HOPPER_DROP_MIDDLE;
+import static org.firstinspires.ftc.teamcode.util.Configurables.HOPPER_INIT;
+import static org.firstinspires.ftc.teamcode.util.Configurables.HOPPER_MID;
+import static org.firstinspires.ftc.teamcode.util.Configurables.HOPPER_START;
+import static org.firstinspires.ftc.teamcode.util.Configurables.INTAKE_SPEED;
+import static org.firstinspires.ftc.teamcode.util.Configurables.SERVO_MOVEMENT;
+import static org.firstinspires.ftc.teamcode.util.Configurables.SLIDE_CUTOFF;
+import static org.firstinspires.ftc.teamcode.util.Configurables.SLIDE_DROP_HIGH;
+import static org.firstinspires.ftc.teamcode.util.Configurables.SLIDE_DROP_LOW;
+import static org.firstinspires.ftc.teamcode.util.Configurables.SLIDE_DROP_MIDDLE;
+import static org.firstinspires.ftc.teamcode.util.Configurables.SLIDE_MOVEMENT;
+import static org.firstinspires.ftc.teamcode.util.Configurables.SLIDE_SPEED;
 import static org.firstinspires.ftc.teamcode.util.MathUtil.clamp;
 
+@Config
 @TeleOp(name = "Red TeleOp", group = "Competition")
 public class RedTeleOp extends OpMode {
     Controller driver1;
@@ -20,6 +35,9 @@ public class RedTeleOp extends OpMode {
 
     private int targetPos;
     private double servoPos;
+
+    private boolean scoringLow = false;
+    private int scoringLowPos = 0;
 
     @Override
     public void init() {
@@ -33,14 +51,14 @@ public class RedTeleOp extends OpMode {
 //        robot.camera.initBarcodeWebcam();
 
         targetPos = 0;
-        servoPos = 0.01;
+        servoPos = HOPPER_INIT;
 
         robot.slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.slide.setTargetPosition(targetPos);
         robot.slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.slide.setPower(0.5);
+        robot.slide.setPower(SLIDE_SPEED);
 
-        robot.hopper.setPosition(0.2);
+        robot.hopper.setPosition(servoPos);
     }
 
 //    @Override
@@ -57,26 +75,99 @@ public class RedTeleOp extends OpMode {
         driver2.update();
 
         // wheels
-        double x = driver1.getLeftStick().getX();
-        double y = driver1.getLeftStick().getY();
-        double z = driver1.getRightStick().getX();
+        double x, y, z;
+        if (driver1.getLeftBumper().isPressed()) {
+            x = driver1.getLeftStick().getX();
+            y = driver1.getLeftStick().getY();
+            z = driver1.getRightStick().getX();
+        } else {
+            x = driver1.getLeftStick().getX() * DRIVE_SPEED;
+            y = driver1.getLeftStick().getY() * DRIVE_SPEED;
+            z = driver1.getRightStick().getX() * DRIVE_SPEED;
+        }
 
         setWheels(x, y, z);
 
         // intake
-        robot.intake.setPower(driver2.getRightTrigger().getValue()*.75);
+        robot.intake.setPower(driver2.getRightTrigger().getValue()*INTAKE_SPEED);
+        if (robot.intake.getPower() == 0) {
+            robot.intake.setPower(-driver2.getLeftTrigger().getValue()*INTAKE_SPEED);
+        }
 
         // slide
-        targetPos -= driver2.getLeftStick().getY()*10;
+        targetPos -= driver2.getLeftStick().getY()*SLIDE_MOVEMENT;
         targetPos = clamp(targetPos, -2400, 0);
-        robot.slide.setTargetPosition(targetPos);
 
         // hopper
-        if (driver2.getRightStick().getY() < -0.1 || 0.1 < driver2.getRightStick().getY()) {
-            servoPos += driver2.getRightStick().getY()/500.0;
-            servoPos = clamp(servoPos, 0.01, 0.99);
-            robot.hopper.setPosition(servoPos);
+        servoPos += driver2.getRightStick().getY()/ SERVO_MOVEMENT;
+
+        if (driver2.getDUp().isJustPressed()) {
+            targetPos = SLIDE_DROP_HIGH;
+        } else if (driver2.getDLeft().isJustPressed()) {
+            targetPos = SLIDE_DROP_MIDDLE;
+        } else if (driver2.getDDown().isJustPressed()) {
+//            scoringLow = true;
+        } else if (driver2.getY().isJustPressed()) {
+            if (targetPos == SLIDE_DROP_HIGH) {
+                servoPos = HOPPER_DROP_HIGH;
+            } else if (targetPos == SLIDE_DROP_MIDDLE) {
+                servoPos = HOPPER_DROP_MIDDLE;
+            } else if (targetPos == SLIDE_DROP_LOW) {
+                servoPos = HOPPER_DROP_LOW;
+            } else {
+                servoPos = HOPPER_DROP_MIDDLE;
+            }
+        } else if (driver2.getX().isJustPressed()) {
+            servoPos = HOPPER_MID.l;
         }
+
+//        if (scoringLow) {
+//            switch (scoringLowPos) {
+//                case 0:
+//                    targetPos = SLIDE_DROP_MIDDLE;
+//                    servoPos = HOPPER_DROP_LOW_POS1;
+//                    if (about(robot.slide.getCurrentPosition(), SLIDE_DROP_MIDDLE)) {
+//                        scoringLowPos++;
+//                    }
+//                    break;
+//                case 1:
+//                    targetPos = SLIDE_DROP_LOW;
+//                    if (about(robot.slide.getCurrentPosition(), SLIDE_DROP_LOW)) {
+//                        scoringLowPos++;
+//                    }
+//                    break;
+//                case 2:
+//                    servoPos = HOPPER_DROP_LOW;
+////                    if (wait a little) {
+////                        ++
+////                    }
+//                    break;
+//                case 3:
+//                    servoPos =
+//            }
+//        }
+
+
+        if (targetPos > SLIDE_CUTOFF) {
+            servoPos = clamp(servoPos, HOPPER_START.l, HOPPER_START.u);
+        } else {
+            servoPos = clamp(servoPos, HOPPER_MID.l, HOPPER_MID.u);
+        }
+
+        robot.slide.setTargetPosition(targetPos);
+        robot.hopper.setPosition(servoPos);
+
+//        if (driver2.getRightStick().getY() < -0.1 || 0.1 < driver2.getRightStick().getY()) {
+//            servoPos += driver2.getRightStick().getY()/500.0;
+//            servoPos = clamp(servoPos, 0.01, 0.99);
+//            robot.hopper.setPosition(servoPos);
+//        }
+
+        // 0 0.1504
+        //  going up 0.305 or .3262
+        // -2400 0.6531
+        // -943 0.6801 (low)
+        // -1411 0.6642 (middle)
 
         // ducky
         if (driver2.getA().isPressed()) {

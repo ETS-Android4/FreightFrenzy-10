@@ -24,8 +24,6 @@ public class Detection {
     private final Size maxSizePx;
     private double areaPx =  INVALID_AREA;
     private Point centerPx = INVALID_POINT;
-    private Point bottomLeftPx = INVALID_POINT;
-    private Point bottomRightPx = INVALID_POINT;
     private MatOfPoint contour;
 
     // Constructor
@@ -39,14 +37,6 @@ public class Detection {
         this.maxSizePx = frameSize;
         this.minAreaPx = frameSize.area() * minAreaFactor;
         this.maxAreaPx = frameSize.area() * maxSizeFactor;
-    }
-
-    public void setMinArea(double minAreaFactor) {
-        this.minAreaPx = maxSizePx.area() * minAreaFactor;
-    }
-
-    public void setMaxArea(double maxAreaFactor) {
-        this.minAreaPx = maxSizePx.area() * maxAreaFactor;
     }
 
     // Draw a convex hull around the current detection on the given image
@@ -67,7 +57,6 @@ public class Detection {
 
     // Check if the current Detection is valid
     public boolean isValid() {
-//        return true;
         return (this.contour != null) && (this.centerPx != INVALID_POINT) && (this.areaPx != INVALID_AREA);
     }
 
@@ -78,21 +67,15 @@ public class Detection {
 
     // Set the values of the current contour
     public void setContour(MatOfPoint contour) {
-        if (contour != null) {
-            this.contour = contour;
+        this.contour = contour;
 
-            double area;
-            if (contour != null && (area = Imgproc.contourArea(contour)) > minAreaPx && area < maxAreaPx) {
-                this.areaPx = area;
-                this.centerPx = getCenterOfContour(contour);
-                this.bottomLeftPx = getBottomLeftOfContour(contour);
-                this.bottomRightPx = getBottomRightOfContour(contour);
-            } else {
-                this.areaPx = INVALID_AREA;
-                this.centerPx = INVALID_POINT;
-                this.bottomLeftPx = INVALID_POINT;
-                this.bottomRightPx = INVALID_POINT;
-            }
+        double area;
+        if (contour != null && (area = Imgproc.contourArea(contour)) > minAreaPx && area < maxAreaPx) {
+            this.areaPx = area;
+            this.centerPx = getCenterOfContour(contour);
+        } else {
+            this.areaPx = INVALID_AREA;
+            this.centerPx = INVALID_POINT;
         }
     }
 
@@ -122,13 +105,8 @@ public class Detection {
         return (areaPx / (maxSizePx.width * maxSizePx.height)) * 100;
     }
 
-    // Get the leftmost bottom corner of the detection
-    public Point getBottomLeftCornerPx() {
-        return bottomLeftPx;
-    }
-
-    // Get the rightmost bottom corner of the detection
-    public Point getBottomRightCornerPx() {
-        return bottomRightPx;
+    // Get the area of the Detection
+    public double getAreaPx() {
+        return areaPx;
     }
 }

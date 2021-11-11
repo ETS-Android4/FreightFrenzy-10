@@ -37,6 +37,7 @@ public class BarcodePipeline extends OpenCvPipeline  {
     // Init
     @Override
     public void init(Mat input) {
+        teamElement = new Detection(input.size(), 0.01);
     }
 
     // Process each frame that is received from the webcam
