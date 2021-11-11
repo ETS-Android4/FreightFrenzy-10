@@ -37,6 +37,12 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.SamplePipeline;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+
 /**
  * This file provides basic Telop driving for a Pushbot robot.
  * The code is structured as an Iterative OpMode
@@ -62,8 +68,16 @@ public class TestTeleOp extends OpMode{
     DcMotor intakeMotor;
     DcMotor linearSlide;
     CRServo duckWheel;
+    Servo elementHolder;
     Servo hopper;
+    OpenCvCamera fred;
+    SamplePipeline george;
+    double hopperPosition;
     int targetPosition = 0;
+
+    public static final int WEBCAM_WIDTH = 320;
+    public static final int WEBCAM_HEIGHT = 240;
+    public static final OpenCvCameraRotation WEBCAM_ROTATION = OpenCvCameraRotation.UPRIGHT;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -73,28 +87,52 @@ public class TestTeleOp extends OpMode{
         /* Initialize the hardware variables.*/
 
 
-         driveFrontLeft = this.hardwareMap.get(DcMotor.class, "driveFrontLeft");
-         driveFrontRight = this.hardwareMap.get(DcMotor.class, "driveFrontRight");
+        driveFrontLeft = this.hardwareMap.get(DcMotor.class, "driveFrontLeft");
+        driveFrontRight = this.hardwareMap.get(DcMotor.class, "driveFrontRight");
         driveBackLeft = this.hardwareMap.get(DcMotor.class, "driveBackLeft");
         driveBackRight = this.hardwareMap.get(DcMotor.class, "driveBackRight");
 
         intakeMotor = this.hardwareMap.get(DcMotor.class, "intakeMotor");
 
         linearSlide = this.hardwareMap.get(DcMotor.class, "linearSlide");
-        linearSlide.setTargetPosition(0);
-        linearSlide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         duckWheel = this.hardwareMap.get(CRServo.class, "duckWheel");
 
-        hopper = this.hardwareMap.get(Servo.class, "hopper");
+        elementHolder = this.hardwareMap.get(Servo.class,"elementHolder");
+        elementHolder.setPosition(0.25);
 
+        hopper = this.hardwareMap.get(Servo.class, "hopper");
+        hopper.scaleRange(0.185,1.0);
+
+        //fred is stack camera
+        //george is the pipeline
+//
+//        int stackCameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+//        this.fred = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "webcam"), stackCameraMonitorViewId);
+//        this.george = new SamplePipeline();
+//        fred.setPipeline(george);
+//        fred.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener()
+//        {
+//            @Override
+//            public void onOpened()
+//            {
+//                fred.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT);
+//            }
+//
+//            @Override
+//            public void onError(int errorCode) {
+//
+//            }
+//        });
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Say", "Hi there hello!");
 
     }
 
-//linear slide goes to 4.8 ish
+    //linear slide goes to 4.8 ish
     @Override
     public void loop() {
         double left;
@@ -106,57 +144,58 @@ public class TestTeleOp extends OpMode{
 
 
 
-            driveFrontLeft.setPower(left);
-            driveBackLeft.setPower(left);
-            driveFrontRight.setPower(right);
-            driveBackRight.setPower(right);
+        driveFrontLeft.setPower(left);
+        driveBackLeft.setPower(left);
+        driveFrontRight.setPower(right);
+        driveBackRight.setPower(right);
 
 
 
         //intake motor
         boolean intakePress;
 
-        intakePress = gamepad1.right_bumper;
+        intakePress = gamepad2.right_bumper;
 
         if(intakePress){
             intakeMotor.setPower(1);
+            this.hopperPosition = 0.05;
         } else {
             intakeMotor.setPower(0);
+            this.hopperPosition = 0.5;
         }
 
 
         // Send telemetry message to signify robot running;
         telemetry.addData("left",  "%.2f", left);
         telemetry.addData("right", "%.2f", right);
-        telemetry.update();
 
 
         //linear slide
         double tR = -5.8;  //total rotation
         double rotationScale = 537.7;
-        boolean slideUp = gamepad1.y;
-        boolean slideDown = gamepad1.x;
+        boolean slideUp = gamepad2.y;
+        boolean slideDown = gamepad2.x;
+        int currentPosition = linearSlide.getCurrentPosition();
+        double maxPosition = tR * rotationScale;
 
-        if(slideUp){
-            if(targetPosition > tR * rotationScale){
-                targetPosition-=10;
-            }
-            linearSlide.setTargetPosition(targetPosition);
-            linearSlide.setPower(.5);
+        if(slideUp && currentPosition > maxPosition){
+            linearSlide.setPower(-1);
+        } else if(slideDown && currentPosition < -200){
+            linearSlide.setPower(1);
+        } else{
+            linearSlide.setPower(0);
         }
 
-        if(slideDown){
-            if(targetPosition < 0){
-                targetPosition+=10;
-            }
-            linearSlide.setTargetPosition(targetPosition);
-            linearSlide.setPower(.5);
-        }
+        telemetry.addData("linearSlide", currentPosition);
+
+        // upper is -1750
+        // middle is -750
+        // bottom is 0
 
         //duck wheel
 
-        double duckSpinLeft = gamepad1.left_trigger;
-        double duckSpinRight = gamepad1.right_trigger;
+        double duckSpinLeft = gamepad2.left_trigger;
+        double duckSpinRight = gamepad2.right_trigger;
 
         if(duckSpinLeft>0 && duckSpinRight == 0) {
             duckWheel.setPower(duckSpinLeft);
@@ -168,17 +207,14 @@ public class TestTeleOp extends OpMode{
 
         //hopper rotation
 
-        double defaultPosition = 0.4;
-        boolean aPress = gamepad1.a;
+        boolean aPress = gamepad2.a;
 
 
         if(aPress){
-            hopper.setPosition(0.7);
-        } else if(intakePress){
-            hopper.setPosition(0);
-        } else {
-            hopper.setPosition(defaultPosition);
+            this.hopperPosition = 1.0;
         }
+
+        this.hopper.setPosition(this.hopperPosition);
     }
 
     /*
