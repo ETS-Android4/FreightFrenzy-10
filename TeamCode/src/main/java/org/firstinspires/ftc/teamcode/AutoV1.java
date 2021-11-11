@@ -68,7 +68,7 @@ public class AutoV1 extends LinearOpMode {
     Servo elementHolder;
     Servo hopper;
 
-    double TICKS_PER_INCH = 28.53// Ticks per revolution = 537.7;
+    double TICKS_PER_INCH = 28.53; // Ticks per revolution = 537.7;
 
     @Override
     public void runOpMode() {
@@ -133,6 +133,11 @@ public class AutoV1 extends LinearOpMode {
         driveBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         driveBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        driveBackLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        driveBackRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        driveFrontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        driveFrontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
         driveFrontLeft.setTargetPosition(distance);
         driveFrontRight.setTargetPosition(distance);
         driveBackLeft.setTargetPosition(distance);
@@ -158,6 +163,11 @@ public class AutoV1 extends LinearOpMode {
         driveFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         driveBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         driveBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        driveBackLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        driveBackRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        driveFrontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        driveFrontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         driveFrontLeft.setTargetPosition(distance);
         driveBackLeft.setTargetPosition(distance);
