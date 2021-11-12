@@ -55,7 +55,7 @@ import java.util.concurrent.TimeUnit;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name = "Auto Red Left", group = "Linear Opmode")
+@Autonomous(name = "Left", group = "Linear Opmode")
 public class AutoRedLeft extends LinearOpMode {
 
     // Declare OpMode members.
