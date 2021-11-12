@@ -103,7 +103,7 @@ public class TestTeleOp extends OpMode{
         elementHolder.setPosition(0.25);
 
         hopper = this.hardwareMap.get(Servo.class, "hopper");
-        hopper.scaleRange(0.185,1.0);
+        hopper.scaleRange(0.25,1.0);
 
         //fred is stack camera
         //george is the pipeline
