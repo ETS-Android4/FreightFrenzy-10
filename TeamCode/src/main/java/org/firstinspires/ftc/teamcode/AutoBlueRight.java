@@ -30,16 +30,11 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
-
-import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -55,8 +50,8 @@ import java.util.concurrent.TimeUnit;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name = "Auto Red Left", group = "Linear Opmode")
-public class AutoRedLeft extends LinearOpMode {
+@Autonomous(name = "Auto Blue Right", group = "Linear Opmode")
+public class AutoBlueRight extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
@@ -117,11 +112,11 @@ public class AutoRedLeft extends LinearOpMode {
         sleep(sleeptime);
 
         //Turn right towards score
-        turnDumbEnc(-6, -driveSpeed);
+        turnDumbEnc(6, driveSpeed);
         sleep(sleeptime);
 
         //Drive slightlyforward before score
-        driveInchesEnc(4, driveSpeed);
+        driveInchesEnc(6, driveSpeed);
         sleep(sleeptime);
 
         //Score
@@ -134,11 +129,11 @@ public class AutoRedLeft extends LinearOpMode {
         sleep(sleeptime);
 
         //Back up
-        driveInchesEnc(-5, -driveSpeed);
+        driveInchesEnc(-7, -driveSpeed);
         sleep(sleeptime);
 
 //        Turn towards warehouse
-        turnDumbEnc(2, -driveSpeed);
+        turnDumbEnc(-2, driveSpeed);
         sleep(sleeptime);
 
         driveInchesEnc(-18, -driveSpeed);
