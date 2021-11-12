@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.controller;
 
+import static org.firstinspires.ftc.teamcode.util.Configurables.DEADZONE;
+
 public class Joystick {
     double x = 0;
     double y = 0;
@@ -12,10 +14,20 @@ public class Joystick {
     }
 
     public double getX() {
-        return x;
+        if(x<DEADZONE && x>-DEADZONE) {
+            return 0;
+        }
+        else{
+            return x;
+        }
     }
 
     public double getY() {
-        return y;
+        if(y<DEADZONE && y>-DEADZONE) {
+            return 0;
+        }
+        else{
+            return y;
+        }
     }
 }

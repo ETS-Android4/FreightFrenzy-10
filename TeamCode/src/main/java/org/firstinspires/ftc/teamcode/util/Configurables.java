@@ -4,17 +4,21 @@ import com.acmerobotics.dashboard.config.Config;
 
 @Config
 public class Configurables {
-    public static Color YELLOW_LOWER = new Color(30, 70, 50);
+    public static Color YELLOW_LOWER = new Color(10, 70, 50);
     public static Color YELLOW_UPPER = new Color(80, 255, 255);
 
     public static double DRIVE_SPEED = 0.75;
     public static double INTAKE_SPEED = 0.75;
 
+    public static double HOPPER_DELAY = 1.5;
+
+    public static double DEADZONE = 0.1;
+
     //320 240
     public static int LEFT_BOUNDARY = -25;
     public static int RIGHT_BOUNDARY = 25;
 
-    public static double SLIDE_SPEED = 0.75;
+    public static double SLIDE_SPEED = 1;
 
     public static double HOPPER_INIT = 0.15;
     public static Range HOPPER_START = new Range(0.15, 0.99);
@@ -31,7 +35,7 @@ public class Configurables {
     public static int SLIDE_CUTOFF = -250;
 
     public static double SERVO_MOVEMENT = 250;
-    public static double SLIDE_MOVEMENT = 10;
+    public static double SLIDE_TICKS_PER_CYCLE = 20;
 
     // 0 0.1504
     //  going up 0.305 or .3262
