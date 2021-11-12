@@ -69,14 +69,14 @@ public class TestTeleOp extends OpMode{
     CRServo duckWheel;
     Servo elementHolder;
     Servo hopper;
-    OpenCvCamera fred;
+    //OpenCvCamera fred;
     SamplePipeline george;
     double hopperPosition;
     int targetPosition = 0;
 
     public static final int WEBCAM_WIDTH = 320;
     public static final int WEBCAM_HEIGHT = 240;
-    public static final OpenCvCameraRotation WEBCAM_ROTATION = OpenCvCameraRotation.UPRIGHT;
+    //public static final OpenCvCameraRotation WEBCAM_ROTATION = OpenCvCameraRotation.UPRIGHT;
 
     /*
      * Code to run ONCE when the driver hits INIT
