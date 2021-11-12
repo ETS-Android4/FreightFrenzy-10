@@ -15,12 +15,14 @@ public class MathUtil {
         return Math.abs(Math.abs(num1) - Math.abs(num2)) < 10;
     }
 
+    // Get the distance between two points
     public static double getDistanceBetweenTwoPoints (Point start, Point end) {
         float o = end.y - start.y;
         float a = end.x - start.x;
         return Math.sqrt(Math.pow(o, 2) + Math.pow(a, 2));
     }
 
+    // Get the angle between two points
     public static double getAngleBetweenTwoPoints(Point start, Point end) {
         float o = end.y - start.y;
         float a = end.x - start.x;
@@ -29,13 +31,15 @@ public class MathUtil {
         return  (inRads >= 0 ? inRads : inRads + (2 * Math.PI)) * 180 / Math.PI;
     }
 
-    public static float piTo2Pi(float angle) {
+    // Changes the gyro result from [-179,180] to [0,359]
+    public static double piTo2Pi(double angle) {
         return (angle + 360) % 360;
     }
 
-    public static boolean isInRange2pi(float angle, float target, float window) {
-        float min = piTo2Pi(target - window);
-        float max = piTo2Pi(target + window);
+    // Check if an angle is the range of the whole circle
+    public static boolean isInRange2pi(double angle, double target, double window) {
+        double min = piTo2Pi(target - window);
+        double max = piTo2Pi(target + window);
         angle = piTo2Pi(angle);
 
         return angle > min && angle < max;

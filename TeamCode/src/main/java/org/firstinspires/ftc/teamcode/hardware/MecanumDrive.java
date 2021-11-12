@@ -12,13 +12,16 @@ import static org.firstinspires.ftc.teamcode.util.Constants.WHEEL_FRONT_LEFT;
 import static org.firstinspires.ftc.teamcode.util.Constants.WHEEL_FRONT_RIGHT;
 
 public class MecanumDrive {
-    private final double wheelDiameter = 4.0;
+    private final double wheelDiameter = 6.0;
     private final double wheelCircumference = Math.PI * wheelDiameter;
     private final double ticksPerRev;
     private final DcMotor frontLeft;
     private final DcMotor frontRight;
     private final DcMotor backLeft;
     private final DcMotor backRight;
+
+    private double ticksToMove;
+    private boolean trackingFrontLeft;
 
     public MecanumDrive(HardwareMap hardwareMap) {
         frontLeft = hardwareMap.get(DcMotor.class, WHEEL_FRONT_LEFT);
@@ -45,30 +48,37 @@ public class MecanumDrive {
                 || this.backRight.isBusy();
     }
 
-    public void setTargetForwardPositionRelative(double inches, double power) {
-        int ticks = (int)((inches / wheelCircumference) * 560);
-        this.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
-        this.setRunMode(RunMode.RUN_TO_POSITION);
+    // Move in two directions a certain number of inches
+    public void setTargetPositionRelative(double x, double y, double power) {
+        double ticksX = (x / wheelCircumference) * 537.7;
+        double ticksY = (y / wheelCircumference) * 537.7;
 
-        this.frontLeft.setTargetPosition(ticks);
-        this.frontRight.setTargetPosition(ticks);
-        this.backLeft.setTargetPosition(ticks);
-        this.backRight.setTargetPosition(ticks);
+        this.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
+
+        // if the 2 directions to go in have the same sign, track the front left, otherwise the back left motor
+        // if either one of the directions are 0, then it doesn't matter so make it true just because
+        trackingFrontLeft = x * y >= 0;
+        // the ticks to move will be Y + X if it is the front left, otherwise the back left is calculated with Y - X
+        ticksToMove = Math.abs(trackingFrontLeft ? ticksY + ticksX : ticksY - ticksX);
+
+        this.frontLeft.setTargetPosition((int) (ticksY + ticksX));
+        this.frontRight.setTargetPosition((int) (ticksY - ticksX));
+        this.backLeft.setTargetPosition((int) (ticksY - ticksX));
+        this.backRight.setTargetPosition((int) (ticksY + ticksX));
+
+        this.setRunMode(RunMode.RUN_TO_POSITION);
 
         this.setPower(power);
     }
 
-    public void setTargetStrafePositionRelative(double inches, double power) {
-        int ticks = (int)((inches / wheelCircumference) * 560);
-        this.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
-        this.setRunMode(RunMode.RUN_TO_POSITION);
+    // Get the total number of ticks for the current movement
+    public double getTargetDistance() {
+        return ticksToMove;
+    }
 
-        this.frontLeft.setTargetPosition(ticks);
-        this.frontRight.setTargetPosition(-ticks);
-        this.backLeft.setTargetPosition(-ticks);
-        this.backRight.setTargetPosition(ticks);
-
-        this.setPower(power);
+    // Get the number of ticks remaining for the current movement
+    public double getTargetDistanceRemaining() {
+        return ticksToMove - Math.abs(trackingFrontLeft ? frontLeft.getCurrentPosition() : backLeft.getCurrentPosition());
     }
 
     public void setPower(double power) {

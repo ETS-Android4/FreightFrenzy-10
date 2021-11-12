@@ -110,7 +110,9 @@ public class AbstractTeleOp extends OpMode {
         if (driver2.getRightTrigger().getValue() > 0) {
             robot.intake.setPower(driver2.getRightTrigger().getValue()*INTAKE_SPEED);
         } else if (driver2.getLeftTrigger().getValue() > 0) {
-            robot.intake.setPower(driver2.getLeftTrigger().getValue()*INTAKE_SPEED);
+            robot.intake.setPower(-driver2.getLeftTrigger().getValue()*INTAKE_SPEED);
+        } else {
+            robot.intake.setPower(0);
         }
 
         // transfer
@@ -211,10 +213,12 @@ public class AbstractTeleOp extends OpMode {
         // ducky
         if (driver2.getA().isPressed()) {
             if (alliance == RED) {
-                robot.ducky.setPower(-1);
-            } else if (alliance == BLUE) {
                 robot.ducky.setPower(1);
+            } else if (alliance == BLUE) {
+                robot.ducky.setPower(-1);
             }
+        } else {
+            robot.ducky.setPower(0);
         }
 
         // telemetry

@@ -7,7 +7,7 @@ public class Configurables {
     public static Color YELLOW_LOWER = new Color(10, 70, 50);
     public static Color YELLOW_UPPER = new Color(80, 255, 255);
 
-    public static double DRIVE_SPEED = 0.75;
+    public static double DRIVE_SPEED = 0.5;
     public static double INTAKE_SPEED = 0.75;
 
     public static double HOPPER_DELAY = 1.5;
@@ -35,7 +35,7 @@ public class Configurables {
     public static int SLIDE_CUTOFF = -250;
 
     public static double SERVO_MOVEMENT = 250;
-    public static double SLIDE_TICKS_PER_CYCLE = 20;
+    public static double SLIDE_TICKS_PER_CYCLE = 10;
 
     // 0 0.1504
     //  going up 0.305 or .3262
