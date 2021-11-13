@@ -37,6 +37,10 @@ public class Configurables {
     public static double SERVO_MOVEMENT = 250;
     public static double SLIDE_TICKS_PER_CYCLE = 10;
 
+    public static double AUTO_P = 0.4;
+    public static double AUTO_MIN = 0.1;
+    public static int AUTO_CUTOFF = 20;
+
     // 0 0.1504
     //  going up 0.305 or .3262
     // -2400 0.6531

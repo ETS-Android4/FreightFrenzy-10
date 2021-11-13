@@ -40,8 +40,8 @@ public class Robot {
     }
 
     public String getTelemetry() {
-        telemetry = String.format(Locale.US, "Slide Position %s\nServo Position %s\n%s",
-                slide.getCurrentPosition(), hopper.getPosition(), camera.getTelemetry());
+        telemetry = String.format(Locale.US, "Slide Position %s\nServo Position %s\n%s\n%s",
+                slide.getCurrentPosition(), hopper.getPosition(), camera.getTelemetry(), sensors.getGyroHeading360());
         return telemetry;
     }
 }

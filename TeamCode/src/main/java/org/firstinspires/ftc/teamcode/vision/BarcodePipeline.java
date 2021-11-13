@@ -5,6 +5,7 @@ import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
@@ -23,7 +24,10 @@ import static org.firstinspires.ftc.teamcode.util.Configurables.YELLOW_LOWER;
 import static org.firstinspires.ftc.teamcode.util.Configurables.YELLOW_UPPER;
 import static org.firstinspires.ftc.teamcode.util.Constants.ANCHOR;
 import static org.firstinspires.ftc.teamcode.util.Constants.ERODE_DILATE_ITERATIONS;
+import static org.firstinspires.ftc.teamcode.util.Constants.GREEN;
 import static org.firstinspires.ftc.teamcode.util.Constants.STRUCTURING_ELEMENT;
+import static org.firstinspires.ftc.teamcode.util.Constants.WEBCAM_HEIGHT;
+import static org.firstinspires.ftc.teamcode.util.Constants.WEBCAM_WIDTH;
 import static org.firstinspires.ftc.teamcode.util.Constants.WHITE;
 
 // Class for the pipeline that is used to detect the StarterStack

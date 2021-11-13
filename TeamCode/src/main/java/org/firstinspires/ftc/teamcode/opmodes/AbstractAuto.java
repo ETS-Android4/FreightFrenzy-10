@@ -12,9 +12,16 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import static org.firstinspires.ftc.teamcode.util.Alliance.NEITHER;
+import static org.firstinspires.ftc.teamcode.util.Configurables.AUTO_CUTOFF;
+import static org.firstinspires.ftc.teamcode.util.Configurables.AUTO_MIN;
+import static org.firstinspires.ftc.teamcode.util.Configurables.AUTO_P;
 import static org.firstinspires.ftc.teamcode.util.Configurables.HOPPER_INIT;
+import static org.firstinspires.ftc.teamcode.util.Configurables.HOPPER_MID;
+import static org.firstinspires.ftc.teamcode.util.Configurables.HOPPER_START;
+import static org.firstinspires.ftc.teamcode.util.Configurables.SLIDE_CUTOFF;
 import static org.firstinspires.ftc.teamcode.util.Configurables.SLIDE_SPEED;
 import static org.firstinspires.ftc.teamcode.util.MathUtil.about;
+import static org.firstinspires.ftc.teamcode.util.MathUtil.clamp;
 
 public abstract class AbstractAuto extends LinearOpMode {
     Alliance alliance;
@@ -158,10 +165,47 @@ public abstract class AbstractAuto extends LinearOpMode {
             }
         });
     }
+    public void addMovement(double timeout, final double xMovement, final double yMovement, final double speed) {
+        String status = "Moving ";
+        if (Math.abs(xMovement) > 0) {
+            status += xMovement > 0 ? xMovement + " right" : Math.abs(xMovement) + " left";
+            if (Math.abs(yMovement) > 0) {
+                status += " and ";
+            }
+        }
+        if (Math.abs(yMovement) > 0) {
+            status += yMovement > 0 ? yMovement + " forward" : Math.abs(yMovement) + " back";
+        }
+        steps.add(new Step(status, timeout) {
+            @Override
+            public void start() {
+                this.x = xMovement;
+                this.y = yMovement;
+                this.power = speed;
+                robot.drive.setTargetPositionRelative(x, y, power);
+            }
+            @Override
+            public void whileRunning() {
+//                if ((robot.drive.getTargetDistance() - robot.drive.getTargetDistanceRemaining() < 500 ||
+//                        robot.drive.getTargetDistanceRemaining() < 1250 ) && this.power > 0.5) {
+//                    robot.drive.setPower(0.5);
+//                } else if (robot.drive.getTargetDistanceRemaining() > 500 && this.power > 0.5) {
+//                    robot.drive.setPower(1);
+//                }
+            }
+            @Override
+            public void end() {}
+            @Override
+            public boolean isFinished() {
+                return false;
+            }
+        });
+    }
     public void addTurnAbsolute(final double degrees) {
         steps.add(new Step("Turning "+degrees+" degrees") {
             @Override
             public void start() {
+                robot.drive.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 robot.sensors.resetGyroHeadingToInitial();
                 destinationHeading = degrees;
                 zRuntime = -1;
@@ -186,12 +230,15 @@ public abstract class AbstractAuto extends LinearOpMode {
                 } else {
                     zRuntime = -1;
                     // set the speed proportionally to the error the robot is off by, with a minimum speed of 0.15
-                    z = Math.copySign(Math.abs(zErr) > 45 ? 0.7 : 0.15, -zErr);
+                    z = Math.copySign(Math.abs(zErr) > AUTO_CUTOFF ? AUTO_P : AUTO_MIN, -zErr);
                 }
                 robot.drive.setWheels(0, 0, z);
+
+                setTelemetry(String.format(Locale.US, "Current Heading: %s\nZ err: %s\nZ: %s", currentHeading, zErr, z));
             }
             @Override
             public void end() {
+                robot.drive.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
                 robot.drive.setWheels(0, 0, 0);
             }
             @Override
@@ -283,7 +330,13 @@ public abstract class AbstractAuto extends LinearOpMode {
                 robot.slide.setTargetPosition(slidePos);
             }
             @Override
-            public void whileRunning() {}
+            public void whileRunning() {
+                if (robot.slide.getCurrentPosition() > SLIDE_CUTOFF) {
+                    robot.hopper.setPosition(HOPPER_START.l);
+                } else if (robot.hopper.getPosition() == HOPPER_START.l) {
+                    robot.hopper.setPosition(HOPPER_MID.l);
+                }
+            }
             @Override
             public void end() {}
             @Override

@@ -222,8 +222,9 @@ public class AbstractTeleOp extends OpMode {
         }
 
         // telemetry
-        telemetry.addData("servo pos", servoPos);
-        telemetry.addData("slide pos", targetPos);
+        telemetry.addLine(robot.getTelemetry());
+//        telemetry.addData("servo pos", servoPos);
+//        telemetry.addData("slide pos", targetPos);
         telemetry.update();
     }
 }
