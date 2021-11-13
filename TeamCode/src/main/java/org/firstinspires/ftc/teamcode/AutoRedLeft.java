@@ -130,7 +130,7 @@ public class AutoRedLeft extends LinearOpMode {
         hopper.setPosition(1.0);
         sleep(1000);
         intakeMotor.setPower(0);
-        hopper.setPosition(0);
+        hopper.setPosition(0.5);
 
         sleep(sleeptime);
 
