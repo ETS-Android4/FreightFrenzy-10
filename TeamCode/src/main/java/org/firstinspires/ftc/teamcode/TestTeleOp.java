@@ -136,10 +136,18 @@ public class TestTeleOp extends OpMode{
     public void loop() {
         double left;
         double right;
-
+        double speed = .6;
+        boolean turbo = gamepad1.left_bumper;
+        boolean slowdown = gamepad1.right_bumper;
+        if(turbo == true){
+            speed = .8;
+        }
+        if(slowdown == true){
+            speed = .25;
+        }
         //wheel controls
-        left = (gamepad1.left_stick_y)*0.6;
-        right = (-gamepad1.right_stick_y)*0.6;
+        left = (gamepad1.left_stick_y)*speed;
+        right = (-gamepad1.right_stick_y)*speed;
 
 
 
@@ -147,6 +155,7 @@ public class TestTeleOp extends OpMode{
             driveBackLeft.setPower(left);
             driveFrontRight.setPower(right);
             driveBackRight.setPower(right);
+
 
 
 
