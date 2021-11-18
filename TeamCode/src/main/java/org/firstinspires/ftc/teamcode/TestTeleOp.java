@@ -29,18 +29,13 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
+import java.util.Locale;
 
 /**
  * This file provides basic Telop driving for a Pushbot robot.
@@ -86,8 +81,8 @@ public class TestTeleOp extends OpMode{
         /* Initialize the hardware variables.*/
 
 
-         driveFrontLeft = this.hardwareMap.get(DcMotor.class, "driveFrontLeft");
-         driveFrontRight = this.hardwareMap.get(DcMotor.class, "driveFrontRight");
+        driveFrontLeft = this.hardwareMap.get(DcMotor.class, "driveFrontLeft");
+        driveFrontRight = this.hardwareMap.get(DcMotor.class, "driveFrontRight");
         driveBackLeft = this.hardwareMap.get(DcMotor.class, "driveBackLeft");
         driveBackRight = this.hardwareMap.get(DcMotor.class, "driveBackRight");
 
@@ -139,25 +134,33 @@ public class TestTeleOp extends OpMode{
         double speed = .6;
         boolean turbo = gamepad1.left_bumper;
         boolean slowdown = gamepad1.right_bumper;
-        if(turbo == true){
+        if (turbo) {
             speed = .8;
         }
-        if(slowdown == true){
+        if (slowdown) {
             speed = .25;
         }
         //wheel controls
-        left = (gamepad1.left_stick_y)*speed;
-        right = (-gamepad1.right_stick_y)*speed;
+        double x = (gamepad1.left_stick_x)*speed;
+        double y = (-gamepad1.right_stick_y)*speed;
 
+        double frontLeftPower = y+x;
+        double frontRightPower = y-x;
+        double backLeftPower = y+x;
+        double backRightPower = y-x;
 
+        double max = Math.max(Math.max(Math.abs(frontLeftPower), Math.abs(frontRightPower)),
+                Math.max(Math.abs(backLeftPower), Math.abs(backRightPower)));
 
-            driveFrontLeft.setPower(left);
-            driveBackLeft.setPower(left);
-            driveFrontRight.setPower(right);
-            driveBackRight.setPower(right);
+        frontLeftPower /= max;
+        frontRightPower /= max;
+        backLeftPower /= max;
+        backRightPower /= max;
 
-
-
+        driveFrontLeft.setPower(frontLeftPower);
+        driveBackLeft.setPower(backLeftPower);
+        driveFrontRight.setPower(frontRightPower);
+        driveBackRight.setPower(backRightPower);
 
         //intake motor
         boolean intakePress;
@@ -172,11 +175,9 @@ public class TestTeleOp extends OpMode{
             this.hopperPosition = 0.5;
         }
 
-
         // Send telemetry message to signify robot running;
-        telemetry.addData("left",  "%.2f", left);
-        telemetry.addData("right", "%.2f", right);
-
+        telemetry.addLine(String.format(Locale.US, "FL: %.02f FR: %.02f\nBL: %.02f BR: %.02f",
+                frontLeftPower, frontRightPower, backLeftPower, backRightPower));
 
         //linear slide
         double tR = -5.8;  //total rotation
