@@ -55,8 +55,8 @@ import java.util.Locale;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Pushbot: Teleop arcade", group="Pushbot")
-public class TestTeleOp extends OpMode{
+@TeleOp(name="PushbotTank: Teleop Tank", group="Pushbot")
+public class TankTestTeleop extends OpMode{
 
     DcMotor driveFrontLeft;
     DcMotor driveFrontRight;
@@ -145,7 +145,7 @@ public class TestTeleOp extends OpMode{
 
     }
 
-//linear slide goes to 4.8 ish
+    //linear slide goes to 4.8 ish
     @Override
     public void loop() {
 
@@ -172,7 +172,7 @@ public class TestTeleOp extends OpMode{
         if (turbo) {
             currentSpeed = turboSpeed;
         }
-       // if not turbo check slowdown
+        // if not turbo check slowdown
         else if (slowdown) {
             currentSpeed = slowSpeed;
         }
@@ -180,26 +180,24 @@ public class TestTeleOp extends OpMode{
             currentSpeed = normalSpeed;
         }
 
-        //arcade wheel controls
-
+        //wheel controls
+        /*
         double x = (gamepad1.left_stick_x);
         double y = (-gamepad1.right_stick_y);
         telemetry.addData("X: ", x);
         telemetry.addData("Y: ", y);
         telemetry.addData("speed: ", currentSpeed);
 
-
-        //if(Math.abs(x) > .15 && developerauto == false){
-        //    currentSpeed = slowSpeed;
-        //}
+        if(Math.abs(x) > .15 && developerauto == false){
+            currentSpeed = slowSpeed;
+        }
         double frontLeftPower = (y+x);
         double frontRightPower = (y-x);
         double backLeftPower = (y+x);
         double backRightPower = (y-x);
-
+        */
 
         //tank drive
-        /*
         double leftPower = (-gamepad1.left_stick_y);
         double rightPower = (-gamepad1.right_stick_y);
 
@@ -209,8 +207,6 @@ public class TestTeleOp extends OpMode{
         double backRightPower = (rightPower);
 
         //end tank drive
-        */
-
 
         double max = 0; //max represents the highest absolute value of power, so that the power can be scales to the limits of 1 and -1
         if(Math.abs(frontLeftPower) > max){
