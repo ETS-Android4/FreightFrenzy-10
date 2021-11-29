@@ -1,31 +1,31 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.hardware.Robot;
-import org.firstinspires.ftc.teamcode.util.Alliance;
-import org.firstinspires.ftc.teamcode.util.BarcodeLocation;
+import org.firstinspires.ftc.teamcode.oldutil.Alliance;
+import org.firstinspires.ftc.teamcode.oldutil.BarcodeLocation;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
-import static org.firstinspires.ftc.teamcode.util.Alliance.NEITHER;
-import static org.firstinspires.ftc.teamcode.util.Configurables.AUTO_CUTOFF;
-import static org.firstinspires.ftc.teamcode.util.Configurables.AUTO_MIN;
-import static org.firstinspires.ftc.teamcode.util.Configurables.AUTO_P;
-import static org.firstinspires.ftc.teamcode.util.Configurables.HOPPER_INIT;
-import static org.firstinspires.ftc.teamcode.util.Configurables.HOPPER_MID;
-import static org.firstinspires.ftc.teamcode.util.Configurables.HOPPER_START;
-import static org.firstinspires.ftc.teamcode.util.Configurables.SLIDE_CUTOFF;
-import static org.firstinspires.ftc.teamcode.util.Configurables.SLIDE_SPEED;
-import static org.firstinspires.ftc.teamcode.util.MathUtil.about;
-import static org.firstinspires.ftc.teamcode.util.MathUtil.clamp;
+import static org.firstinspires.ftc.teamcode.oldutil.Alliance.NEITHER;
+import static org.firstinspires.ftc.teamcode.oldutil.Configurables.AUTO_CUTOFF;
+import static org.firstinspires.ftc.teamcode.oldutil.Configurables.AUTO_MIN;
+import static org.firstinspires.ftc.teamcode.oldutil.Configurables.AUTO_P;
+import static org.firstinspires.ftc.teamcode.oldutil.Configurables.HOPPER_INIT;
+import static org.firstinspires.ftc.teamcode.oldutil.Configurables.HOPPER_MID;
+import static org.firstinspires.ftc.teamcode.oldutil.Configurables.HOPPER_START;
+import static org.firstinspires.ftc.teamcode.oldutil.Configurables.SLIDE_CUTOFF;
+import static org.firstinspires.ftc.teamcode.oldutil.Configurables.SLIDE_SPEED;
+import static org.firstinspires.ftc.teamcode.oldutil.MathUtil.about;
+import static org.firstinspires.ftc.teamcode.oldutil.MathUtil.clamp;
 
 public abstract class AbstractAuto extends LinearOpMode {
     Alliance alliance;
-    private Robot robot;
+    public Robot robot;
     private BarcodeLocation teamElementLocation;
     private ArrayList<Step> steps;
     private double currentRuntime;
@@ -69,7 +69,7 @@ public abstract class AbstractAuto extends LinearOpMode {
         resetStartTime();
 
         // switch from stack camera to targeting camera
-        robot.camera.stopBarcodeWebcam();
+
 
 
         // start up the first step
@@ -129,168 +129,44 @@ public abstract class AbstractAuto extends LinearOpMode {
             }
         });
     }
-    public void addMovement(final double xMovement, final double yMovement, final double speed) {
-        String status = "Moving ";
-        if (Math.abs(xMovement) > 0) {
-            status += xMovement > 0 ? xMovement + " right" : Math.abs(xMovement) + " left";
-            if (Math.abs(yMovement) > 0) {
-                status += " and ";
-            }
-        }
-        if (Math.abs(yMovement) > 0) {
-            status += yMovement > 0 ? yMovement + " forward" : Math.abs(yMovement) + " back";
-        }
-        steps.add(new Step(status) {
+    public void turn(double degrees) {
+        steps.add(new Step("Following a trajectory") {
             @Override
             public void start() {
-                this.x = xMovement;
-                this.y = yMovement;
-                this.power = speed;
-                robot.drive.setTargetPositionRelative(x, y, power);
+                robot.drive.turn(degrees);
             }
             @Override
             public void whileRunning() {
-//                if ((robot.drive.getTargetDistance() - robot.drive.getTargetDistanceRemaining() < 500 ||
-//                        robot.drive.getTargetDistanceRemaining() < 1250 ) && this.power > 0.5) {
-//                    robot.drive.setPower(0.5);
-//                } else if (robot.drive.getTargetDistanceRemaining() > 500 && this.power > 0.5) {
-//                    robot.drive.setPower(1);
-//                }
+                robot.drive.update();
             }
             @Override
             public void end() {}
             @Override
             public boolean isFinished() {
-                return !robot.drive.isBusy() || robot.drive.getTargetDistanceRemaining() < 15;
+                return !robot.drive.isBusy();
             }
         });
     }
-    public void addMovement(double timeout, final double xMovement, final double yMovement, final double speed) {
-        String status = "Moving ";
-        if (Math.abs(xMovement) > 0) {
-            status += xMovement > 0 ? xMovement + " right" : Math.abs(xMovement) + " left";
-            if (Math.abs(yMovement) > 0) {
-                status += " and ";
-            }
-        }
-        if (Math.abs(yMovement) > 0) {
-            status += yMovement > 0 ? yMovement + " forward" : Math.abs(yMovement) + " back";
-        }
-        steps.add(new Step(status, timeout) {
+
+    public void followTrajectory(Trajectory trajectory) {
+        steps.add(new Step("Following a trajectory") {
             @Override
             public void start() {
-                this.x = xMovement;
-                this.y = yMovement;
-                this.power = speed;
-                robot.drive.setTargetPositionRelative(x, y, power);
+                robot.drive.followTrajectoryAsync(trajectory);
             }
             @Override
             public void whileRunning() {
-//                if ((robot.drive.getTargetDistance() - robot.drive.getTargetDistanceRemaining() < 500 ||
-//                        robot.drive.getTargetDistanceRemaining() < 1250 ) && this.power > 0.5) {
-//                    robot.drive.setPower(0.5);
-//                } else if (robot.drive.getTargetDistanceRemaining() > 500 && this.power > 0.5) {
-//                    robot.drive.setPower(1);
-//                }
+                robot.drive.update();
             }
             @Override
             public void end() {}
             @Override
             public boolean isFinished() {
-                return false;
+                return !robot.drive.isBusy();
             }
         });
     }
-    public void addTurnAbsolute(final double degrees) {
-        steps.add(new Step("Turning "+degrees+" degrees") {
-            @Override
-            public void start() {
-                robot.drive.setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                robot.sensors.resetGyroHeadingToInitial();
-                destinationHeading = degrees;
-                zRuntime = -1;
-            }
-            @Override
-            public void whileRunning() {
-                currentHeading = robot.sensors.getGyroHeading360();
-                // determine the error (special case because the heading resets to 0 instead of 360)
-                // the logic works, but in the future making it clearer and more efficient would be nice
-                if (currentHeading > 180 && currentHeading > destinationHeading + 180) {
-                    zErr = 360 - currentHeading + destinationHeading;
-                } else {
-                    zErr = (destinationHeading - currentHeading + 180) % 360 - 180;
-                }
 
-                // determine whether to turn or not
-                if (Math.abs(zErr) <= 1) {
-                    z = 0;
-                    if (zRuntime == -1) {
-                        zRuntime = currentRuntime;
-                    }
-                } else {
-                    zRuntime = -1;
-                    // set the speed proportionally to the error the robot is off by, with a minimum speed of 0.15
-                    z = Math.copySign(Math.abs(zErr) > AUTO_CUTOFF ? AUTO_P : AUTO_MIN, -zErr);
-                }
-                robot.drive.setWheels(0, 0, z);
-
-                setTelemetry(String.format(Locale.US, "Current Heading: %s\nZ err: %s\nZ: %s", currentHeading, zErr, z));
-            }
-            @Override
-            public void end() {
-                robot.drive.setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.drive.setWheels(0, 0, 0);
-            }
-            @Override
-            public boolean isFinished() {
-                // if the robot is within a degree of the target position for more than 1 second
-                return currentRuntime > zRuntime + 1 && zRuntime != -1;
-            }
-        });
-    }
-    public void addTurnAbsoluteFast(final double degrees) {
-        steps.add(new Step("Turning "+degrees+" degrees") {
-            @Override
-            public void start() {
-                robot.sensors.resetGyroHeadingToInitial();
-                destinationHeading = degrees;
-                zRuntime = -1;
-            }
-            @Override
-            public void whileRunning() {
-                currentHeading = robot.sensors.getGyroHeading360();
-                // determine the error (special case because the heading resets to 0 instead of 360)
-                // the logic works, but in the future making it clearer and more efficient would be nice
-                if (currentHeading > 180 && currentHeading > destinationHeading + 180) {
-                    zErr = 360 - currentHeading + destinationHeading;
-                } else {
-                    zErr = (destinationHeading - currentHeading + 180) % 360 - 180;
-                }
-
-                // determine whether to turn or not
-                if (Math.abs(zErr) <= 3) {
-                    z = 0;
-                    if (zRuntime == -1) {
-                        zRuntime = currentRuntime;
-                    }
-                } else {
-                    zRuntime = -1;
-                    // set the speed proportionally to the error the robot is off by, with a minimum speed of 0.15
-                    z = Math.copySign(Math.abs(zErr) > 45 ? 0.7 : 0.15, -zErr);
-                }
-                robot.drive.setWheels(0, 0, z);
-            }
-            @Override
-            public void end() {
-                robot.drive.setWheels(0, 0, 0);
-            }
-            @Override
-            public boolean isFinished() {
-                // if the robot is within a degree of the target position for more than 1 second
-                return z == 0;
-            }
-        });
-    }
     public void addIntake(double timeout, final double intakePower) {
         steps.add(new Step("Setting intake power to " + intakePower, timeout) {
             @Override
@@ -358,6 +234,27 @@ public abstract class AbstractAuto extends LinearOpMode {
             @Override
             public boolean isFinished() {
                 return false;
+            }
+        });
+    }
+    public void stopTargetingCamera() {
+        steps.add(new Step("Stopping Targeting Camera") {
+            @Override
+            public void start() {
+                robot.camera.stopBarcodeWebcam();
+            }
+
+            @Override
+            public void whileRunning() {
+            }
+
+            @Override
+            public void end() {
+            }
+
+            @Override
+            public boolean isFinished() {
+                return robot.camera.getFrameCount() == 0;
             }
         });
     }

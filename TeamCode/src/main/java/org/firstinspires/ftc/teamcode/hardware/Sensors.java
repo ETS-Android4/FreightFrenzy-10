@@ -6,9 +6,9 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.teamcode.util.MathUtil;
+import org.firstinspires.ftc.teamcode.oldutil.MathUtil;
 
-import static org.firstinspires.ftc.teamcode.util.Constants.IMU_SENSOR;
+import static org.firstinspires.ftc.teamcode.oldutil.Constants.IMU_SENSOR;
 
 // Class for the IMU Sensor on the Control Hub
 public class Sensors {

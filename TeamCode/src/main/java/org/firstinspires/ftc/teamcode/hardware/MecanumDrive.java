@@ -6,10 +6,10 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.RunMode;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior;
-import static org.firstinspires.ftc.teamcode.util.Constants.WHEEL_BACK_LEFT;
-import static org.firstinspires.ftc.teamcode.util.Constants.WHEEL_BACK_RIGHT;
-import static org.firstinspires.ftc.teamcode.util.Constants.WHEEL_FRONT_LEFT;
-import static org.firstinspires.ftc.teamcode.util.Constants.WHEEL_FRONT_RIGHT;
+import static org.firstinspires.ftc.teamcode.oldutil.Constants.WHEEL_BACK_LEFT;
+import static org.firstinspires.ftc.teamcode.oldutil.Constants.WHEEL_BACK_RIGHT;
+import static org.firstinspires.ftc.teamcode.oldutil.Constants.WHEEL_FRONT_LEFT;
+import static org.firstinspires.ftc.teamcode.oldutil.Constants.WHEEL_FRONT_RIGHT;
 
 public class MecanumDrive {
     private final double wheelDiameter = 6.0;

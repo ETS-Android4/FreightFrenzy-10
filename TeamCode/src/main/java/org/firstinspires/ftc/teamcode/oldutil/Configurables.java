@@ -1,11 +1,11 @@
-package org.firstinspires.ftc.teamcode.util;
+package org.firstinspires.ftc.teamcode.oldutil;
 
 import com.acmerobotics.dashboard.config.Config;
 
 @Config
 public class Configurables {
-    public static Color YELLOW_LOWER = new Color(10, 70, 50);
-    public static Color YELLOW_UPPER = new Color(80, 255, 255);
+    public static Color YELLOW_LOWER = new Color(25, 70, 50);
+    public static Color YELLOW_UPPER = new Color(60, 255, 255);
 
     public static double DRIVE_SPEED = 0.5;
     public static double INTAKE_SPEED = 0.75;
@@ -19,6 +19,8 @@ public class Configurables {
     public static int RIGHT_BOUNDARY = 25;
 
     public static double SLIDE_SPEED = 1;
+
+    public static double CAPPER_SPEED = 0.01;
 
     public static double HOPPER_INIT = 0.15;
     public static Range HOPPER_START = new Range(0.15, 0.99);
@@ -35,7 +37,7 @@ public class Configurables {
     public static int SLIDE_CUTOFF = -250;
 
     public static double SERVO_MOVEMENT = 250;
-    public static double SLIDE_TICKS_PER_CYCLE = 10;
+    public static double SLIDE_TICKS_PER_CYCLE = 20;
 
     public static double AUTO_P = 0.4;
     public static double AUTO_MIN = 0.1;

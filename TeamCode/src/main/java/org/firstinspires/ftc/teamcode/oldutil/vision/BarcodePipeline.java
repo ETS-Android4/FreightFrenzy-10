@@ -1,12 +1,9 @@
-package org.firstinspires.ftc.teamcode.vision;
+package org.firstinspires.ftc.teamcode.oldutil.vision;
 
-import org.firstinspires.ftc.teamcode.util.BarcodeLocation;
+import org.firstinspires.ftc.teamcode.oldutil.BarcodeLocation;
 import org.opencv.core.Core;
-import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
@@ -14,21 +11,18 @@ import org.openftc.easyopencv.OpenCvPipeline;
 
 import java.util.ArrayList;
 
-import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.LEFT;
-import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.MIDDLE;
-import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.RIGHT;
-import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.UNKNOWN;
-import static org.firstinspires.ftc.teamcode.util.Configurables.LEFT_BOUNDARY;
-import static org.firstinspires.ftc.teamcode.util.Configurables.RIGHT_BOUNDARY;
-import static org.firstinspires.ftc.teamcode.util.Configurables.YELLOW_LOWER;
-import static org.firstinspires.ftc.teamcode.util.Configurables.YELLOW_UPPER;
-import static org.firstinspires.ftc.teamcode.util.Constants.ANCHOR;
-import static org.firstinspires.ftc.teamcode.util.Constants.ERODE_DILATE_ITERATIONS;
-import static org.firstinspires.ftc.teamcode.util.Constants.GREEN;
-import static org.firstinspires.ftc.teamcode.util.Constants.STRUCTURING_ELEMENT;
-import static org.firstinspires.ftc.teamcode.util.Constants.WEBCAM_HEIGHT;
-import static org.firstinspires.ftc.teamcode.util.Constants.WEBCAM_WIDTH;
-import static org.firstinspires.ftc.teamcode.util.Constants.WHITE;
+import static org.firstinspires.ftc.teamcode.oldutil.BarcodeLocation.LEFT;
+import static org.firstinspires.ftc.teamcode.oldutil.BarcodeLocation.MIDDLE;
+import static org.firstinspires.ftc.teamcode.oldutil.BarcodeLocation.RIGHT;
+import static org.firstinspires.ftc.teamcode.oldutil.BarcodeLocation.UNKNOWN;
+import static org.firstinspires.ftc.teamcode.oldutil.Configurables.LEFT_BOUNDARY;
+import static org.firstinspires.ftc.teamcode.oldutil.Configurables.RIGHT_BOUNDARY;
+import static org.firstinspires.ftc.teamcode.oldutil.Configurables.YELLOW_LOWER;
+import static org.firstinspires.ftc.teamcode.oldutil.Configurables.YELLOW_UPPER;
+import static org.firstinspires.ftc.teamcode.oldutil.Constants.ANCHOR;
+import static org.firstinspires.ftc.teamcode.oldutil.Constants.ERODE_DILATE_ITERATIONS;
+import static org.firstinspires.ftc.teamcode.oldutil.Constants.STRUCTURING_ELEMENT;
+import static org.firstinspires.ftc.teamcode.oldutil.Constants.WHITE;
 
 // Class for the pipeline that is used to detect the StarterStack
 public class BarcodePipeline extends OpenCvPipeline  {

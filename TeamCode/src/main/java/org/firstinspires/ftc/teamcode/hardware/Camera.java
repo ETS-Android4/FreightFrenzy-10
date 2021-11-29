@@ -4,20 +4,20 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.teamcode.util.BarcodeLocation;
-import org.firstinspires.ftc.teamcode.vision.BarcodePipeline;
-import org.firstinspires.ftc.teamcode.vision.Detection;
+import org.firstinspires.ftc.teamcode.oldutil.BarcodeLocation;
+import org.firstinspires.ftc.teamcode.oldutil.vision.BarcodePipeline;
+import org.firstinspires.ftc.teamcode.oldutil.vision.Detection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 
 import java.util.Locale;
 
-import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.UNKNOWN;
-import static org.firstinspires.ftc.teamcode.util.Constants.BARCODE_WEBCAM;
-import static org.firstinspires.ftc.teamcode.util.Constants.INVALID_DETECTION;
-import static org.firstinspires.ftc.teamcode.util.Constants.WEBCAM_HEIGHT;
-import static org.firstinspires.ftc.teamcode.util.Constants.WEBCAM_ROTATION;
-import static org.firstinspires.ftc.teamcode.util.Constants.WEBCAM_WIDTH;
+import static org.firstinspires.ftc.teamcode.oldutil.BarcodeLocation.UNKNOWN;
+import static org.firstinspires.ftc.teamcode.oldutil.Constants.BARCODE_WEBCAM;
+import static org.firstinspires.ftc.teamcode.oldutil.Constants.INVALID_DETECTION;
+import static org.firstinspires.ftc.teamcode.oldutil.Constants.WEBCAM_HEIGHT;
+import static org.firstinspires.ftc.teamcode.oldutil.Constants.WEBCAM_ROTATION;
+import static org.firstinspires.ftc.teamcode.oldutil.Constants.WEBCAM_WIDTH;
 
 // Class for the camera
 public class Camera {

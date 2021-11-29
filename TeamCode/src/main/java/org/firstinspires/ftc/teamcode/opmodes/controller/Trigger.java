@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.controller;
+package org.firstinspires.ftc.teamcode.opmodes.controller;
 
 public class Trigger {
     double value = 0;

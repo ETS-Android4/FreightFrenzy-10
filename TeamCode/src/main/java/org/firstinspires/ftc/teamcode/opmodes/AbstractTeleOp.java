@@ -1,35 +1,36 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.controller.Controller;
+import org.firstinspires.ftc.teamcode.opmodes.controller.Controller;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
-import org.firstinspires.ftc.teamcode.util.Alliance;
+import org.firstinspires.ftc.teamcode.oldutil.Alliance;
 
-import static org.firstinspires.ftc.teamcode.util.Alliance.BLUE;
-import static org.firstinspires.ftc.teamcode.util.Alliance.NEITHER;
-import static org.firstinspires.ftc.teamcode.util.Alliance.RED;
-import static org.firstinspires.ftc.teamcode.util.Configurables.DRIVE_SPEED;
-import static org.firstinspires.ftc.teamcode.util.Configurables.HOPPER_DELAY;
-import static org.firstinspires.ftc.teamcode.util.Configurables.HOPPER_DROP_HIGH;
-import static org.firstinspires.ftc.teamcode.util.Configurables.HOPPER_DROP_LOW;
-import static org.firstinspires.ftc.teamcode.util.Configurables.HOPPER_DROP_LOW_POS1;
-import static org.firstinspires.ftc.teamcode.util.Configurables.HOPPER_DROP_MIDDLE;
-import static org.firstinspires.ftc.teamcode.util.Configurables.HOPPER_INIT;
-import static org.firstinspires.ftc.teamcode.util.Configurables.HOPPER_MID;
-import static org.firstinspires.ftc.teamcode.util.Configurables.HOPPER_START;
-import static org.firstinspires.ftc.teamcode.util.Configurables.INTAKE_SPEED;
-import static org.firstinspires.ftc.teamcode.util.Configurables.SERVO_MOVEMENT;
-import static org.firstinspires.ftc.teamcode.util.Configurables.SLIDE_CUTOFF;
-import static org.firstinspires.ftc.teamcode.util.Configurables.SLIDE_DROP_HIGH;
-import static org.firstinspires.ftc.teamcode.util.Configurables.SLIDE_DROP_LOW;
-import static org.firstinspires.ftc.teamcode.util.Configurables.SLIDE_DROP_MIDDLE;
-import static org.firstinspires.ftc.teamcode.util.Configurables.SLIDE_TICKS_PER_CYCLE;
-import static org.firstinspires.ftc.teamcode.util.Configurables.SLIDE_SPEED;
-import static org.firstinspires.ftc.teamcode.util.MathUtil.about;
-import static org.firstinspires.ftc.teamcode.util.MathUtil.clamp;
+import static org.firstinspires.ftc.teamcode.oldutil.Alliance.BLUE;
+import static org.firstinspires.ftc.teamcode.oldutil.Alliance.NEITHER;
+import static org.firstinspires.ftc.teamcode.oldutil.Alliance.RED;
+import static org.firstinspires.ftc.teamcode.oldutil.Configurables.DRIVE_SPEED;
+import static org.firstinspires.ftc.teamcode.oldutil.Configurables.HOPPER_DELAY;
+import static org.firstinspires.ftc.teamcode.oldutil.Configurables.HOPPER_DROP_HIGH;
+import static org.firstinspires.ftc.teamcode.oldutil.Configurables.HOPPER_DROP_LOW;
+import static org.firstinspires.ftc.teamcode.oldutil.Configurables.HOPPER_DROP_LOW_POS1;
+import static org.firstinspires.ftc.teamcode.oldutil.Configurables.HOPPER_DROP_MIDDLE;
+import static org.firstinspires.ftc.teamcode.oldutil.Configurables.HOPPER_INIT;
+import static org.firstinspires.ftc.teamcode.oldutil.Configurables.HOPPER_MID;
+import static org.firstinspires.ftc.teamcode.oldutil.Configurables.HOPPER_START;
+import static org.firstinspires.ftc.teamcode.oldutil.Configurables.INTAKE_SPEED;
+import static org.firstinspires.ftc.teamcode.oldutil.Configurables.SERVO_MOVEMENT;
+import static org.firstinspires.ftc.teamcode.oldutil.Configurables.SLIDE_CUTOFF;
+import static org.firstinspires.ftc.teamcode.oldutil.Configurables.SLIDE_DROP_HIGH;
+import static org.firstinspires.ftc.teamcode.oldutil.Configurables.SLIDE_DROP_LOW;
+import static org.firstinspires.ftc.teamcode.oldutil.Configurables.SLIDE_DROP_MIDDLE;
+import static org.firstinspires.ftc.teamcode.oldutil.Configurables.SLIDE_TICKS_PER_CYCLE;
+import static org.firstinspires.ftc.teamcode.oldutil.Configurables.SLIDE_SPEED;
+import static org.firstinspires.ftc.teamcode.oldutil.MathUtil.about;
+import static org.firstinspires.ftc.teamcode.oldutil.MathUtil.clamp;
 
 @Config
 public class AbstractTeleOp extends OpMode {
@@ -48,6 +49,8 @@ public class AbstractTeleOp extends OpMode {
     private double currentTime;
     private double startMacro;
     private boolean macroing = false;
+
+    private double capperPos;
 
     public void setAlliance() {
         this.alliance = NEITHER;
@@ -75,6 +78,9 @@ public class AbstractTeleOp extends OpMode {
         robot.slide.setPower(SLIDE_SPEED);
 
         robot.hopper.setPosition(servoPos);
+
+        capperPos = robot.capper.getPosition();
+        robot.capper.setPosition(capperPos);
     }
 
     @Override
@@ -104,7 +110,7 @@ public class AbstractTeleOp extends OpMode {
             y = driver1.getLeftStick().getY() * DRIVE_SPEED;
             z = driver1.getRightStick().getX() * DRIVE_SPEED;
         }
-        robot.drive.setWheels(x, y, z);
+        robot.drive.setWeightedDrivePower(new Pose2d(y,-x,-z));
 
         // intake
         if (driver2.getRightTrigger().getValue() > 0) {
@@ -220,6 +226,15 @@ public class AbstractTeleOp extends OpMode {
         } else {
             robot.ducky.setPower(0);
         }
+
+        // capper
+        if (driver2.getLeftBumper().isPressed()) {
+            capperPos -= 0.005;
+        } else if (driver2.getRightBumper().isPressed()) {
+            capperPos += 0.005;
+        }
+        capperPos = clamp(capperPos, 0.01, 0.99);
+        robot.capper.setPosition(capperPos);
 
         // telemetry
         telemetry.addLine(robot.getTelemetry());

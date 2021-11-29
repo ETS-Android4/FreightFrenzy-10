@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.controller;
+package org.firstinspires.ftc.teamcode.opmodes.controller;
 
 public class Button {
     boolean currentState = false;

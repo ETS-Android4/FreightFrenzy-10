@@ -1,6 +1,6 @@
-package org.firstinspires.ftc.teamcode.util;
+package org.firstinspires.ftc.teamcode.oldutil;
 
-import org.firstinspires.ftc.teamcode.vision.Detection;
+import org.firstinspires.ftc.teamcode.oldutil.vision.Detection;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;

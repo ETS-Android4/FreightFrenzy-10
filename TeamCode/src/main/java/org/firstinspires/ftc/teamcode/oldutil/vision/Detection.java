@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.vision;
+package org.firstinspires.ftc.teamcode.oldutil.vision;
 
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -7,18 +7,16 @@ import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
-import static org.firstinspires.ftc.teamcode.util.Constants.GREEN;
-import static org.firstinspires.ftc.teamcode.util.Constants.INVALID_AREA;
-import static org.firstinspires.ftc.teamcode.util.Constants.INVALID_POINT;
-import static org.firstinspires.ftc.teamcode.vision.OpenCVUtil.drawConvexHull;
-import static org.firstinspires.ftc.teamcode.vision.OpenCVUtil.drawPoint;
-import static org.firstinspires.ftc.teamcode.vision.OpenCVUtil.fillConvexHull;
-import static org.firstinspires.ftc.teamcode.vision.OpenCVUtil.getBottomLeftOfContour;
-import static org.firstinspires.ftc.teamcode.vision.OpenCVUtil.getBottomRightOfContour;
-import static org.firstinspires.ftc.teamcode.vision.OpenCVUtil.getCenterOfContour;
+import static org.firstinspires.ftc.teamcode.oldutil.Constants.GREEN;
+import static org.firstinspires.ftc.teamcode.oldutil.Constants.INVALID_AREA;
+import static org.firstinspires.ftc.teamcode.oldutil.Constants.INVALID_POINT;
+import static org.firstinspires.ftc.teamcode.oldutil.vision.OpenCVUtil.drawConvexHull;
+import static org.firstinspires.ftc.teamcode.oldutil.vision.OpenCVUtil.drawPoint;
+import static org.firstinspires.ftc.teamcode.oldutil.vision.OpenCVUtil.fillConvexHull;
+import static org.firstinspires.ftc.teamcode.oldutil.vision.OpenCVUtil.getCenterOfContour;
 
 // Class for a Detection
-public class Detection {
+public class  Detection {
     private double minAreaPx;
     private double maxAreaPx;
     private final Size maxSizePx;

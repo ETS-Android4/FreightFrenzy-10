@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.vision;
+package org.firstinspires.ftc.teamcode.oldutil.vision;
 
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfInt;
@@ -11,8 +11,6 @@ import org.opencv.imgproc.Moments;
 
 import java.util.Collections;
 import java.util.List;
-
-import static org.firstinspires.ftc.teamcode.util.Constants.INVALID_DETECTION;
 
 // CV Helper Functions
 public class OpenCVUtil {
