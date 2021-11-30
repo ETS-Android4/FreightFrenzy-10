@@ -84,6 +84,8 @@ public class TankTestTeleop extends OpMode{
     public static final int WEBCAM_HEIGHT = 240;
     //public static final OpenCvCameraRotation WEBCAM_ROTATION = OpenCvCameraRotation.UPRIGHT;
 
+    private boolean prevIntake = false;
+    private double startTime= -1;
     /*
      * Code to run ONCE when the driver hits INIT
      */
@@ -272,8 +274,23 @@ public class TankTestTeleop extends OpMode{
             this.hopperPosition = 0;
         } else {
             intakeMotor.setPower(0);
-            this.hopperPosition = 0.5;
+
         }
+        if(!intakePress && prevIntake){
+            startTime= getRuntime();
+        }
+
+
+    //hopper rotation
+
+        boolean aPress = gamepad2.a;
+        if(aPress){
+            this.hopperPosition = 1.0;
+        }
+
+        this.hopper.setPosition(this.hopperPosition);
+
+        prevIntake=intakePress;
 
         //linear slide
         double tR = -5.8;  //total rotation
@@ -310,16 +327,6 @@ public class TankTestTeleop extends OpMode{
             duckWheel.setPower(0);
         }
 
-        //hopper rotation
-
-        boolean aPress = gamepad2.a;
-
-
-        if(aPress){
-            this.hopperPosition = 1.0;
-        }
-
-        this.hopper.setPosition(this.hopperPosition);
 
         telemetry.update();
     }
