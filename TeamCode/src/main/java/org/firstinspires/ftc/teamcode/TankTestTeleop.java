@@ -116,7 +116,7 @@ public class TankTestTeleop extends OpMode{
         duckWheel = this.hardwareMap.get(CRServo.class, "duckWheel");
 
         elementHolder = this.hardwareMap.get(Servo.class,"elementHolder");
-        elementHolder.setPosition(0.25);
+        elementHolder.setPosition(0.3);
 
         hopper = this.hardwareMap.get(Servo.class, "hopper");
         hopper.scaleRange(0.25,1.0);
@@ -151,23 +151,20 @@ public class TankTestTeleop extends OpMode{
     @Override
     public void loop() {
 
-        if(gamepad1.left_trigger > 0.1){
+        if (gamepad1.left_trigger > 0.1) {
             turbo = true;
-        }
-        else{
-            turbo=false;
+        } else {
+            turbo = false;
         }
 
-        if(gamepad1.right_trigger > 0.1){
+        if (gamepad1.right_trigger > 0.1) {
             slowdown = true;
-        }
-        else{
+        } else {
             slowdown = false;
         }
-        if(developerauto == true && gamepad1.a == true){
+        if (developerauto == true && gamepad1.a == true) {
             developerauto = false;
-        }
-        else if(developerauto == false && gamepad1.a == true){
+        } else if (developerauto == false && gamepad1.a == true) {
             developerauto = true;
         }
 
@@ -177,8 +174,7 @@ public class TankTestTeleop extends OpMode{
         // if not turbo check slowdown
         else if (slowdown) {
             currentSpeed = slowSpeed;
-        }
-        else{ //if not turbo or slowdown then it goes to normal speed
+        } else { //if not turbo or slowdown then it goes to normal speed
             currentSpeed = normalSpeed;
         }
 
@@ -211,16 +207,16 @@ public class TankTestTeleop extends OpMode{
         //end tank drive
 
         double max = 0; //max represents the highest absolute value of power, so that the power can be scales to the limits of 1 and -1
-        if(Math.abs(frontLeftPower) > max){
+        if (Math.abs(frontLeftPower) > max) {
             max = Math.abs(frontLeftPower);
         }
-        if(Math.abs(frontRightPower) > max){
+        if (Math.abs(frontRightPower) > max) {
             max = Math.abs(frontRightPower);
         }
-        if(Math.abs(backLeftPower) > max){
+        if (Math.abs(backLeftPower) > max) {
             max = Math.abs(backLeftPower);
         }
-        if(Math.abs(backRightPower) > max){
+        if (Math.abs(backRightPower) > max) {
             max = Math.abs(backRightPower);
         }
 
@@ -230,7 +226,7 @@ public class TankTestTeleop extends OpMode{
 
         telemetry.addData("Max: ", max);
         // scaling all values to one
-        frontLeftPower =  frontLeftPower / max;
+        frontLeftPower = frontLeftPower / max;
         frontRightPower = frontRightPower / max;
         backLeftPower = backLeftPower / max;
         backRightPower = backRightPower / max;
@@ -269,66 +265,73 @@ public class TankTestTeleop extends OpMode{
 
         intakePress = gamepad2.right_bumper;
 
-        if(intakePress){
+        if (intakePress) {
             intakeMotor.setPower(1);
             this.hopperPosition = 0;
         } else {
             intakeMotor.setPower(0);
 
         }
-        if(!intakePress && prevIntake){
-            startTime= getRuntime();
+        if (!intakePress && prevIntake) {
+            startTime = getRuntime();
         }
-
-
-    //hopper rotation
+        if (getRuntime() > startTime + 1 && startTime != -1) {
+            this.hopperPosition = 0.5;
+            startTime = -1;
+        }
+        //team element
+        double elementStick = gamepad2.left_stick_y;
+        double elementPos = elementStick * (3/20) + 0.15;
+        this.elementHolder.setPosition(elementPos);
+        //hopper rotation
 
         boolean aPress = gamepad2.a;
-        if(aPress){
+        if (aPress) {
             this.hopperPosition = 1.0;
+
+
+            this.hopper.setPosition(this.hopperPosition);
+
+            prevIntake = intakePress;
+
+            //linear slide
+            double tR = -5.8;  //total rotation
+            double rotationScale = 537.7;
+            boolean slideUp = gamepad2.y;
+            boolean slideDown = gamepad2.x;
+            int currentPosition = linearSlide.getCurrentPosition();
+            double maxPosition = tR * rotationScale;
+
+            if (slideUp && currentPosition > maxPosition) {
+                linearSlide.setPower(-1);
+            } else if (slideDown && currentPosition < -200) {
+                linearSlide.setPower(1);
+            } else {
+                linearSlide.setPower(0);
+            }
+
+            telemetry.addData("linearSlide", currentPosition);
+
+            // upper is -1750
+            // middle is -750
+            // bottom is 0
+
+            //duck wheel
+
+            double duckSpinLeft = gamepad2.left_trigger;
+            double duckSpinRight = gamepad2.right_trigger;
+
+            if (duckSpinLeft > 0 && duckSpinRight == 0) {
+                duckWheel.setPower(duckSpinLeft);
+            } else if (duckSpinLeft == 0 && duckSpinRight > 0) {
+                duckWheel.setPower(-duckSpinRight);
+            } else {
+                duckWheel.setPower(0);
+            }
+
+
+            telemetry.update();
         }
-
-        this.hopper.setPosition(this.hopperPosition);
-
-        prevIntake=intakePress;
-
-        //linear slide
-        double tR = -5.8;  //total rotation
-        double rotationScale = 537.7;
-        boolean slideUp = gamepad2.y;
-        boolean slideDown = gamepad2.x;
-        int currentPosition = linearSlide.getCurrentPosition();
-        double maxPosition = tR * rotationScale;
-
-        if(slideUp && currentPosition > maxPosition){
-            linearSlide.setPower(-1);
-        } else if(slideDown && currentPosition < -200){
-            linearSlide.setPower(1);
-        } else{
-            linearSlide.setPower(0);
-        }
-
-        telemetry.addData("linearSlide", currentPosition);
-
-        // upper is -1750
-        // middle is -750
-        // bottom is 0
-
-        //duck wheel
-
-        double duckSpinLeft = gamepad2.left_trigger;
-        double duckSpinRight = gamepad2.right_trigger;
-
-        if(duckSpinLeft>0 && duckSpinRight == 0) {
-            duckWheel.setPower(duckSpinLeft);
-        } else if(duckSpinLeft == 0 && duckSpinRight > 0) {
-            duckWheel.setPower(-duckSpinRight);
-        } else {
-            duckWheel.setPower(0);
-        }
-
-
-        telemetry.update();
     }
 
     /*
