@@ -22,9 +22,9 @@ public class RedAutoRight extends AbstractAuto {
 
     public static Pose2d FORWARD  = new Pose2d(10, -30, Math.toRadians(-90));
     public static Pose2d BACK  = new Pose2d(10, -55, Math.toRadians(-90));
-    public static Pose2d DEPOSIT  = new Pose2d(0, -24, Math.toRadians(-45));
-    public static Pose2d READY_TO_PARK  = new Pose2d(5, -30, Math.toRadians(0));
-    public static Pose2d PARK  = new Pose2d(48, -30, Math.toRadians(0));
+    public static Pose2d DEPOSIT  = new Pose2d(2.5, -33, Math.toRadians(-45));
+    public static Pose2d READY_TO_PARK  = new Pose2d(9, -44, Math.toRadians(0));
+    public static Pose2d PARK  = new Pose2d(60, -38, Math.toRadians(0));
 
     @Override
     public void setAlliance() {
@@ -56,34 +56,35 @@ public class RedAutoRight extends AbstractAuto {
 
 //        followTrajectory(forwardf);
 
+        addDelay(2);
         followTrajectory(forward);
         followTrajectory(back);
         followTrajectory(deposit);
-//        switch(location) {
-//            case LEFT:
-//                addSlide(SLIDE_DROP_HIGH);
-//                addHopper(0, HOPPER_DROP_LOW_POS1);
-//                addSlide(SLIDE_DROP_LOW);
-//                addHopper(1, HOPPER_DROP_LOW);
-//                addSlide(SLIDE_DROP_HIGH);
-//                addHopper(0, HOPPER_MID.l);
-//                addSlide(0);
-//                break;
-//            case MIDDLE:
-//                addSlide(SLIDE_DROP_MIDDLE);
-//                addHopper(1, HOPPER_DROP_MIDDLE);
-//                addHopper(0.2, HOPPER_MID.l);
-//                addSlide(0);
-//                break;
-//            case RIGHT:
-//            case UNKNOWN:
-//                addSlide(SLIDE_DROP_HIGH);
-//                addHopper(1, HOPPER_DROP_HIGH);
-//                addHopper(0.2, HOPPER_MID.l);
-//                addSlide(0);
-//                break;
-//        }
-//        addHopper(0, 0.2);
+        switch(location) {
+            case LEFT:
+                addSlide(SLIDE_DROP_HIGH);
+                addHopper(0, HOPPER_DROP_LOW_POS1);
+                addSlide(SLIDE_DROP_LOW);
+                addHopper(1, HOPPER_DROP_LOW);
+                addSlide(SLIDE_DROP_HIGH);
+                addHopper(0, HOPPER_MID.l);
+                addSlide(0);
+                break;
+            case MIDDLE:
+                addSlide(SLIDE_DROP_MIDDLE);
+                addHopper(1, HOPPER_DROP_MIDDLE);
+                addHopper(0.2, HOPPER_MID.l);
+                addSlide(0);
+                break;
+            case RIGHT:
+            case UNKNOWN:
+                addSlide(SLIDE_DROP_HIGH);
+                addHopper(1, HOPPER_DROP_HIGH);
+                addHopper(0.2, HOPPER_MID.l);
+                addSlide(0);
+                break;
+        }
+        addHopper(0, 0.2);
         followTrajectory(readyToPark);
         followTrajectory(park);
         stopTargetingCamera();

@@ -34,7 +34,7 @@ public class Robot {
         camera = new Camera(hardwareMap);
 
         drive = new SampleMecanumDrive(hardwareMap);
-        sensors = new Sensors(hardwareMap);
+//        sensors = new Sensors(hardwareMap);
 
         intake = hardwareMap.get(DcMotor.class, INTAKE);
         slide = hardwareMap.get(DcMotor.class, SLIDE);
@@ -44,8 +44,8 @@ public class Robot {
     }
 
     public String getTelemetry() {
-        telemetry = String.format(Locale.US, "Slide Position %s\nServo Position %s\n%s\n%s",
-                slide.getCurrentPosition(), hopper.getPosition(), camera.getTelemetry(), sensors.getGyroHeading360());
+        telemetry = String.format(Locale.US, "Slide Position %s\nServo Position %s\n%s",
+                slide.getCurrentPosition(), hopper.getPosition(), camera.getTelemetry());
         return telemetry;
     }
 }

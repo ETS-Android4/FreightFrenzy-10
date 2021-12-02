@@ -22,8 +22,8 @@ public class Configurables {
 
     public static double CAPPER_SPEED = 0.01;
 
-    public static double HOPPER_INIT = 0.15;
-    public static Range HOPPER_START = new Range(0.15, 0.99);
+    public static double HOPPER_INIT = 0.5;
+    public static Range HOPPER_START = new Range(0.20, 0.99);
     public static Range HOPPER_MID = new Range(0.32, 0.99);
     public static double HOPPER_DROP_HIGH = 0.65;
     public static double HOPPER_DROP_MIDDLE = 0.66;
