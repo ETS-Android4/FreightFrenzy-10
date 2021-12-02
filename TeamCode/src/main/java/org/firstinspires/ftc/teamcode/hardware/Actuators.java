@@ -92,8 +92,18 @@ public class Actuators {
         this.duckWheelServo.setPower(this.duckWheelServoPower);
     }
 
+    public void setLiftPosition(int pos) {
+        this.linearSlideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        this.linearSlideMotor.setTargetPosition(pos);
+        this.linearSlideMotor.setPower(1);
+    }
+
+    public int getLiftPosition() {
+        return this.linearSlideMotor.getCurrentPosition();
+    }
+
     public static class Constants {
-        public static final double HOPPER_RANGE_MIN = 0.25;
+        public static final double HOPPER_RANGE_MIN = 0.2;
         public static final double HOPPER_RANGE_MAX = 1.0;
 
         private static final double LINEAR_SLIDE_MAX_ROTATIONS = 5.8;

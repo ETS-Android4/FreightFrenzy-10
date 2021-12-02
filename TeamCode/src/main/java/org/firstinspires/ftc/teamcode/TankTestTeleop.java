@@ -288,9 +288,9 @@ public class TankTestTeleop extends OpMode{
         boolean aPress = gamepad2.a;
         if (aPress) {
             this.hopperPosition = 1.0;
-
-
             this.hopper.setPosition(this.hopperPosition);
+        }
+
 
             prevIntake = intakePress;
 
@@ -332,7 +332,7 @@ public class TankTestTeleop extends OpMode{
 
             telemetry.update();
         }
-    }
+
 
     /*
      * Code to run ONCE after the driver hits STOP

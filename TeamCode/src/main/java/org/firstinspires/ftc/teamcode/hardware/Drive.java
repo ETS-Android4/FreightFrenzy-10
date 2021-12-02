@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
@@ -11,17 +13,20 @@ public class Drive {
     private final DcMotor frontRight;
     private final DcMotor backLeft;
     private final DcMotor backRight;
+    private final BNO055IMU imu;
 
     @Builder
     private Drive(
             DcMotor frontLeft,
             DcMotor frontRight,
             DcMotor backLeft,
-            DcMotor backRight) {
+            DcMotor backRight,
+            BNO055IMU imu) {
         this.frontLeft = frontLeft;
         this.frontRight = frontRight;
         this.backLeft = backLeft;
         this.backRight = backRight;
+        this.imu = imu;
         this.initialize();
     }
 
@@ -33,7 +38,13 @@ public class Drive {
 
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        // Put any hardware initialization that may be required here
+
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.mode                 = BNO055IMU.SensorMode.IMU;
+        parameters.angleUnit            = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit            = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.loggingEnabled       = false;
+        this.imu.initialize(parameters);
     }
 
     public void setInput(Gamepad gamepad) {
@@ -74,9 +85,61 @@ public class Drive {
         this.backRight.setPower(right);
     }
 
+    // Move in two directions a certain number of inches
+    public void setTargetPositionRelative(double distance, double power) {
+        double ticks = (distance / Constants.WHEEL_CIRCUMFERENCE) * 537.7;
+
+        this.setRunMode(RunMode.STOP_AND_RESET_ENCODER);
+
+        this.frontLeft.setTargetPosition((int) ticks);
+        this.frontRight.setTargetPosition((int) ticks);
+        this.backLeft.setTargetPosition((int) ticks);
+        this.backRight.setTargetPosition((int) ticks);
+
+        this.setRunMode(RunMode.RUN_TO_POSITION);
+
+        this.setPower(power);
+    }
+
+    public void setRunMode(RunMode runMode) {
+        this.frontLeft.setMode(runMode);
+        this.frontRight.setMode(runMode);
+        this.backLeft.setMode(runMode);
+        this.backRight.setMode(runMode);
+    }
+
+    public RunMode getRunMode() {
+        return this.frontLeft.getMode();
+    }
+
+    public void setPower(double power) {
+        this.frontLeft.setPower(power);
+        this.frontRight.setPower(power);
+        this.backLeft.setPower(power);
+        this.backRight.setPower(power);
+    }
+
+    public boolean isBusy() {
+        return this.getRunMode() != RunMode.RUN_TO_POSITION
+                || this.frontLeft.isBusy()
+                || this.frontRight.isBusy()
+                || this.backLeft.isBusy()
+                || this.backRight.isBusy();
+    }
+
+    public void turn(double degrees) {
+        double currentHeadingRad = imu.getAngularOrientation().thirdAngle; //radians
+        double currentHeadingDeg = currentHeadingRad * (180/Math.PI);
+        frontLeft.setPower(-0.5);
+        backLeft.setPower(-0.5);
+        frontRight.setPower(0.5);
+        frontRight.setPower(0.5);
+    }
+
     public static class Constants {
         public static final double DEFAULT_MAX_POWER = 0.6;
         public static final double SLOW_MODE_MAX_POWER = 0.2;
         public static final double TURBO_MODE_MAX_POWER = 1.0;
+        public static final double WHEEL_CIRCUMFERENCE = Math.PI * 6;
     }
 }
