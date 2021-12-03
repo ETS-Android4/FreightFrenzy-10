@@ -26,7 +26,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+//Right Now, the Auto Red Left is testing the pushing team element out of way
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -55,7 +55,7 @@ import java.util.concurrent.TimeUnit;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name = "Left", group = "Linear Opmode")
+@Autonomous(name = "LeftRed", group = "Linear Opmode")
 public class AutoRedLeft extends LinearOpMode {
 
     // Declare OpMode members.
@@ -107,11 +107,12 @@ public class AutoRedLeft extends LinearOpMode {
         double driveSpeed = 0.3;
         int sleeptime = 1000;
 
-        int firstMoveDist = 15;
+        int firstMoveDist = 25;
         //Drive forward
         driveInchesEnc(firstMoveDist, driveSpeed);
         sleep(sleeptime);
-
+        driveInchesEnc(-10, -driveSpeed);
+        sleep(sleeptime);
         telemetry.addData("Status", "Run beater");
         telemetry.update();
         runBeater(1000, -1.0);
@@ -121,7 +122,7 @@ public class AutoRedLeft extends LinearOpMode {
         turnDumbEnc(-6, -driveSpeed);
         sleep(sleeptime);
 
-        //Drive slightlyforward before score
+        //Drive slightly forward before score
         driveInchesEnc(4, driveSpeed);
         sleep(sleeptime);
 
@@ -138,10 +139,10 @@ public class AutoRedLeft extends LinearOpMode {
         driveInchesEnc(-5, -driveSpeed);
         sleep(sleeptime);
 
-//        Turn towards warehouse
-        turnDumbEnc(2, -driveSpeed);
+        //Turn towards warehouse
+        turnDumbEnc(-2, -driveSpeed);
         sleep(sleeptime);
-
+        //Back in
         driveInchesEnc(-18, -driveSpeed);
         sleep(sleeptime);
 

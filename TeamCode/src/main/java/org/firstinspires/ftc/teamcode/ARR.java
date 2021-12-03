@@ -26,7 +26,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-//Right now, Auto Blue Right is testing all new features except pushing element out of way
+//Right Now, Auto Red Right is testing everything except camera
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -54,13 +54,13 @@ import org.firstinspires.ftc.teamcode.visioncode.Detection;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name = "RightBlue", group = "Linear Opmode")
-public class AutoBlueRight extends LinearOpMode {
+@Autonomous(name = "RightRed", group = "Linear Opmode")
+public class ARR extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     Cvhelper.BarcodeLocation BarcodeLocation;
-    int LinearSPos = 1;
+    int LinearSPos = 3;
     DcMotor driveFrontLeft;
     DcMotor driveFrontRight;
     DcMotor driveBackLeft;
@@ -108,38 +108,43 @@ public class AutoBlueRight extends LinearOpMode {
 
         double driveSpeed = 0.3;
         int sleeptime = 1000;
-        int firstMoveDist = 15;
-
+        int firstMoveDist = 25;
         //Read Camera (Work-In-Progress)
+/*
         if(BarcodeLocation == Cvhelper.BarcodeLocation.LEFT){
-            LinearSPos = 0;
-        } else if(BarcodeLocation == Cvhelper.BarcodeLocation.MIDDLE){
-            LinearSPos = 1/3;
-        } else if(BarcodeLocation == Cvhelper.BarcodeLocation.RIGHT){
             LinearSPos = 1;
+        } else if(BarcodeLocation == Cvhelper.BarcodeLocation.MIDDLE){
+            LinearSPos = 2;
+        } else if(BarcodeLocation == Cvhelper.BarcodeLocation.RIGHT){
+            LinearSPos = 3;
         }
 
-        //Drive forward
+ */
+        //Drive forward and back to clear team element
         driveInchesEnc(firstMoveDist, driveSpeed);
         sleep(sleeptime);
-
+        driveInchesEnc(-10, -driveSpeed);
+        sleep(sleeptime);
         telemetry.addData("Status", "Run beater");
         telemetry.update();
         runBeater(1000, -1.0);
         sleep(sleeptime);
 
-        //Turn left towards score
-        turnDumbEnc(6, driveSpeed);
+        //Turn right to dodge obstacle
+        turnDumbEnc(-6, -driveSpeed);
+        sleep(sleeptime);
+        driveInchesEnc(-2,-driveSpeed);
         sleep(sleeptime);
 
-        //Drive slightly forward before score
-        driveInchesEnc(6, driveSpeed);
+        //Turn left to score
+        turnDumbEnc(9, driveSpeed);
         sleep(sleeptime);
+        driveInchesEnc(2, driveSpeed);
 
         //Score
         double tR = -5.8;  //total rotation
         double rotationScale = 537.7;
-        double maxPosition = tR * rotationScale * LinearSPos;
+        double maxPosition = tR * rotationScale;
         while(linearSlide.getCurrentPosition()<maxPosition){
             linearSlide.setPower(0.25);
         }
@@ -149,22 +154,16 @@ public class AutoBlueRight extends LinearOpMode {
         sleep(1000);
         intakeMotor.setPower(0);
         hopper.setPosition(0.5);
-
         sleep(sleeptime);
 
-        //Back up
-        driveInchesEnc(-20, -driveSpeed);
+        //Line up with warehouse
+        driveInchesEnc(-3, -driveSpeed);
         sleep(sleeptime);
-        //Spin Duck
-        duckWheel.setPower(1.0);
-        sleep(sleeptime*2);
-        duckWheel.setPower(0);
-        //Turn towards storage unit
-        turnDumbEnc(2, driveSpeed);
+        turnDumbEnc(9, driveSpeed);
         sleep(sleeptime);
 
-        driveInchesEnc(-4, -driveSpeed);
-        sleep(sleeptime);
+        //Back in to warehouse
+        driveInchesEnc(-20, -2*driveSpeed);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());

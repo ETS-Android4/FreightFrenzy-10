@@ -26,19 +26,20 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-//Right now, Auto Blue Right is testing all new features except pushing element out of way
+//Right Now, the Auto Blue Left is testing the base code on warehouse side
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.teamcode.visioncode.BarcodePipeline;
-import org.firstinspires.ftc.teamcode.visioncode.Cvhelper;
-import org.firstinspires.ftc.teamcode.visioncode.Detection;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -54,13 +55,11 @@ import org.firstinspires.ftc.teamcode.visioncode.Detection;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name = "RightBlue", group = "Linear Opmode")
-public class AutoBlueRight extends LinearOpMode {
+@Autonomous(name = "LeftBlue", group = "Linear Opmode")
+public class ABL extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    Cvhelper.BarcodeLocation BarcodeLocation;
-    int LinearSPos = 1;
     DcMotor driveFrontLeft;
     DcMotor driveFrontRight;
     DcMotor driveBackLeft;
@@ -70,7 +69,6 @@ public class AutoBlueRight extends LinearOpMode {
     CRServo duckWheel;
     Servo elementHolder;
     Servo hopper;
-    int CLocation;
 
     double TICKS_PER_INCH = 28.53; // Ticks per revolution = 537.7;
 
@@ -108,62 +106,46 @@ public class AutoBlueRight extends LinearOpMode {
 
         double driveSpeed = 0.3;
         int sleeptime = 1000;
-        int firstMoveDist = 15;
-
-        //Read Camera (Work-In-Progress)
-        if(BarcodeLocation == Cvhelper.BarcodeLocation.LEFT){
-            LinearSPos = 0;
-        } else if(BarcodeLocation == Cvhelper.BarcodeLocation.MIDDLE){
-            LinearSPos = 1/3;
-        } else if(BarcodeLocation == Cvhelper.BarcodeLocation.RIGHT){
-            LinearSPos = 1;
-        }
-
+        int firstMoveDist = 25;
         //Drive forward
         driveInchesEnc(firstMoveDist, driveSpeed);
         sleep(sleeptime);
-
+        driveInchesEnc(-10, -driveSpeed);
+        sleep(sleeptime);
         telemetry.addData("Status", "Run beater");
         telemetry.update();
         runBeater(1000, -1.0);
         sleep(sleeptime);
 
-        //Turn left towards score
+        //Turn left to get to scoring hub
         turnDumbEnc(6, driveSpeed);
         sleep(sleeptime);
 
-        //Drive slightly forward before score
-        driveInchesEnc(6, driveSpeed);
+        //Drive back to dodge obstacle
+        driveInchesEnc(-2, -driveSpeed);
+        sleep(sleeptime);
+
+        //Turn right to score
+        turnDumbEnc(-9, -driveSpeed);
+        sleep(sleeptime);
+        driveInchesEnc(2, driveSpeed);
         sleep(sleeptime);
 
         //Score
-        double tR = -5.8;  //total rotation
-        double rotationScale = 537.7;
-        double maxPosition = tR * rotationScale * LinearSPos;
-        while(linearSlide.getCurrentPosition()<maxPosition){
-            linearSlide.setPower(0.25);
-        }
-        linearSlide.setPower(0);
         intakeMotor.setPower(1.0);
         hopper.setPosition(1.0);
         sleep(1000);
         intakeMotor.setPower(0);
         hopper.setPosition(0.5);
-
         sleep(sleeptime);
 
-        //Back up
-        driveInchesEnc(-20, -driveSpeed);
-        sleep(sleeptime);
-        //Spin Duck
-        duckWheel.setPower(1.0);
-        sleep(sleeptime*2);
-        duckWheel.setPower(0);
-        //Turn towards storage unit
-        turnDumbEnc(2, driveSpeed);
+        //Turn to warehouse
+        driveInchesEnc(-3, -driveSpeed);
+        turnDumbEnc(-9, -driveSpeed);
         sleep(sleeptime);
 
-        driveInchesEnc(-4, -driveSpeed);
+        //Get in warehouse
+        driveInchesEnc(-20, -2*driveSpeed);
         sleep(sleeptime);
 
         // Show the elapsed game time and wheel power.

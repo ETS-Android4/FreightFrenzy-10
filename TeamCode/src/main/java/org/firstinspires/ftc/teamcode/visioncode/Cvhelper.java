@@ -19,7 +19,6 @@ public class Cvhelper {
     public enum BarcodeLocation {
         LEFT, MIDDLE, RIGHT, UNKNOWN
     }
-
     public static Scalar YELLOW_LOWER = new Scalar(10, 70, 50);
     public static Scalar YELLOW_UPPER = new Scalar(80, 255, 255);
 
