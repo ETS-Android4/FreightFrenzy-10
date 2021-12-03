@@ -1,14 +1,5 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-
-import org.firstinspires.ftc.teamcode.opmodes.controller.Controller;
-import org.firstinspires.ftc.teamcode.hardware.Robot;
-import org.firstinspires.ftc.teamcode.oldutil.Alliance;
-
 import static org.firstinspires.ftc.teamcode.oldutil.Alliance.BLUE;
 import static org.firstinspires.ftc.teamcode.oldutil.Alliance.NEITHER;
 import static org.firstinspires.ftc.teamcode.oldutil.Alliance.RED;
@@ -27,10 +18,19 @@ import static org.firstinspires.ftc.teamcode.oldutil.Configurables.SLIDE_CUTOFF;
 import static org.firstinspires.ftc.teamcode.oldutil.Configurables.SLIDE_DROP_HIGH;
 import static org.firstinspires.ftc.teamcode.oldutil.Configurables.SLIDE_DROP_LOW;
 import static org.firstinspires.ftc.teamcode.oldutil.Configurables.SLIDE_DROP_MIDDLE;
-import static org.firstinspires.ftc.teamcode.oldutil.Configurables.SLIDE_TICKS_PER_CYCLE;
 import static org.firstinspires.ftc.teamcode.oldutil.Configurables.SLIDE_SPEED;
+import static org.firstinspires.ftc.teamcode.oldutil.Configurables.SLIDE_TICKS_PER_CYCLE;
 import static org.firstinspires.ftc.teamcode.oldutil.MathUtil.about;
 import static org.firstinspires.ftc.teamcode.oldutil.MathUtil.clamp;
+
+import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+
+import org.firstinspires.ftc.teamcode.hardware.Robot;
+import org.firstinspires.ftc.teamcode.oldutil.Alliance;
+import org.firstinspires.ftc.teamcode.opmodes.controller.Controller;
 
 @Config
 public class AbstractTeleOp extends OpMode {
@@ -229,9 +229,20 @@ public class AbstractTeleOp extends OpMode {
 
         // capper
         if (driver2.getLeftBumper().isPressed()) {
-            capperPos -= 0.005;
+            if(capperPos>0.40 && capperPos<70){
+                capperPos=0.5;
+            }
+            else{
+                capperPos -= 0.001;
+            }
         } else if (driver2.getRightBumper().isPressed()) {
-            capperPos += 0.005;
+
+            if(capperPos<0.70 && capperPos>40){
+                capperPos=0.75;
+            }
+            else{
+                capperPos += 0.001;
+            }
         }
         capperPos = clamp(capperPos, 0.01, 0.99);
         robot.capper.setPosition(capperPos);
