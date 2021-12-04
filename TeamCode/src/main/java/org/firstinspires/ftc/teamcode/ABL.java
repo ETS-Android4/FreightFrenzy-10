@@ -26,20 +26,19 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-//Right Now, the Auto Blue Left is testing the base code on warehouse side
+//Right Now, Auto Red Right is testing everything except camera
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
-import java.util.concurrent.TimeUnit;
+import org.firstinspires.ftc.teamcode.visioncode.BarcodePipeline;
+import org.firstinspires.ftc.teamcode.visioncode.Cvhelper;
+import org.firstinspires.ftc.teamcode.visioncode.Detection;
 
 
 /**
@@ -55,11 +54,11 @@ import java.util.concurrent.TimeUnit;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name = "LeftBlue", group = "Linear Opmode")
+@Autonomous(name = "WarehouseBlue", group = "Linear Opmode")
 public class ABL extends LinearOpMode {
-
-    // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
+    private Cvhelper.BarcodeLocation teamElementLocation;
+    double LinearSPos = -1.0;
     DcMotor driveFrontLeft;
     DcMotor driveFrontRight;
     DcMotor driveBackLeft;
@@ -69,6 +68,9 @@ public class ABL extends LinearOpMode {
     CRServo duckWheel;
     Servo elementHolder;
     Servo hopper;
+    int CLocation;
+    Camera camera;
+
 
     double TICKS_PER_INCH = 28.53; // Ticks per revolution = 537.7;
 
@@ -84,7 +86,8 @@ public class ABL extends LinearOpMode {
         driveBackLeft = this.hardwareMap.get(DcMotor.class, "driveBackLeft");
         driveFrontRight = this.hardwareMap.get(DcMotor.class, "driveFrontRight");
         driveBackRight = this.hardwareMap.get(DcMotor.class, "driveBackRight");
-
+        camera = new Camera(hardwareMap);
+        camera.initBarcodeWebcam();
         intakeMotor = this.hardwareMap.get(DcMotor.class, "intakeMotor");
 
         linearSlide = this.hardwareMap.get(DcMotor.class, "linearSlide");
@@ -100,53 +103,75 @@ public class ABL extends LinearOpMode {
         hopper.scaleRange(0.25, 1.0);
         hopper.setPosition(0.5);
 
+        while (camera.getFrameCount() < 1) {
+            idle();
+        }
+
         // Wait for the game to start (driver presses PLAY)
-        waitForStart();
+        while(!isStarted() || isStopRequested()){
+            teamElementLocation = camera.checkTeamElementLocation();
+            telemetry.addData("Camera", teamElementLocation);
+            telemetry.update();
+        }
+
         runtime.reset();
 
         double driveSpeed = 0.3;
         int sleeptime = 1000;
-        int firstMoveDist = 25;
+        int firstMoveDist = 30;
+
+        //Read Camera (Work-In-Progress)
+        if(teamElementLocation == Cvhelper.BarcodeLocation.LEFT){
+            LinearSPos = 0;
+        } else if(teamElementLocation == Cvhelper.BarcodeLocation.MIDDLE){
+            LinearSPos = -.3;
+        } else if(teamElementLocation == Cvhelper.BarcodeLocation.RIGHT){
+            LinearSPos = -0.66;
+        }
+
         //Drive forward
         driveInchesEnc(firstMoveDist, driveSpeed);
         sleep(sleeptime);
-        driveInchesEnc(-10, -driveSpeed);
+        driveInchesEnc(-15, -driveSpeed);
         sleep(sleeptime);
         telemetry.addData("Status", "Run beater");
         telemetry.update();
         runBeater(1000, -1.0);
         sleep(sleeptime);
 
-        //Turn left to get to scoring hub
+
+        //Turn right to dodge obstacle
         turnDumbEnc(6, driveSpeed);
         sleep(sleeptime);
-
-        //Drive back to dodge obstacle
-        driveInchesEnc(-2, -driveSpeed);
+        driveInchesEnc(-2,-driveSpeed);
         sleep(sleeptime);
 
-        //Turn right to score
-        turnDumbEnc(-9, -driveSpeed);
+        //Turn left to score
+        turnDumbEnc(-16, -driveSpeed);
         sleep(sleeptime);
-        driveInchesEnc(2, driveSpeed);
-        sleep(sleeptime);
+        driveInchesEnc(5, driveSpeed);
 
         //Score
+        linearSlide.setPower(LinearSPos);
+        sleep(sleeptime*2);
+        linearSlide.setPower(0);
         intakeMotor.setPower(1.0);
         hopper.setPosition(1.0);
         sleep(1000);
         intakeMotor.setPower(0);
         hopper.setPosition(0.5);
+        linearSlide.setPower(-LinearSPos);
+        sleep(sleeptime*2);
+        linearSlide.setPower(0);
+
+        //Line up with warehouse
+        driveInchesEnc(-2, -driveSpeed);
+        sleep(sleeptime);
+        turnDumbEnc(-6, -driveSpeed);
         sleep(sleeptime);
 
-        //Turn to warehouse
-        driveInchesEnc(-3, -driveSpeed);
-        turnDumbEnc(-9, -driveSpeed);
-        sleep(sleeptime);
-
-        //Get in warehouse
-        driveInchesEnc(-20, -2*driveSpeed);
-        sleep(sleeptime);
+        //Back in to warehouse
+        driveInchesEnc(-45, -2.5*driveSpeed);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());

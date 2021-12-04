@@ -54,13 +54,11 @@ import org.firstinspires.ftc.teamcode.visioncode.Detection;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name = "RightRed", group = "Linear Opmode")
+@Autonomous(name = "WarehouseRed", group = "Linear Opmode")
 public class ARR extends LinearOpMode {
-
-    // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    Cvhelper.BarcodeLocation BarcodeLocation;
-    int LinearSPos = 3;
+    private Cvhelper.BarcodeLocation teamElementLocation;
+    double LinearSPos = -1.0;
     DcMotor driveFrontLeft;
     DcMotor driveFrontRight;
     DcMotor driveBackLeft;
@@ -71,6 +69,8 @@ public class ARR extends LinearOpMode {
     Servo elementHolder;
     Servo hopper;
     int CLocation;
+    Camera camera;
+
 
     double TICKS_PER_INCH = 28.53; // Ticks per revolution = 537.7;
 
@@ -86,7 +86,8 @@ public class ARR extends LinearOpMode {
         driveBackLeft = this.hardwareMap.get(DcMotor.class, "driveBackLeft");
         driveFrontRight = this.hardwareMap.get(DcMotor.class, "driveFrontRight");
         driveBackRight = this.hardwareMap.get(DcMotor.class, "driveBackRight");
-
+        camera = new Camera(hardwareMap);
+        camera.initBarcodeWebcam();
         intakeMotor = this.hardwareMap.get(DcMotor.class, "intakeMotor");
 
         linearSlide = this.hardwareMap.get(DcMotor.class, "linearSlide");
@@ -102,33 +103,42 @@ public class ARR extends LinearOpMode {
         hopper.scaleRange(0.25, 1.0);
         hopper.setPosition(0.5);
 
+        while (camera.getFrameCount() < 1) {
+            idle();
+        }
+
         // Wait for the game to start (driver presses PLAY)
-        waitForStart();
+        while(!isStarted() || isStopRequested()){
+            teamElementLocation = camera.checkTeamElementLocation();
+            telemetry.addData("Camera", teamElementLocation);
+            telemetry.update();
+        }
+
         runtime.reset();
 
         double driveSpeed = 0.3;
         int sleeptime = 1000;
-        int firstMoveDist = 25;
+        int firstMoveDist = 30;
+
         //Read Camera (Work-In-Progress)
-/*
-        if(BarcodeLocation == Cvhelper.BarcodeLocation.LEFT){
-            LinearSPos = 1;
-        } else if(BarcodeLocation == Cvhelper.BarcodeLocation.MIDDLE){
-            LinearSPos = 2;
-        } else if(BarcodeLocation == Cvhelper.BarcodeLocation.RIGHT){
-            LinearSPos = 3;
+        if(teamElementLocation == Cvhelper.BarcodeLocation.LEFT){
+            LinearSPos = 0;
+        } else if(teamElementLocation == Cvhelper.BarcodeLocation.MIDDLE){
+            LinearSPos = -.3;
+        } else if(teamElementLocation == Cvhelper.BarcodeLocation.RIGHT){
+            LinearSPos = -0.66;
         }
 
- */
-        //Drive forward and back to clear team element
+        //Drive forward
         driveInchesEnc(firstMoveDist, driveSpeed);
         sleep(sleeptime);
-        driveInchesEnc(-10, -driveSpeed);
+        driveInchesEnc(-15, -driveSpeed);
         sleep(sleeptime);
         telemetry.addData("Status", "Run beater");
         telemetry.update();
         runBeater(1000, -1.0);
         sleep(sleeptime);
+
 
         //Turn right to dodge obstacle
         turnDumbEnc(-6, -driveSpeed);
@@ -137,33 +147,31 @@ public class ARR extends LinearOpMode {
         sleep(sleeptime);
 
         //Turn left to score
-        turnDumbEnc(9, driveSpeed);
+        turnDumbEnc(8, driveSpeed);
         sleep(sleeptime);
-        driveInchesEnc(2, driveSpeed);
+        driveInchesEnc(5, driveSpeed);
 
         //Score
-        double tR = -5.8;  //total rotation
-        double rotationScale = 537.7;
-        double maxPosition = tR * rotationScale;
-        while(linearSlide.getCurrentPosition()<maxPosition){
-            linearSlide.setPower(0.25);
-        }
+        linearSlide.setPower(LinearSPos);
+        sleep(sleeptime*2);
         linearSlide.setPower(0);
         intakeMotor.setPower(1.0);
         hopper.setPosition(1.0);
         sleep(1000);
         intakeMotor.setPower(0);
         hopper.setPosition(0.5);
-        sleep(sleeptime);
+        linearSlide.setPower(-LinearSPos);
+        sleep(sleeptime*2);
+        linearSlide.setPower(0);
 
         //Line up with warehouse
-        driveInchesEnc(-3, -driveSpeed);
+        driveInchesEnc(-2, -driveSpeed);
         sleep(sleeptime);
-        turnDumbEnc(9, driveSpeed);
+        turnDumbEnc(6, driveSpeed);
         sleep(sleeptime);
 
         //Back in to warehouse
-        driveInchesEnc(-20, -2*driveSpeed);
+        driveInchesEnc(-45, -2.5*driveSpeed);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());

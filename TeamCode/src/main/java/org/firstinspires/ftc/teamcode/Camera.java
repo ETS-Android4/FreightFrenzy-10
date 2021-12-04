@@ -6,6 +6,7 @@ import static org.firstinspires.ftc.teamcode.visioncode.Cvhelper.WEBCAM_HEIGHT;
 import static org.firstinspires.ftc.teamcode.visioncode.Cvhelper.WEBCAM_ROTATION;
 import static org.firstinspires.ftc.teamcode.visioncode.Cvhelper.WEBCAM_WIDTH;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -49,8 +50,7 @@ public class Camera {
 
             }
         });
-
-//        FtcDashboard.getInstance().startCameraStream(barcodeWebcam, 0);
+        FtcDashboard.getInstance().startCameraStream(barcodeWebcam, 0);
     }
 
     // Close the Barcode Camera
