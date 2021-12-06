@@ -68,10 +68,6 @@ public abstract class AbstractAuto extends LinearOpMode {
         }
         resetStartTime();
 
-        // switch from stack camera to targeting camera
-
-
-
         // start up the first step
         steps = new ArrayList<>();
         initializeSteps(teamElementLocation);

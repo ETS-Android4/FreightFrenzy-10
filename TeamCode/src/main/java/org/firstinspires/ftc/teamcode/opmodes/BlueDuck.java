@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.oldutil.BarcodeLocation;
 
+import static org.firstinspires.ftc.teamcode.oldutil.Alliance.BLUE;
 import static org.firstinspires.ftc.teamcode.oldutil.Alliance.RED;
 import static org.firstinspires.ftc.teamcode.oldutil.Configurables.HOPPER_DROP_HIGH;
 import static org.firstinspires.ftc.teamcode.oldutil.Configurables.HOPPER_DROP_LOW;
@@ -16,19 +17,19 @@ import static org.firstinspires.ftc.teamcode.oldutil.Configurables.SLIDE_DROP_HI
 import static org.firstinspires.ftc.teamcode.oldutil.Configurables.SLIDE_DROP_LOW;
 import static org.firstinspires.ftc.teamcode.oldutil.Configurables.SLIDE_DROP_MIDDLE;
 
-@Autonomous(name = "Red Left", group = "Competition", preselectTeleOp = "Red TeleOp")
-public class RedAutoLeft extends AbstractAuto {
-    public static Pose2d START_POSE = new Pose2d(-36, -63, Math.toRadians(-90));
+@Autonomous(name = "Blue Duck", group = "Competition", preselectTeleOp = "Blue TeleOp")
+public class BlueDuck extends AbstractAuto {
+    public static Pose2d START_POSE = new Pose2d(-36, 63, Math.toRadians(90));
 
-    public static Pose2d FORWARD  = new Pose2d(-36, -30, Math.toRadians(-90));
-    public static Pose2d BACK  = new Pose2d(-36, -55, Math.toRadians(-90));
-    public static Pose2d DEPOSIT  = new Pose2d(0, -24, Math.toRadians(-45));
-    public static Pose2d READY_TO_SPIN  = new Pose2d(-50, -50, Math.toRadians(-135));
-    public static Pose2d PARK  = new Pose2d(-60, -36, Math.toRadians(-180));
+    public static Pose2d FORWARD  = new Pose2d(-36, 30, Math.toRadians(90));
+    public static Pose2d BACK  = new Pose2d(-36, 55, Math.toRadians(90));
+    public static Pose2d DEPOSIT  = new Pose2d(-26, 33, Math.toRadians(135));
+    public static Pose2d READY_TO_SPIN  = new Pose2d(-61.5, 59, Math.toRadians(135));
+    public static Pose2d PARK  = new Pose2d(-63, 33.5, Math.toRadians(180));
 
     @Override
     public void setAlliance() {
-        this.alliance = RED;
+        this.alliance = BLUE;
     }
 
     @Override
@@ -54,32 +55,34 @@ public class RedAutoLeft extends AbstractAuto {
         followTrajectory(forward);
         followTrajectory(back);
         followTrajectory(deposit);
-//        switch(location) {
-//            case LEFT:
-//                addSlide(SLIDE_DROP_HIGH);
-//                addHopper(0, HOPPER_DROP_LOW_POS1);
-//                addSlide(SLIDE_DROP_LOW);
-//                addHopper(1, HOPPER_DROP_LOW);
-//                addSlide(SLIDE_DROP_HIGH);
-//                addHopper(0, HOPPER_MID.l);
-//                addSlide(0);
-//                break;
-//            case MIDDLE:
-//                addSlide(SLIDE_DROP_MIDDLE);
-//                addHopper(1, HOPPER_DROP_MIDDLE);
-//                addHopper(0.2, HOPPER_MID.l);
-//                addSlide(0);
-//                break;
-//            case RIGHT:
-//            case UNKNOWN:
-//                addSlide(SLIDE_DROP_HIGH);
-//                addHopper(1, HOPPER_DROP_HIGH);
-//                addHopper(0.2, HOPPER_MID.l);
-//                addSlide(0);
-//                break;
-//        }
-//        addHopper(0, 0.2);
+        switch(location) {
+            case LEFT:
+                addSlide(SLIDE_DROP_HIGH);
+                addHopper(0, HOPPER_DROP_LOW_POS1);
+                addSlide(SLIDE_DROP_LOW);
+                addHopper(1, HOPPER_DROP_LOW);
+                addSlide(SLIDE_DROP_HIGH);
+                addHopper(0, HOPPER_MID.l);
+                addSlide(0);
+                break;
+            case MIDDLE:
+                addSlide(SLIDE_DROP_MIDDLE);
+                addHopper(1, HOPPER_DROP_MIDDLE);
+                addHopper(0.2, HOPPER_MID.l);
+                addSlide(0);
+                break;
+            case RIGHT:
+            case UNKNOWN:
+                addSlide(SLIDE_DROP_HIGH);
+                addHopper(1, HOPPER_DROP_HIGH);
+                addHopper(0.2, HOPPER_MID.l);
+                addSlide(0);
+                break;
+        }
+        addHopper(0, 0.2);
         followTrajectory(readyToSpin);
+        addDuckSpinner(5, -0.3);
+        addDuckSpinner(0, 0);
         followTrajectory(park);
         stopTargetingCamera();
     }

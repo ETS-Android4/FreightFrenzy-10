@@ -16,15 +16,15 @@ import static org.firstinspires.ftc.teamcode.oldutil.Configurables.SLIDE_DROP_HI
 import static org.firstinspires.ftc.teamcode.oldutil.Configurables.SLIDE_DROP_LOW;
 import static org.firstinspires.ftc.teamcode.oldutil.Configurables.SLIDE_DROP_MIDDLE;
 
-@Autonomous(name = "Red Right", group = "Competition", preselectTeleOp = "Red TeleOp")
-public class RedAutoRight extends AbstractAuto {
-    public static Pose2d START_POSE = new Pose2d(12, -63, Math.toRadians(-90));
+@Autonomous(name = "Red Duck", group = "Competition", preselectTeleOp = "Red TeleOp")
+public class RedDuck extends AbstractAuto {
+    public static Pose2d START_POSE = new Pose2d(-36, -63, Math.toRadians(-90));
 
-    public static Pose2d FORWARD  = new Pose2d(10, -30, Math.toRadians(-90));
-    public static Pose2d BACK  = new Pose2d(10, -55, Math.toRadians(-90));
-    public static Pose2d DEPOSIT  = new Pose2d(2.5, -33, Math.toRadians(-45));
-    public static Pose2d READY_TO_PARK  = new Pose2d(9, -44, Math.toRadians(0));
-    public static Pose2d PARK  = new Pose2d(60, -38, Math.toRadians(0));
+    public static Pose2d FORWARD  = new Pose2d(-36, -30, Math.toRadians(-90));
+    public static Pose2d BACK  = new Pose2d(-36, -55, Math.toRadians(-90));
+    public static Pose2d DEPOSIT  = new Pose2d(-26, -33, Math.toRadians(-135));
+    public static Pose2d READY_TO_SPIN  = new Pose2d(-59, -58, Math.toRadians(-135));
+    public static Pose2d PARK  = new Pose2d(-61, -33.5, Math.toRadians(-180));
 
     @Override
     public void setAlliance() {
@@ -34,9 +34,6 @@ public class RedAutoRight extends AbstractAuto {
     @Override
     public void initializeSteps(BarcodeLocation location) {
         robot.drive.setPoseEstimate(START_POSE);
-//        Trajectory forwardf = robot.drive.trajectoryBuilder(START_POSE)
-//                .forward(10)
-//                .build();
 
         Trajectory forward = robot.drive.trajectoryBuilder(START_POSE)
                 .lineToLinearHeading(FORWARD)
@@ -47,16 +44,13 @@ public class RedAutoRight extends AbstractAuto {
         Trajectory deposit = robot.drive.trajectoryBuilder(back.end())
                 .lineToLinearHeading(DEPOSIT)
                 .build();
-        Trajectory readyToPark = robot.drive.trajectoryBuilder(deposit.end())
-                .lineToLinearHeading(READY_TO_PARK)
+        Trajectory readyToSpin = robot.drive.trajectoryBuilder(deposit.end())
+                .lineToLinearHeading(READY_TO_SPIN)
                 .build();
-        Trajectory park = robot.drive.trajectoryBuilder(readyToPark.end())
+        Trajectory park = robot.drive.trajectoryBuilder(readyToSpin.end())
                 .lineToLinearHeading(PARK)
                 .build();
 
-//        followTrajectory(forwardf);
-
-        addDelay(2);
         followTrajectory(forward);
         followTrajectory(back);
         followTrajectory(deposit);
@@ -85,7 +79,9 @@ public class RedAutoRight extends AbstractAuto {
                 break;
         }
         addHopper(0, 0.2);
-        followTrajectory(readyToPark);
+        followTrajectory(readyToSpin);
+        addDuckSpinner(5, 0.3);
+        addDuckSpinner(0, 0);
         followTrajectory(park);
         stopTargetingCamera();
     }

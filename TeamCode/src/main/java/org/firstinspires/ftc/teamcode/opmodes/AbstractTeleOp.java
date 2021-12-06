@@ -3,6 +3,10 @@ package org.firstinspires.ftc.teamcode.opmodes;
 import static org.firstinspires.ftc.teamcode.oldutil.Alliance.BLUE;
 import static org.firstinspires.ftc.teamcode.oldutil.Alliance.NEITHER;
 import static org.firstinspires.ftc.teamcode.oldutil.Alliance.RED;
+import static org.firstinspires.ftc.teamcode.oldutil.Configurables.CAPPER_DOWN_CUTOFF;
+import static org.firstinspires.ftc.teamcode.oldutil.Configurables.CAPPER_DOWN_MAX;
+import static org.firstinspires.ftc.teamcode.oldutil.Configurables.CAPPER_UP_CUTOFF;
+import static org.firstinspires.ftc.teamcode.oldutil.Configurables.CAPPER_UP_MAX;
 import static org.firstinspires.ftc.teamcode.oldutil.Configurables.DRIVE_SPEED;
 import static org.firstinspires.ftc.teamcode.oldutil.Configurables.HOPPER_DELAY;
 import static org.firstinspires.ftc.teamcode.oldutil.Configurables.HOPPER_DROP_HIGH;
@@ -70,7 +74,7 @@ public class AbstractTeleOp extends OpMode {
         robot.camera.initBarcodeWebcam();
 
         targetPos = 0;
-        servoPos = HOPPER_INIT;
+        servoPos = 0.2;
 
         robot.slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.slide.setTargetPosition(targetPos);
@@ -78,6 +82,9 @@ public class AbstractTeleOp extends OpMode {
         robot.slide.setPower(SLIDE_SPEED);
 
         robot.hopper.setPosition(servoPos);
+
+        robot.intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         capperPos = robot.capper.getPosition();
         robot.capper.setPosition(capperPos);
@@ -114,12 +121,21 @@ public class AbstractTeleOp extends OpMode {
 
         // intake
         if (driver2.getRightTrigger().getValue() > 0) {
+            robot.intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             robot.intake.setPower(driver2.getRightTrigger().getValue()*INTAKE_SPEED);
         } else if (driver2.getLeftTrigger().getValue() > 0) {
+            robot.intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             robot.intake.setPower(-driver2.getLeftTrigger().getValue()*INTAKE_SPEED);
-        } else {
+        } else if (driver2.getRightTrigger().isJustReleased() || driver2.getLeftTrigger().isJustReleased()) {
+            double currentPosition = robot.intake.getCurrentPosition();
+            double newPosition = robot.intake.getCurrentPosition() - (currentPosition % 537.6) + 537.6/2;
+            robot.intake.setTargetPosition((int)(newPosition));
+            robot.intake.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.intake.setPower(0.5);
+        } else if (robot.intake.getMode() != DcMotor.RunMode.RUN_TO_POSITION){
             robot.intake.setPower(0);
         }
+
 
         // transfer
         targetPos -= driver2.getLeftStick().getY()* SLIDE_TICKS_PER_CYCLE;
@@ -229,28 +245,16 @@ public class AbstractTeleOp extends OpMode {
 
         // capper
         if (driver2.getLeftBumper().isPressed()) {
-            if(capperPos>0.40 && capperPos<70){
-                capperPos=0.5;
-            }
-            else{
-                capperPos -= 0.001;
-            }
+            capperPos -= 0.0015;
         } else if (driver2.getRightBumper().isPressed()) {
-
-            if(capperPos<0.70 && capperPos>40){
-                capperPos=0.75;
-            }
-            else{
-                capperPos += 0.001;
-            }
+            capperPos += 0.0015;
         }
-        capperPos = clamp(capperPos, 0.01, 0.99);
+
+        capperPos = clamp(capperPos, CAPPER_DOWN_MAX, CAPPER_UP_MAX);
         robot.capper.setPosition(capperPos);
 
         // telemetry
         telemetry.addLine(robot.getTelemetry());
-//        telemetry.addData("servo pos", servoPos);
-//        telemetry.addData("slide pos", targetPos);
         telemetry.update();
     }
 }
