@@ -27,6 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 //Right now, Auto Blue Right is testing all new features except pushing element out of way
+
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -60,7 +61,8 @@ public class AutoRedLeft extends LinearOpMode {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private Cvhelper.BarcodeLocation teamElementLocation;
-    double LinearSPos = -1.0;
+    double LinearSPos = 0;
+    int noLinear = 1;
     DcMotor driveFrontLeft;
     DcMotor driveFrontRight;
     DcMotor driveBackLeft;
@@ -72,7 +74,6 @@ public class AutoRedLeft extends LinearOpMode {
     Servo hopper;
     int CLocation;
     Camera camera;
-
 
     double TICKS_PER_INCH = 28.53; // Ticks per revolution = 537.7;
 
@@ -99,7 +100,7 @@ public class AutoRedLeft extends LinearOpMode {
         duckWheel = this.hardwareMap.get(CRServo.class, "duckWheel");
 
         elementHolder = this.hardwareMap.get(Servo.class, "elementHolder");
-        elementHolder.setPosition(0.25);
+        elementHolder.setPosition(0.1);
 
         hopper = this.hardwareMap.get(Servo.class, "hopper");
         hopper.scaleRange(0.25, 1.0);
@@ -125,10 +126,11 @@ public class AutoRedLeft extends LinearOpMode {
         //Read Camera (Work-In-Progress)
         if(teamElementLocation == Cvhelper.BarcodeLocation.LEFT){
             LinearSPos = 0;
+            noLinear = 0;
         } else if(teamElementLocation == Cvhelper.BarcodeLocation.MIDDLE){
-            LinearSPos = -.3;
+            LinearSPos = 60;
         } else if(teamElementLocation == Cvhelper.BarcodeLocation.RIGHT){
-            LinearSPos = -0.66;
+            LinearSPos = 0;
         }
 
         //Drive forward
@@ -147,36 +149,36 @@ public class AutoRedLeft extends LinearOpMode {
 
         //Drive slightly forward before score
         driveInchesEnc(5, driveSpeed);
-        sleep(sleeptime);
+        sleep(sleeptime/2);
 
         //Score
 
-        linearSlide.setPower(LinearSPos);
-        sleep(sleeptime*2);
-        linearSlide.setPower(0);
+        driveLinearSlide((110-LinearSPos)*noLinear, 1);
+//        sleep(sleeptime*2);
+//       linearSlide.setPower(0);
         intakeMotor.setPower(1.0);
         hopper.setPosition(1.0);
         sleep(1000);
         intakeMotor.setPower(0);
         hopper.setPosition(0.5);
-        linearSlide.setPower(-LinearSPos);
-        sleep(sleeptime*2);
-        linearSlide.setPower(0);
+        driveLinearSlide((-109.6+LinearSPos)*noLinear, -1);
+//        sleep(sleeptime);
+//        linearSlide.setPower(0);
 
         turnDumbEnc(-1, -driveSpeed);
         sleep(sleeptime);
         //Back up
-        driveInchesEnc(-34, -driveSpeed/3);
-        sleep(sleeptime/2);
-        //Spin Duck
         duckWheel.setPower(1.0);
-        sleep(sleeptime*4);
+        driveInchesEnc(-35, -driveSpeed/3);
+        sleep(sleeptime/2);
+        driveInchesEnc(-1, -driveSpeed/10);
+        //Spin Duck
         duckWheel.setPower(0);
         //Turn towards storage unit
-        turnDumbEnc(12, driveSpeed);
+        turnDumbEnc(8, driveSpeed);
         sleep(sleeptime);
 
-        driveInchesEnc(7, driveSpeed);
+        driveInchesEnc(9, driveSpeed);
         sleep(sleeptime);
 
         // Show the elapsed game time and wheel power.
@@ -216,8 +218,13 @@ public class AutoRedLeft extends LinearOpMode {
         driveBackLeft.setPower(driveSpeed);
         driveFrontLeft.setPower(driveSpeed);
 
-        while (opModeIsActive() && Math.abs(driveFrontLeft.getCurrentPosition()) < Math.abs(distance)) {
+        while (opModeIsActive() && Math.abs(driveFrontRight.getCurrentPosition()) < Math.abs(distance)) {
             sleep(5);
+            telemetry.addData("FL", driveFrontLeft.getCurrentPosition());
+            telemetry.addData("FR", driveFrontRight.getCurrentPosition());
+            telemetry.addData("BL", driveBackLeft.getCurrentPosition());
+            telemetry.addData("BR", driveBackRight.getCurrentPosition());
+            telemetry.update();
         }
 
         driveBackRight.setPower(0);
@@ -225,7 +232,28 @@ public class AutoRedLeft extends LinearOpMode {
         driveFrontRight.setPower(0);
         driveFrontLeft.setPower(0);
     }
+    private void driveLinearSlide(double distance, double slideSpeed) {
+        telemetry.addData("Status", "Dist: " + distance);
+        telemetry.addData("Status", "Speed: " + slideSpeed);
+        telemetry.update();
+        distance = (int) (distance * TICKS_PER_INCH);
 
+        linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linearSlide.setPower(-1*slideSpeed);
+
+
+        while (opModeIsActive() && Math.abs(linearSlide.getCurrentPosition()) < Math.abs(distance)) {
+            sleep(5);
+            telemetry.addData("FL", driveFrontLeft.getCurrentPosition());
+            telemetry.addData("FR", driveFrontRight.getCurrentPosition());
+            telemetry.addData("BL", driveBackLeft.getCurrentPosition());
+            telemetry.addData("BR", driveBackRight.getCurrentPosition());
+            telemetry.update();
+        }
+
+        linearSlide.setPower(0);
+    }
 //    private void driveInches(int distance, double driveSpeed) {
 //        telemetry.addData("Status", "Dist: " + distance);
 //        telemetry.addData("Status", "Speed: " + driveSpeed);
@@ -302,6 +330,10 @@ public class AutoRedLeft extends LinearOpMode {
     private void turnDumbEnc(int distance, double driveSpeed) {
         telemetry.addData("Status", "Dist: " + distance);
         telemetry.addData("Status", "Speed: " + driveSpeed);
+        telemetry.addData("FL", driveFrontLeft.getCurrentPosition());
+        telemetry.addData("FR", driveFrontRight.getCurrentPosition());
+        telemetry.addData("BL", driveBackLeft.getCurrentPosition());
+        telemetry.addData("BR", driveBackRight.getCurrentPosition());
         telemetry.update();
         distance = (int) (distance * TICKS_PER_INCH);
         driveFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -319,7 +351,7 @@ public class AutoRedLeft extends LinearOpMode {
         driveBackRight.setPower(driveSpeed);
         driveFrontRight.setPower(driveSpeed);
 
-        while (opModeIsActive() && Math.abs(driveFrontLeft.getCurrentPosition()) < Math.abs(distance)) {
+        while (opModeIsActive() && Math.abs(driveFrontRight.getCurrentPosition()) < Math.abs(distance)) {
             sleep(5);
         }
 

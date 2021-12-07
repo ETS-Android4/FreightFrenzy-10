@@ -60,7 +60,8 @@ public class AutoBlueRight extends LinearOpMode {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private Cvhelper.BarcodeLocation teamElementLocation;
-    double LinearSPos = -1.0;
+    double LinearSPos = 0;
+    int noLinear = 1;
     DcMotor driveFrontLeft;
     DcMotor driveFrontRight;
     DcMotor driveBackLeft;
@@ -99,7 +100,7 @@ public class AutoBlueRight extends LinearOpMode {
         duckWheel = this.hardwareMap.get(CRServo.class, "duckWheel");
 
         elementHolder = this.hardwareMap.get(Servo.class, "elementHolder");
-        elementHolder.setPosition(0.25);
+        elementHolder.setPosition(0.1);
 
         hopper = this.hardwareMap.get(Servo.class, "hopper");
         hopper.scaleRange(0.25, 1.0);
@@ -125,10 +126,11 @@ public class AutoBlueRight extends LinearOpMode {
         //Read Camera (Work-In-Progress)
         if(teamElementLocation == Cvhelper.BarcodeLocation.LEFT){
             LinearSPos = 0;
+            noLinear = 0;
         } else if(teamElementLocation == Cvhelper.BarcodeLocation.MIDDLE){
-            LinearSPos = -.30;
+            LinearSPos = 60;
         } else if(teamElementLocation == Cvhelper.BarcodeLocation.RIGHT){
-            LinearSPos = -0.66;
+            LinearSPos = 0;
         }
 
         //Drive forward
@@ -142,7 +144,7 @@ public class AutoBlueRight extends LinearOpMode {
         sleep(sleeptime);
 
         //Turn left towards score
-        turnDumbEnc(4, driveSpeed);
+        turnDumbEnc(5, driveSpeed);
         sleep(sleeptime);
 
         //Drive slightly forward before score
@@ -151,32 +153,28 @@ public class AutoBlueRight extends LinearOpMode {
 
         //Score
 
-        linearSlide.setPower(LinearSPos);
-        sleep(sleeptime*2);
-        linearSlide.setPower(0);
+        driveLinearSlide((110-LinearSPos)*noLinear, 1);
         intakeMotor.setPower(1.0);
         hopper.setPosition(1.0);
         sleep(1000);
         intakeMotor.setPower(0);
         hopper.setPosition(0.5);
-        linearSlide.setPower(-LinearSPos);
-        sleep(sleeptime*2);
-        linearSlide.setPower(0);
+        driveLinearSlide((-109.6+LinearSPos)*noLinear, -1);
 
         turnDumbEnc(1, driveSpeed);
         sleep(sleeptime);
         //Back up
-        driveInchesEnc(-34, -driveSpeed/3);
-        sleep(sleeptime);
-        //Spin Duck
         duckWheel.setPower(-1.0);
-        sleep(sleeptime*4);
+        driveInchesEnc(-35, -driveSpeed/3);
+        sleep(sleeptime/2);
+        driveInchesEnc(-1, -driveSpeed/10);
+        //Spin Duck
         duckWheel.setPower(0);
         //Turn towards storage unit
-        turnDumbEnc(-12, -driveSpeed);
+        turnDumbEnc(-8, -driveSpeed);
         sleep(sleeptime);
 
-        driveInchesEnc(7, driveSpeed);
+        driveInchesEnc(9, driveSpeed);
         sleep(sleeptime);
 
         // Show the elapsed game time and wheel power.
@@ -216,7 +214,7 @@ public class AutoBlueRight extends LinearOpMode {
         driveBackLeft.setPower(driveSpeed);
         driveFrontLeft.setPower(driveSpeed);
 
-        while (opModeIsActive() && Math.abs(driveFrontLeft.getCurrentPosition()) < Math.abs(distance)) {
+        while (opModeIsActive() && Math.abs(driveFrontRight.getCurrentPosition()) < Math.abs(distance)) {
             sleep(5);
         }
 
@@ -224,6 +222,28 @@ public class AutoBlueRight extends LinearOpMode {
         driveBackLeft.setPower(0);
         driveFrontRight.setPower(0);
         driveFrontLeft.setPower(0);
+    }
+    private void driveLinearSlide(double distance, double slideSpeed) {
+        telemetry.addData("Status", "Dist: " + distance);
+        telemetry.addData("Status", "Speed: " + slideSpeed);
+        telemetry.update();
+        distance = (int) (distance * TICKS_PER_INCH);
+
+        linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linearSlide.setPower(-1*slideSpeed);
+
+
+        while (opModeIsActive() && Math.abs(linearSlide.getCurrentPosition()) < Math.abs(distance)) {
+            sleep(5);
+            telemetry.addData("FL", driveFrontLeft.getCurrentPosition());
+            telemetry.addData("FR", driveFrontRight.getCurrentPosition());
+            telemetry.addData("BL", driveBackLeft.getCurrentPosition());
+            telemetry.addData("BR", driveBackRight.getCurrentPosition());
+            telemetry.update();
+        }
+
+        linearSlide.setPower(0);
     }
 
 //    private void driveInches(int distance, double driveSpeed) {
@@ -319,6 +339,35 @@ public class AutoBlueRight extends LinearOpMode {
         driveBackRight.setPower(driveSpeed);
         driveFrontRight.setPower(driveSpeed);
 
+        while (opModeIsActive() && Math.abs(driveFrontRight.getCurrentPosition()) < Math.abs(distance)) {
+            sleep(5);
+        }
+
+        driveBackRight.setPower(0);
+        driveBackLeft.setPower(0);
+        driveFrontRight.setPower(0);
+        driveFrontLeft.setPower(0);
+    }
+/*
+    private void turnTime(double time, double driveSpeed) {
+        telemetry.addData("Status", "Dist: " + distance);
+        telemetry.addData("Status", "Speed: " + driveSpeed);
+        telemetry.update();
+        driveFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        driveFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        driveBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        driveBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        driveBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        driveBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        driveFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        driveFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        driveBackLeft.setPower(driveSpeed);
+        driveFrontLeft.setPower(driveSpeed);
+        driveBackRight.setPower(driveSpeed);
+        driveFrontRight.setPower(driveSpeed);
+
         while (opModeIsActive() && Math.abs(driveFrontLeft.getCurrentPosition()) < Math.abs(distance)) {
             sleep(5);
         }
@@ -328,4 +377,6 @@ public class AutoBlueRight extends LinearOpMode {
         driveFrontRight.setPower(0);
         driveFrontLeft.setPower(0);
     }
+
+ */
 }

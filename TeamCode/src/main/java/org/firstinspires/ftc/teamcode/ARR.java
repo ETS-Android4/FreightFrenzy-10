@@ -58,7 +58,8 @@ import org.firstinspires.ftc.teamcode.visioncode.Detection;
 public class ARR extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private Cvhelper.BarcodeLocation teamElementLocation;
-    double LinearSPos = -1.0;
+    double LinearSPos = 0;
+    int noLinear = 1;
     DcMotor driveFrontLeft;
     DcMotor driveFrontRight;
     DcMotor driveBackLeft;
@@ -97,7 +98,7 @@ public class ARR extends LinearOpMode {
         duckWheel = this.hardwareMap.get(CRServo.class, "duckWheel");
 
         elementHolder = this.hardwareMap.get(Servo.class, "elementHolder");
-        elementHolder.setPosition(0.25);
+        elementHolder.setPosition(0.1);
 
         hopper = this.hardwareMap.get(Servo.class, "hopper");
         hopper.scaleRange(0.25, 1.0);
@@ -123,10 +124,11 @@ public class ARR extends LinearOpMode {
         //Read Camera (Work-In-Progress)
         if(teamElementLocation == Cvhelper.BarcodeLocation.LEFT){
             LinearSPos = 0;
+            noLinear = 0;
         } else if(teamElementLocation == Cvhelper.BarcodeLocation.MIDDLE){
-            LinearSPos = -.3;
+            LinearSPos = 60;
         } else if(teamElementLocation == Cvhelper.BarcodeLocation.RIGHT){
-            LinearSPos = -0.66;
+            LinearSPos = 0;
         }
 
         //Drive forward
@@ -153,16 +155,12 @@ public class ARR extends LinearOpMode {
 
         //Score
         linearSlide.setPower(LinearSPos);
-        sleep(sleeptime*2);
-        linearSlide.setPower(0);
         intakeMotor.setPower(1.0);
         hopper.setPosition(1.0);
         sleep(1000);
         intakeMotor.setPower(0);
         hopper.setPosition(0.5);
-        linearSlide.setPower(-LinearSPos);
-        sleep(sleeptime*2);
-        linearSlide.setPower(0);
+        linearSlide.setPower(-LinearSPos*1.9);
 
         //Line up with warehouse
         driveInchesEnc(-2, -driveSpeed);
@@ -210,7 +208,7 @@ public class ARR extends LinearOpMode {
         driveBackLeft.setPower(driveSpeed);
         driveFrontLeft.setPower(driveSpeed);
 
-        while (opModeIsActive() && Math.abs(driveFrontLeft.getCurrentPosition()) < Math.abs(distance)) {
+        while (opModeIsActive() && Math.abs(driveFrontRight.getCurrentPosition()) < Math.abs(distance)) {
             sleep(5);
         }
 
@@ -313,7 +311,7 @@ public class ARR extends LinearOpMode {
         driveBackRight.setPower(driveSpeed);
         driveFrontRight.setPower(driveSpeed);
 
-        while (opModeIsActive() && Math.abs(driveFrontLeft.getCurrentPosition()) < Math.abs(distance)) {
+        while (opModeIsActive() && Math.abs(driveFrontRight.getCurrentPosition()) < Math.abs(distance)) {
             sleep(5);
         }
 

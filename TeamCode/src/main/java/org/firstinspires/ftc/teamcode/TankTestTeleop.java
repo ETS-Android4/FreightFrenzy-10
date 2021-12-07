@@ -111,6 +111,7 @@ public class TankTestTeleop extends OpMode{
 
         linearSlide = this.hardwareMap.get(DcMotor.class, "linearSlide");
         linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         linearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         duckWheel = this.hardwareMap.get(CRServo.class, "duckWheel");
@@ -144,7 +145,6 @@ public class TankTestTeleop extends OpMode{
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Say", "Hello There");
-
     }
 
     //linear slide goes to 4.8 ish
