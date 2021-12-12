@@ -244,10 +244,18 @@ public class AbstractTeleOp extends OpMode {
         }
 
         // capper
-        if (driver2.getLeftBumper().isPressed()) {
-            capperPos -= 0.0015;
-        } else if (driver2.getRightBumper().isPressed()) {
-            capperPos += 0.0015;
+        if(driver2.getB().isPressed()){
+            if (driver2.getLeftBumper().isPressed()) {
+                capperPos -= 0.003;
+            } else if (driver2.getRightBumper().isPressed()) {
+                capperPos += 0.003;
+            }
+        }else{
+            if (driver2.getLeftBumper().isPressed()) {
+                capperPos -= 0.0015;
+            } else if (driver2.getRightBumper().isPressed()) {
+                capperPos += 0.0015;
+            }
         }
 
         capperPos = clamp(capperPos, CAPPER_DOWN_MAX, CAPPER_UP_MAX);
