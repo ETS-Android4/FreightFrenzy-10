@@ -57,6 +57,10 @@ public class Camera {
         return (barcodeWebcamInitialized ? barcodePipeline.getTeamElementLocation() : UNKNOWN);
     }
 
+    public BarcodeLocation checkTeamElementLocationUsingAprilTags() {
+        return (barcodeWebcamInitialized ? barcodePipeline.getTeamElementLocationUsingAprilTag() : UNKNOWN);
+    }
+
     // Get the StarterStack Detection
     public Detection getTeamElement() {
         return (barcodeWebcamInitialized ? barcodePipeline.getTeamElement() : INVALID_DETECTION);
