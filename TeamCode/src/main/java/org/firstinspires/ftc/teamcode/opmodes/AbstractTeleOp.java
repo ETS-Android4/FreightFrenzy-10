@@ -71,7 +71,7 @@ public class AbstractTeleOp extends OpMode {
         driver2 = new Controller(gamepad2);
 
         robot = new Robot(hardwareMap);
-        robot.camera.initBarcodeWebcam();
+        //robot.camera.initBarcodeWebcam();
 
         targetPos = 0;
         servoPos = 0.2;
@@ -90,14 +90,14 @@ public class AbstractTeleOp extends OpMode {
         robot.capper.setPosition(capperPos);
     }
 
-    @Override
-    public void init_loop() {
-        if (robot.camera.getFrameCount() > 0) {
-            telemetry.addLine("Initialized");
-            telemetry.addLine("Alliance: "+alliance);
-            telemetry.update();
-        }
-    }
+    //@Override
+    //public void init_loop() {
+    //    if (robot.camera.getFrameCount() > 0) {
+    //        telemetry.addLine("Initialized");
+    //        telemetry.addLine("Alliance: "+alliance);
+    //        telemetry.update();
+    //    }
+    //}
 
     @Override
     public void loop() {
