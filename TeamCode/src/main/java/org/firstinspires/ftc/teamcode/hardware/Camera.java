@@ -38,9 +38,17 @@ public class Camera {
         this.barcodeWebcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, BARCODE_WEBCAM), stackCameraMonitorViewId);
         this.barcodePipeline = new BarcodePipeline();
         barcodeWebcam.setPipeline(barcodePipeline);
-        barcodeWebcam.openCameraDeviceAsync(() -> {
-            barcodeWebcam.startStreaming(WEBCAM_WIDTH, WEBCAM_HEIGHT, WEBCAM_ROTATION);
-            barcodeWebcamInitialized = true;
+        barcodeWebcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                barcodeWebcam.startStreaming(WEBCAM_WIDTH, WEBCAM_HEIGHT, WEBCAM_ROTATION);
+                barcodeWebcamInitialized = true;
+            }
+
+            @Override
+            public void onError(int errorCode) {
+
+            }
         });
         FtcDashboard.getInstance().startCameraStream(barcodeWebcam, 0);
     }
