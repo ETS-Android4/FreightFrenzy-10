@@ -90,14 +90,14 @@ public class AbstractTeleOp extends OpMode {
         robot.capper.setPosition(capperPos);
     }
 
-    //@Override
-    //public void init_loop() {
-    //    if (robot.camera.getFrameCount() > 0) {
-    //        telemetry.addLine("Initialized");
-    //        telemetry.addLine("Alliance: "+alliance);
-    //        telemetry.update();
-    //    }
-    //}
+    @Override
+    public void init_loop() {
+        if (robot.camera.getFrameCount() > 0) {
+            telemetry.addLine("Initialized");
+            telemetry.addLine("Alliance: "+alliance);
+            telemetry.update();
+        }
+    }
 
     @Override
     public void loop() {
