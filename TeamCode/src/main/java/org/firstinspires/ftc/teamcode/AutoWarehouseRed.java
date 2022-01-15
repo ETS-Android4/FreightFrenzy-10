@@ -133,22 +133,22 @@ public class AutoWarehouseRed extends LinearOpMode {
 
         double driveSpeed = 0.3;
         int sleeptime = 1000;
-        int firstMoveDist = 30;
+        int firstMoveDist = 25;
 
         //Read Camera
         if(teamElementLocation == Cvhelper.BarcodeLocation.LEFT){
-            LinearSPos = 0;
-            noLinear = 0;
+            LinearSPos = 100;
+            noLinear = 1;
         } else if(teamElementLocation == Cvhelper.BarcodeLocation.MIDDLE){
-            LinearSPos = 60;
+            LinearSPos = 70;
         } else if(teamElementLocation == Cvhelper.BarcodeLocation.RIGHT){
-            LinearSPos = 0;
+            LinearSPos = 40;
         }
 
         //Drive forward
         driveInchesEnc(firstMoveDist*driveModifier, driveSpeed);
         sleep(sleeptime);
-        driveInchesEnc(-15*driveModifier, -driveSpeed);
+        driveInchesEnc(-10*driveModifier, -driveSpeed);
         sleep(sleeptime);
         telemetry.addData("Status", "Run beater");
         telemetry.update();
@@ -159,13 +159,14 @@ public class AutoWarehouseRed extends LinearOpMode {
         //Turn right to dodge obstacle
         turnDumbEnc(6*turnModifier*rightTurnModifier, -driveSpeed);
         sleep(sleeptime);
-        driveInchesEnc(-2*driveModifier,-driveSpeed);
+        driveInchesEnc(-1.5*driveModifier,-driveSpeed);
         sleep(sleeptime);
 
         //Turn left to score
-        turnDumbEnc(8*turnModifier*leftTurnModifier, driveSpeed);
+        turnDumbEnc(9*turnModifier*leftTurnModifier, driveSpeed);
         sleep(sleeptime);
-        driveInchesEnc(5*driveModifier, driveSpeed);
+        driveInchesEnc(4.5*driveModifier, driveSpeed);
+        sleep(sleeptime);
 
         //Score
         driveLinearSlide((110-LinearSPos)*noLinear, 1);
@@ -175,15 +176,16 @@ public class AutoWarehouseRed extends LinearOpMode {
         intakeMotor.setPower(0);
         hopper.setPosition(0.5);
         driveLinearSlide((-109.6+LinearSPos)*noLinear, -1);
+        linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //Line up with warehouse
         driveInchesEnc(-2*driveModifier, -driveSpeed);
         sleep(sleeptime);
-        turnDumbEnc(6*turnModifier*leftTurnModifier, driveSpeed);
+        turnDumbEnc(4*turnModifier*leftTurnModifier, driveSpeed);
         sleep(sleeptime);
 
         //Back in to warehouse
-        driveInchesEnc(-45*driveModifier, -2.5*driveSpeed);
+        driveInchesEnc(-40*driveModifier, -2.5*driveSpeed);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());

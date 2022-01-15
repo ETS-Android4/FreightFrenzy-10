@@ -81,7 +81,7 @@ public class AutoDuckBlue extends LinearOpMode {
     Camera camera;
 
     //Variables
-    double LinearSPos = 0;
+    double LinearSPos = 40;
     int noLinear = 1;
     double turnModifier = 1;
     double driveModifier = 1;
@@ -173,23 +173,25 @@ public class AutoDuckBlue extends LinearOpMode {
         intakeMotor.setPower(0);
         hopper.setPosition(0.5);
         driveLinearSlide((-109.6+LinearSPos)*noLinear, -1);
+        linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //Line up to Duck Wheel
-        //turnDumbEnc(.35*turnModifier*leftTurnModifier, driveSpeed);
+        turnDumbEnc(.3*turnModifier*leftTurnModifier, driveSpeed);
         sleep(sleeptime/3);
 
         //Turn on Duck Wheel and move to it
         duckWheel.setPower(-1.0);
-        driveInchesEnc(-32*driveModifier, -driveSpeed/3);
+        driveInchesEnc(-17*driveModifier, -driveSpeed/2);
         sleep(sleeptime/2);
-        driveInchesEnc(-.75*driveModifier, -driveSpeed/12);
-        sleep(sleeptime*4);
+        driveInchesEnc(-17*driveModifier, -driveSpeed/4);
+        driveInchesEnc(-.75*driveModifier, -driveSpeed/10);
+        sleep(sleeptime);
         duckWheel.setPower(0);
 
         //Park
-        driveInchesEnc(1*driveModifier, driveSpeed);
+        driveInchesEnc(2*driveModifier, driveSpeed);
         sleep(sleeptime/2);
-        turnDumbEnc(-13*turnModifier*rightTurnModifier, -driveSpeed);
+        turnDumbEnc(15*turnModifier*rightTurnModifier, -driveSpeed);
         sleep(sleeptime);
         driveInchesEnc(8*driveModifier, driveSpeed);
         sleep(sleeptime);

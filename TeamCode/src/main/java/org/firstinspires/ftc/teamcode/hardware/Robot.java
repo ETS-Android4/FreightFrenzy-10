@@ -25,6 +25,7 @@ public class Robot {
     public String getTelemetry() {
         return drive.getTelemetry();
     }
+
     private void initialize() {
         this.drive = Drive.builder()
                 .frontLeft(this.hardwareMap.get(DcMotor.class, Constants.FRONT_LEFT_DRIVE_NAME))

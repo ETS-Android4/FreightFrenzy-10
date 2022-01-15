@@ -140,18 +140,18 @@ public class AutoDuckRed extends LinearOpMode {
 
         //Read Camera
         if(teamElementLocation == Cvhelper.BarcodeLocation.LEFT){
-            LinearSPos = 0;
-            noLinear = 0;
+            LinearSPos = 100;
+            noLinear = 1;
         } else if(teamElementLocation == Cvhelper.BarcodeLocation.MIDDLE){
-            LinearSPos = 60;
+            LinearSPos = 70;
         } else if(teamElementLocation == Cvhelper.BarcodeLocation.RIGHT){
-            LinearSPos = 0;
+            LinearSPos = 40;
         }
 
         //Drive forward
         driveInchesEnc(firstMoveDist*driveModifier, driveSpeed);
         sleep(sleeptime);
-        driveInchesEnc(-15*driveModifier, -driveSpeed);
+        driveInchesEnc(-14*driveModifier, -driveSpeed);
         sleep(sleeptime);
         telemetry.addData("Status", "Run beater");
         telemetry.update();
@@ -159,11 +159,11 @@ public class AutoDuckRed extends LinearOpMode {
         sleep(sleeptime);
 
         //Turn right towards score
-        turnDumbEnc(5*turnModifier*rightTurnModifier, -driveSpeed);
+        turnDumbEnc(8.5*turnModifier*rightTurnModifier, -driveSpeed);
         sleep(sleeptime);
 
         //Drive slightly forward before score
-        driveInchesEnc(4*driveModifier, driveSpeed);
+        driveInchesEnc(5*driveModifier, driveSpeed);
         sleep(sleeptime/2);
 
         //Score
@@ -174,22 +174,26 @@ public class AutoDuckRed extends LinearOpMode {
         intakeMotor.setPower(0);
         hopper.setPosition(0.5);
         driveLinearSlide((-109.6+LinearSPos)*noLinear, -1);
+        linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //Line up with Duck Wheel
-        turnDumbEnc(1*turnModifier*rightTurnModifier, -driveSpeed);
+        turnDumbEnc(.5*turnModifier*rightTurnModifier, -driveSpeed);
         sleep(sleeptime);
 
         //Spin wheel and back up
         duckWheel.setPower(1.0);
-        driveInchesEnc(-35*driveModifier, -driveSpeed/3);
+        driveInchesEnc(-34.5*driveModifier, -driveSpeed/3);
         sleep(sleeptime/2);
-        driveInchesEnc(-1*driveModifier, -driveSpeed/10);
+        driveInchesEnc(-.75*driveModifier, -driveSpeed/12);
+        sleep(sleeptime*3);
         duckWheel.setPower(0);
 
         //Park
-        turnDumbEnc(8*turnModifier*leftTurnModifier, driveSpeed);
+        driveInchesEnc(2*driveModifier, driveSpeed);
+        sleep(sleeptime/2);
+        turnDumbEnc(9*turnModifier*leftTurnModifier, driveSpeed);
         sleep(sleeptime);
-        driveInchesEnc(7*driveModifier, driveSpeed);
+        driveInchesEnc(8*driveModifier, driveSpeed);
         sleep(sleeptime);
 
         // Show the elapsed game time and wheel power.
