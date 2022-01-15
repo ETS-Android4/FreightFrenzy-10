@@ -210,6 +210,8 @@ public class ARR extends LinearOpMode {
 
         while (opModeIsActive() && Math.abs(driveFrontRight.getCurrentPosition()) < Math.abs(distance)) {
             sleep(5);
+            telemetry.addData("FR", driveFrontRight.getCurrentPosition());
+            telemetry.update();
         }
 
         driveBackRight.setPower(0);

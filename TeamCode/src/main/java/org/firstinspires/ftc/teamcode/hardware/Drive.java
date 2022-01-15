@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotor.RunMode;
@@ -83,6 +85,11 @@ public class Drive {
         this.backLeft.setPower(left);
         this.frontRight.setPower(right);
         this.backRight.setPower(right);
+//        telemetry.addData("FL", frontLeft.getCurrentPosition());
+//        telemetry.addData("FR", frontRight.getCurrentPosition());
+//        telemetry.addData("BL", backRight.getCurrentPosition());
+//        telemetry.addData("BR", backLeft.getCurrentPosition());
+//        telemetry.update();
     }
 
     // Move in two directions a certain number of inches
@@ -135,7 +142,11 @@ public class Drive {
         frontRight.setPower(0.5);
         frontRight.setPower(0.5);
     }
-
+    public String getTelemetry() {
+        String telemetry;
+        telemetry = String.format("FL %s \n FR %s \n BL %s \n BR %s", frontLeft.getCurrentPosition(), frontRight.getCurrentPosition(), backLeft.getCurrentPosition(), backRight.getCurrentPosition());
+        return telemetry;
+    }
     public static class Constants {
         public static final double DEFAULT_MAX_POWER = 0.6;
         public static final double SLOW_MODE_MAX_POWER = 0.2;

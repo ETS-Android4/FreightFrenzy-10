@@ -6,6 +6,10 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import lombok.Builder;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Value;
 
 public class Actuators {
     private final DcMotor intakeMotor;
@@ -52,6 +56,9 @@ public class Actuators {
         double duckSpinRight = gamepad.right_trigger;
         boolean hopperPress = gamepad.a;
         double elementStick = gamepad.left_stick_y;
+        if(gamepad.left_bumper){
+            elementStick = .5;
+        }
 
         // Intake
         if(intakePress) {

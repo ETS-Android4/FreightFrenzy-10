@@ -144,7 +144,7 @@ public class AutoBlueRight extends LinearOpMode {
         sleep(sleeptime);
 
         //Turn left towards score
-        turnDumbEnc(5, driveSpeed);
+        turnDumbEnc(8, driveSpeed);
         sleep(sleeptime);
 
         //Drive slightly forward before score
@@ -216,6 +216,8 @@ public class AutoBlueRight extends LinearOpMode {
 
         while (opModeIsActive() && Math.abs(driveFrontRight.getCurrentPosition()) < Math.abs(distance)) {
             sleep(5);
+            telemetry.addData("FR", driveFrontRight.getCurrentPosition());
+            telemetry.update();
         }
 
         driveBackRight.setPower(0);

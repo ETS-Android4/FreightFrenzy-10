@@ -78,7 +78,7 @@ public class TankTestTeleop extends OpMode{
 
     private boolean turbo = false;
     private boolean slowdown = false;
-    private boolean developerauto = false;
+
 
     public static final int WEBCAM_WIDTH = 320;
     public static final int WEBCAM_HEIGHT = 240;
@@ -161,11 +161,6 @@ public class TankTestTeleop extends OpMode{
             slowdown = true;
         } else {
             slowdown = false;
-        }
-        if (developerauto == true && gamepad1.a == true) {
-            developerauto = false;
-        } else if (developerauto == false && gamepad1.a == true) {
-            developerauto = true;
         }
 
         if (turbo) {
@@ -276,9 +271,10 @@ public class TankTestTeleop extends OpMode{
             startTime = getRuntime();
         }
         if (getRuntime() > startTime + 1 && startTime != -1) {
-            this.hopperPosition = 0.5;
+            this.hopperPosition = .5;
             startTime = -1;
         }
+
         //team element
         double elementStick = gamepad2.left_stick_y;
         double elementPos = elementStick * (3/20) + 0.15;

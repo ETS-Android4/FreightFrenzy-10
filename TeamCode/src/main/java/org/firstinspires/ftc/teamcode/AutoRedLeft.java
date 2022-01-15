@@ -178,7 +178,7 @@ public class AutoRedLeft extends LinearOpMode {
         turnDumbEnc(8, driveSpeed);
         sleep(sleeptime);
 
-        driveInchesEnc(9, driveSpeed);
+        driveInchesEnc(7, driveSpeed);
         sleep(sleeptime);
 
         // Show the elapsed game time and wheel power.
