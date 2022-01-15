@@ -54,12 +54,19 @@ import org.firstinspires.ftc.teamcode.visioncode.Detection;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
+/*
+Programmer's Notes:
+- turnDumbEnc turns the robot, positive driveSpeed turns left, negative turns right, pos or neg distance doesn't matter
+- driveInchesEnc drives the robot, positive distance and driveSpeed moves forward, negative moves Back
+- turnModifier adjusts all turns by a multiplier, use if encoder breaks or everything is off by a similar amount
+- driveModifier does the same for driveInchesEnc
+- right and left TurnModifier adjust only their respective directions
+ */
+
 @Autonomous(name = "WarehouseRed", group = "Linear Opmode")
-public class ARR extends LinearOpMode {
+public class AutoWarehouseRed extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private Cvhelper.BarcodeLocation teamElementLocation;
-    double LinearSPos = 0;
-    int noLinear = 1;
     DcMotor driveFrontLeft;
     DcMotor driveFrontRight;
     DcMotor driveBackLeft;
@@ -72,6 +79,13 @@ public class ARR extends LinearOpMode {
     int CLocation;
     Camera camera;
 
+    //Variables
+    double LinearSPos = 0;
+    int noLinear = 1;
+    double turnModifier = 1;
+    double driveModifier = 1;
+    double leftTurnModifier = 1;
+    double rightTurnModifier = .57;
 
     double TICKS_PER_INCH = 28.53; // Ticks per revolution = 537.7;
 
@@ -121,7 +135,7 @@ public class ARR extends LinearOpMode {
         int sleeptime = 1000;
         int firstMoveDist = 30;
 
-        //Read Camera (Work-In-Progress)
+        //Read Camera
         if(teamElementLocation == Cvhelper.BarcodeLocation.LEFT){
             LinearSPos = 0;
             noLinear = 0;
@@ -132,9 +146,9 @@ public class ARR extends LinearOpMode {
         }
 
         //Drive forward
-        driveInchesEnc(firstMoveDist, driveSpeed);
+        driveInchesEnc(firstMoveDist*driveModifier, driveSpeed);
         sleep(sleeptime);
-        driveInchesEnc(-15, -driveSpeed);
+        driveInchesEnc(-15*driveModifier, -driveSpeed);
         sleep(sleeptime);
         telemetry.addData("Status", "Run beater");
         telemetry.update();
@@ -143,37 +157,36 @@ public class ARR extends LinearOpMode {
 
 
         //Turn right to dodge obstacle
-        turnDumbEnc(-6, -driveSpeed);
+        turnDumbEnc(6*turnModifier*rightTurnModifier, -driveSpeed);
         sleep(sleeptime);
-        driveInchesEnc(-2,-driveSpeed);
+        driveInchesEnc(-2*driveModifier,-driveSpeed);
         sleep(sleeptime);
 
         //Turn left to score
-        turnDumbEnc(8, driveSpeed);
+        turnDumbEnc(8*turnModifier*leftTurnModifier, driveSpeed);
         sleep(sleeptime);
-        driveInchesEnc(5, driveSpeed);
+        driveInchesEnc(5*driveModifier, driveSpeed);
 
         //Score
-        linearSlide.setPower(LinearSPos);
+        driveLinearSlide((110-LinearSPos)*noLinear, 1);
         intakeMotor.setPower(1.0);
         hopper.setPosition(1.0);
         sleep(1000);
         intakeMotor.setPower(0);
         hopper.setPosition(0.5);
-        linearSlide.setPower(-LinearSPos*1.9);
+        driveLinearSlide((-109.6+LinearSPos)*noLinear, -1);
 
         //Line up with warehouse
-        driveInchesEnc(-2, -driveSpeed);
+        driveInchesEnc(-2*driveModifier, -driveSpeed);
         sleep(sleeptime);
-        turnDumbEnc(6, driveSpeed);
+        turnDumbEnc(6*turnModifier*leftTurnModifier, driveSpeed);
         sleep(sleeptime);
 
         //Back in to warehouse
-        driveInchesEnc(-45, -2.5*driveSpeed);
+        driveInchesEnc(-45*driveModifier, -2.5*driveSpeed);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
-
         telemetry.update();
     }
 
@@ -187,7 +200,7 @@ public class ARR extends LinearOpMode {
         intakeMotor.setPower(0);
     }
 
-    private void driveInchesEnc(int distance, double driveSpeed) {
+    private void driveInchesEnc(double distance, double driveSpeed) {
         telemetry.addData("Status", "Dist: " + distance);
         telemetry.addData("Status", "Speed: " + driveSpeed);
         telemetry.update();
@@ -205,12 +218,15 @@ public class ARR extends LinearOpMode {
 
         driveBackRight.setPower(-1*driveSpeed);
         driveFrontRight.setPower(-1*driveSpeed);
-        driveBackLeft.setPower(driveSpeed);
-        driveFrontLeft.setPower(driveSpeed);
+        driveBackLeft.setPower(.8*driveSpeed);
+        driveFrontLeft.setPower(.8*driveSpeed);
 
         while (opModeIsActive() && Math.abs(driveFrontRight.getCurrentPosition()) < Math.abs(distance)) {
             sleep(5);
+            telemetry.addData("FL", driveFrontLeft.getCurrentPosition());
             telemetry.addData("FR", driveFrontRight.getCurrentPosition());
+            telemetry.addData("BL", driveBackLeft.getCurrentPosition());
+            telemetry.addData("BR", driveBackRight.getCurrentPosition());
             telemetry.update();
         }
 
@@ -218,6 +234,28 @@ public class ARR extends LinearOpMode {
         driveBackLeft.setPower(0);
         driveFrontRight.setPower(0);
         driveFrontLeft.setPower(0);
+    }
+    private void driveLinearSlide(double distance, double slideSpeed) {
+        telemetry.addData("Status", "Dist: " + distance);
+        telemetry.addData("Status", "Speed: " + slideSpeed);
+        telemetry.update();
+        distance = (int) (distance * TICKS_PER_INCH);
+
+        linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linearSlide.setPower(-1*slideSpeed);
+
+
+        while (opModeIsActive() && Math.abs(linearSlide.getCurrentPosition()) < Math.abs(distance)) {
+            sleep(5);
+            telemetry.addData("FL", driveFrontLeft.getCurrentPosition());
+            telemetry.addData("FR", driveFrontRight.getCurrentPosition());
+            telemetry.addData("BL", driveBackLeft.getCurrentPosition());
+            telemetry.addData("BR", driveBackRight.getCurrentPosition());
+            telemetry.update();
+        }
+
+        linearSlide.setPower(0);
     }
 
 //    private void driveInches(int distance, double driveSpeed) {
@@ -293,7 +331,7 @@ public class ARR extends LinearOpMode {
 //        driveFrontLeft.setPower(0);
 //    }
 
-    private void turnDumbEnc(int distance, double driveSpeed) {
+    private void turnDumbEnc(double distance, double driveSpeed) {
         telemetry.addData("Status", "Dist: " + distance);
         telemetry.addData("Status", "Speed: " + driveSpeed);
         telemetry.update();

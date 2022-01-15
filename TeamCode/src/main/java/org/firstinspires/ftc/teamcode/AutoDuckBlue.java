@@ -26,8 +26,7 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-//Right Now, Auto Red Right is testing everything except camera
-
+//Right now, Auto Blue Right is testing all new features except pushing element out of way
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -55,12 +54,20 @@ import org.firstinspires.ftc.teamcode.visioncode.Detection;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name = "WarehouseBlue", group = "Linear Opmode")
-public class ABL extends LinearOpMode {
+/*
+Programmer's Notes:
+- turnDumbEnc turns the robot, positive driveSpeed turns left, negative turns right, pos or neg distance doesn't matter
+- driveInchesEnc drives the robot, positive distance and driveSpeed moves forward, negative moves Back
+- turnModifier adjusts all turns by a multiplier, use if encoder breaks or everything is off by a similar amount
+- driveModifier does the same for driveInchesEnc
+- right and left TurnModifier adjust only their respective directions
+ */
+@Autonomous(name = "DuckBlue", group = "Linear Opmode")
+public class AutoDuckBlue extends LinearOpMode {
+
+    // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private Cvhelper.BarcodeLocation teamElementLocation;
-    double LinearSPos = 0;
-    int noLinear = 1;
     DcMotor driveFrontLeft;
     DcMotor driveFrontRight;
     DcMotor driveBackLeft;
@@ -73,6 +80,13 @@ public class ABL extends LinearOpMode {
     int CLocation;
     Camera camera;
 
+    //Variables
+    double LinearSPos = 0;
+    int noLinear = 1;
+    double turnModifier = 1;
+    double driveModifier = 1;
+    double leftTurnModifier = 1;
+    double rightTurnModifier = .57;
 
     double TICKS_PER_INCH = 28.53; // Ticks per revolution = 537.7;
 
@@ -118,41 +132,38 @@ public class ABL extends LinearOpMode {
 
         runtime.reset();
 
+        //Other Variables
         double driveSpeed = 0.3;
         int sleeptime = 1000;
-        int firstMoveDist = 30;
+        int firstMoveDist = 25;
 
-        //Read Camera (Work-In-Progress)
+        //Read Camera
         if(teamElementLocation == Cvhelper.BarcodeLocation.LEFT){
-            LinearSPos = 0;
-            noLinear = 0;
+            LinearSPos = 100;
+            noLinear = 1;
         } else if(teamElementLocation == Cvhelper.BarcodeLocation.MIDDLE){
-            LinearSPos = 60;
+            LinearSPos = 70;
         } else if(teamElementLocation == Cvhelper.BarcodeLocation.RIGHT){
-            LinearSPos = 0;
+            LinearSPos = 40;
         }
 
-        //Drive forward
-        driveInchesEnc(firstMoveDist, driveSpeed);
+        //Push Element out of the Way
+        driveInchesEnc(firstMoveDist*driveModifier, driveSpeed);
         sleep(sleeptime);
-        driveInchesEnc(-15, -driveSpeed);
+        driveInchesEnc(-10*driveModifier, -driveSpeed);
         sleep(sleeptime);
         telemetry.addData("Status", "Run beater");
         telemetry.update();
         runBeater(1000, -1.0);
         sleep(sleeptime);
 
-
-        //Turn right to dodge obstacle
-        turnDumbEnc(6, driveSpeed);
-        sleep(sleeptime);
-        driveInchesEnc(-2,-driveSpeed);
+        //Turn left towards score
+        turnDumbEnc(4.5*turnModifier*leftTurnModifier, driveSpeed);
         sleep(sleeptime);
 
-        //Turn left to score
-        turnDumbEnc(-16, -driveSpeed);
+        //Drive slightly forward before score
+        driveInchesEnc(4*driveModifier, driveSpeed);
         sleep(sleeptime);
-        driveInchesEnc(5, driveSpeed);
 
         //Score
         driveLinearSlide((110-LinearSPos)*noLinear, 1);
@@ -163,18 +174,28 @@ public class ABL extends LinearOpMode {
         hopper.setPosition(0.5);
         driveLinearSlide((-109.6+LinearSPos)*noLinear, -1);
 
-        //Line up with warehouse
-        driveInchesEnc(-2, -driveSpeed);
-        sleep(sleeptime);
-        turnDumbEnc(-6, -driveSpeed);
-        sleep(sleeptime);
+        //Line up to Duck Wheel
+        //turnDumbEnc(.35*turnModifier*leftTurnModifier, driveSpeed);
+        sleep(sleeptime/3);
 
-        //Back in to warehouse
-        driveInchesEnc(-45, -2.5*driveSpeed);
+        //Turn on Duck Wheel and move to it
+        duckWheel.setPower(-1.0);
+        driveInchesEnc(-32*driveModifier, -driveSpeed/3);
+        sleep(sleeptime/2);
+        driveInchesEnc(-.75*driveModifier, -driveSpeed/12);
+        sleep(sleeptime*4);
+        duckWheel.setPower(0);
+
+        //Park
+        driveInchesEnc(1*driveModifier, driveSpeed);
+        sleep(sleeptime/2);
+        turnDumbEnc(-13*turnModifier*rightTurnModifier, -driveSpeed);
+        sleep(sleeptime);
+        driveInchesEnc(8*driveModifier, driveSpeed);
+        sleep(sleeptime);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
-
         telemetry.update();
     }
 
@@ -187,8 +208,7 @@ public class ABL extends LinearOpMode {
         }
         intakeMotor.setPower(0);
     }
-
-    private void driveInchesEnc(int distance, double driveSpeed) {
+    private void driveInchesEnc(double distance, double driveSpeed) {
         telemetry.addData("Status", "Dist: " + distance);
         telemetry.addData("Status", "Speed: " + driveSpeed);
         telemetry.update();
@@ -204,14 +224,18 @@ public class ABL extends LinearOpMode {
         driveFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         driveFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        //If encoders are behaving weird and it isn't going in a straight line, mess around with these values
         driveBackRight.setPower(-1*driveSpeed);
         driveFrontRight.setPower(-1*driveSpeed);
-        driveBackLeft.setPower(driveSpeed);
-        driveFrontLeft.setPower(driveSpeed);
+        driveBackLeft.setPower(.8*driveSpeed);
+        driveFrontLeft.setPower(.8*driveSpeed);
 
         while (opModeIsActive() && Math.abs(driveFrontRight.getCurrentPosition()) < Math.abs(distance)) {
             sleep(5);
+            telemetry.addData("FL", driveFrontLeft.getCurrentPosition());
             telemetry.addData("FR", driveFrontRight.getCurrentPosition());
+            telemetry.addData("BL", driveBackLeft.getCurrentPosition());
+            telemetry.addData("BR", driveBackRight.getCurrentPosition());
             telemetry.update();
         }
 
@@ -220,6 +244,7 @@ public class ABL extends LinearOpMode {
         driveFrontRight.setPower(0);
         driveFrontLeft.setPower(0);
     }
+
     private void driveLinearSlide(double distance, double slideSpeed) {
         telemetry.addData("Status", "Dist: " + distance);
         telemetry.addData("Status", "Speed: " + slideSpeed);
@@ -242,6 +267,7 @@ public class ABL extends LinearOpMode {
 
         linearSlide.setPower(0);
     }
+
 //    private void driveInches(int distance, double driveSpeed) {
 //        telemetry.addData("Status", "Dist: " + distance);
 //        telemetry.addData("Status", "Speed: " + driveSpeed);
@@ -315,7 +341,7 @@ public class ABL extends LinearOpMode {
 //        driveFrontLeft.setPower(0);
 //    }
 
-    private void turnDumbEnc(int distance, double driveSpeed) {
+    private void turnDumbEnc(double distance, double driveSpeed) {
         telemetry.addData("Status", "Dist: " + distance);
         telemetry.addData("Status", "Speed: " + driveSpeed);
         telemetry.update();
@@ -344,4 +370,35 @@ public class ABL extends LinearOpMode {
         driveFrontRight.setPower(0);
         driveFrontLeft.setPower(0);
     }
+/*
+    private void turnTime(double time, double driveSpeed) {
+        telemetry.addData("Status", "Dist: " + distance);
+        telemetry.addData("Status", "Speed: " + driveSpeed);
+        telemetry.update();
+        driveFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        driveFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        driveBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        driveBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        driveBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        driveBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        driveFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        driveFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        driveBackLeft.setPower(driveSpeed);
+        driveFrontLeft.setPower(driveSpeed);
+        driveBackRight.setPower(driveSpeed);
+        driveFrontRight.setPower(driveSpeed);
+
+        while (opModeIsActive() && Math.abs(driveFrontLeft.getCurrentPosition()) < Math.abs(distance)) {
+            sleep(5);
+        }
+
+        driveBackRight.setPower(0);
+        driveBackLeft.setPower(0);
+        driveFrontRight.setPower(0);
+        driveFrontLeft.setPower(0);
+    }
+
+ */
 }

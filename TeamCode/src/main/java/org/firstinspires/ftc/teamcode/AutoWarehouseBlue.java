@@ -26,7 +26,8 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-//Right now, Auto Blue Right is testing all new features except pushing element out of way
+//Right Now, Auto Red Right is testing everything except camera
+
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -54,14 +55,19 @@ import org.firstinspires.ftc.teamcode.visioncode.Detection;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name = "DuckBlue", group = "Linear Opmode")
-public class AutoBlueRight extends LinearOpMode {
+/*
+Programmer's Notes:
+- turnDumbEnc turns the robot, positive driveSpeed turns left, negative turns right, pos or neg distance doesn't matter
+- driveInchesEnc drives the robot, positive distance and driveSpeed moves forward, negative moves Back
+- turnModifier adjusts all turns by a multiplier, use if encoder breaks or everything is off by a similar amount
+- driveModifier does the same for driveInchesEnc
+- right and left TurnModifier adjust only their respective directions
+ */
 
-    // Declare OpMode members.
+@Autonomous(name = "WarehouseBlue", group = "Linear Opmode")
+public class AutoWarehouseBlue extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private Cvhelper.BarcodeLocation teamElementLocation;
-    double LinearSPos = 0;
-    int noLinear = 1;
     DcMotor driveFrontLeft;
     DcMotor driveFrontRight;
     DcMotor driveBackLeft;
@@ -74,6 +80,13 @@ public class AutoBlueRight extends LinearOpMode {
     int CLocation;
     Camera camera;
 
+    //Variables
+    double LinearSPos = 0;
+    int noLinear = 1;
+    double turnModifier = 1;
+    double driveModifier = 1;
+    double leftTurnModifier = 1;
+    double rightTurnModifier = .57;
 
     double TICKS_PER_INCH = 28.53; // Ticks per revolution = 537.7;
 
@@ -123,7 +136,7 @@ public class AutoBlueRight extends LinearOpMode {
         int sleeptime = 1000;
         int firstMoveDist = 30;
 
-        //Read Camera (Work-In-Progress)
+        //Read Camera
         if(teamElementLocation == Cvhelper.BarcodeLocation.LEFT){
             LinearSPos = 0;
             noLinear = 0;
@@ -133,26 +146,29 @@ public class AutoBlueRight extends LinearOpMode {
             LinearSPos = 0;
         }
 
-        //Drive forward
-        driveInchesEnc(firstMoveDist, driveSpeed);
+        //Push Element out of the Way
+        driveInchesEnc(firstMoveDist*driveModifier, driveSpeed);
         sleep(sleeptime);
-        driveInchesEnc(-15, -driveSpeed);
+        driveInchesEnc(-15*driveModifier, -driveSpeed);
         sleep(sleeptime);
         telemetry.addData("Status", "Run beater");
         telemetry.update();
         runBeater(1000, -1.0);
         sleep(sleeptime);
 
-        //Turn left towards score
-        turnDumbEnc(8, driveSpeed);
+
+        //Turn left to dodge obstacle
+        turnDumbEnc(6*turnModifier*leftTurnModifier, driveSpeed);
+        sleep(sleeptime);
+        driveInchesEnc(-2*driveModifier,-driveSpeed);
         sleep(sleeptime);
 
-        //Drive slightly forward before score
-        driveInchesEnc(5, driveSpeed);
+        //Turn right to score
+        turnDumbEnc(16*turnModifier*rightTurnModifier, -driveSpeed);
         sleep(sleeptime);
+        driveInchesEnc(5*driveModifier, driveSpeed);
 
         //Score
-
         driveLinearSlide((110-LinearSPos)*noLinear, 1);
         intakeMotor.setPower(1.0);
         hopper.setPosition(1.0);
@@ -161,25 +177,17 @@ public class AutoBlueRight extends LinearOpMode {
         hopper.setPosition(0.5);
         driveLinearSlide((-109.6+LinearSPos)*noLinear, -1);
 
-        turnDumbEnc(1, driveSpeed);
+        //Line up with warehouse
+        driveInchesEnc(-2*driveModifier, -driveSpeed);
         sleep(sleeptime);
-        //Back up
-        duckWheel.setPower(-1.0);
-        driveInchesEnc(-35, -driveSpeed/3);
-        sleep(sleeptime/2);
-        driveInchesEnc(-1, -driveSpeed/10);
-        //Spin Duck
-        duckWheel.setPower(0);
-        //Turn towards storage unit
-        turnDumbEnc(-8, -driveSpeed);
+        turnDumbEnc(6*turnModifier*rightTurnModifier, -driveSpeed);
         sleep(sleeptime);
 
-        driveInchesEnc(9, driveSpeed);
-        sleep(sleeptime);
+        //Back in to warehouse
+        driveInchesEnc(-45*driveModifier, -2.5*driveSpeed);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
-
         telemetry.update();
     }
 
@@ -193,7 +201,7 @@ public class AutoBlueRight extends LinearOpMode {
         intakeMotor.setPower(0);
     }
 
-    private void driveInchesEnc(int distance, double driveSpeed) {
+    private void driveInchesEnc(double distance, double driveSpeed) {
         telemetry.addData("Status", "Dist: " + distance);
         telemetry.addData("Status", "Speed: " + driveSpeed);
         telemetry.update();
@@ -211,12 +219,15 @@ public class AutoBlueRight extends LinearOpMode {
 
         driveBackRight.setPower(-1*driveSpeed);
         driveFrontRight.setPower(-1*driveSpeed);
-        driveBackLeft.setPower(driveSpeed);
-        driveFrontLeft.setPower(driveSpeed);
+        driveBackLeft.setPower(.8*driveSpeed);
+        driveFrontLeft.setPower(.8*driveSpeed);
 
         while (opModeIsActive() && Math.abs(driveFrontRight.getCurrentPosition()) < Math.abs(distance)) {
             sleep(5);
+            telemetry.addData("FL", driveFrontLeft.getCurrentPosition());
             telemetry.addData("FR", driveFrontRight.getCurrentPosition());
+            telemetry.addData("BL", driveBackLeft.getCurrentPosition());
+            telemetry.addData("BR", driveBackRight.getCurrentPosition());
             telemetry.update();
         }
 
@@ -247,7 +258,6 @@ public class AutoBlueRight extends LinearOpMode {
 
         linearSlide.setPower(0);
     }
-
 //    private void driveInches(int distance, double driveSpeed) {
 //        telemetry.addData("Status", "Dist: " + distance);
 //        telemetry.addData("Status", "Speed: " + driveSpeed);
@@ -321,7 +331,7 @@ public class AutoBlueRight extends LinearOpMode {
 //        driveFrontLeft.setPower(0);
 //    }
 
-    private void turnDumbEnc(int distance, double driveSpeed) {
+    private void turnDumbEnc(double distance, double driveSpeed) {
         telemetry.addData("Status", "Dist: " + distance);
         telemetry.addData("Status", "Speed: " + driveSpeed);
         telemetry.update();
@@ -350,35 +360,4 @@ public class AutoBlueRight extends LinearOpMode {
         driveFrontRight.setPower(0);
         driveFrontLeft.setPower(0);
     }
-/*
-    private void turnTime(double time, double driveSpeed) {
-        telemetry.addData("Status", "Dist: " + distance);
-        telemetry.addData("Status", "Speed: " + driveSpeed);
-        telemetry.update();
-        driveFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        driveFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        driveBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        driveBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        driveBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        driveBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        driveFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        driveFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        driveBackLeft.setPower(driveSpeed);
-        driveFrontLeft.setPower(driveSpeed);
-        driveBackRight.setPower(driveSpeed);
-        driveFrontRight.setPower(driveSpeed);
-
-        while (opModeIsActive() && Math.abs(driveFrontLeft.getCurrentPosition()) < Math.abs(distance)) {
-            sleep(5);
-        }
-
-        driveBackRight.setPower(0);
-        driveBackLeft.setPower(0);
-        driveFrontRight.setPower(0);
-        driveFrontLeft.setPower(0);
-    }
-
- */
 }

@@ -55,14 +55,21 @@ import org.firstinspires.ftc.teamcode.visioncode.Detection;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
+/*
+Programmer's Notes:
+- turnDumbEnc turns the robot, positive driveSpeed turns left, negative turns right, pos or neg distance doesn't matter
+- driveInchesEnc drives the robot, positive distance and driveSpeed moves forward, negative moves Back
+- turnModifier adjusts all turns by a multiplier, use if encoder breaks or everything is off by a similar amount
+- driveModifier does the same for driveInchesEnc
+- right and left TurnModifier adjust only their respective directions
+ */
+
 @Autonomous(name = "DuckRed", group = "Linear Opmode")
-public class AutoRedLeft extends LinearOpMode {
+public class AutoDuckRed extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private Cvhelper.BarcodeLocation teamElementLocation;
-    double LinearSPos = 0;
-    int noLinear = 1;
     DcMotor driveFrontLeft;
     DcMotor driveFrontRight;
     DcMotor driveBackLeft;
@@ -74,6 +81,14 @@ public class AutoRedLeft extends LinearOpMode {
     Servo hopper;
     int CLocation;
     Camera camera;
+
+    //Variables
+    double LinearSPos = 0;
+    int noLinear = 1;
+    double turnModifier = 1;
+    double driveModifier = 1;
+    double leftTurnModifier = 1;
+    double rightTurnModifier = .57;
 
     double TICKS_PER_INCH = 28.53; // Ticks per revolution = 537.7;
 
@@ -121,9 +136,9 @@ public class AutoRedLeft extends LinearOpMode {
 
         double driveSpeed = 0.3;
         int sleeptime = 1000;
-        int firstMoveDist = 30;
+        int firstMoveDist = 25;
 
-        //Read Camera (Work-In-Progress)
+        //Read Camera
         if(teamElementLocation == Cvhelper.BarcodeLocation.LEFT){
             LinearSPos = 0;
             noLinear = 0;
@@ -134,56 +149,51 @@ public class AutoRedLeft extends LinearOpMode {
         }
 
         //Drive forward
-        driveInchesEnc(firstMoveDist, driveSpeed);
+        driveInchesEnc(firstMoveDist*driveModifier, driveSpeed);
         sleep(sleeptime);
-        driveInchesEnc(-15, -driveSpeed);
+        driveInchesEnc(-15*driveModifier, -driveSpeed);
         sleep(sleeptime);
         telemetry.addData("Status", "Run beater");
         telemetry.update();
         runBeater(1000, -1.0);
         sleep(sleeptime);
 
-        //Turn left towards score
-        turnDumbEnc(-5, -driveSpeed);
+        //Turn right towards score
+        turnDumbEnc(5*turnModifier*rightTurnModifier, -driveSpeed);
         sleep(sleeptime);
 
         //Drive slightly forward before score
-        driveInchesEnc(5, driveSpeed);
+        driveInchesEnc(4*driveModifier, driveSpeed);
         sleep(sleeptime/2);
 
         //Score
-
         driveLinearSlide((110-LinearSPos)*noLinear, 1);
-//        sleep(sleeptime*2);
-//       linearSlide.setPower(0);
         intakeMotor.setPower(1.0);
         hopper.setPosition(1.0);
         sleep(1000);
         intakeMotor.setPower(0);
         hopper.setPosition(0.5);
         driveLinearSlide((-109.6+LinearSPos)*noLinear, -1);
-//        sleep(sleeptime);
-//        linearSlide.setPower(0);
 
-        turnDumbEnc(-1, -driveSpeed);
+        //Line up with Duck Wheel
+        turnDumbEnc(1*turnModifier*rightTurnModifier, -driveSpeed);
         sleep(sleeptime);
-        //Back up
+
+        //Spin wheel and back up
         duckWheel.setPower(1.0);
-        driveInchesEnc(-35, -driveSpeed/3);
+        driveInchesEnc(-35*driveModifier, -driveSpeed/3);
         sleep(sleeptime/2);
-        driveInchesEnc(-1, -driveSpeed/10);
-        //Spin Duck
+        driveInchesEnc(-1*driveModifier, -driveSpeed/10);
         duckWheel.setPower(0);
-        //Turn towards storage unit
-        turnDumbEnc(8, driveSpeed);
-        sleep(sleeptime);
 
-        driveInchesEnc(7, driveSpeed);
+        //Park
+        turnDumbEnc(8*turnModifier*leftTurnModifier, driveSpeed);
+        sleep(sleeptime);
+        driveInchesEnc(7*driveModifier, driveSpeed);
         sleep(sleeptime);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
-
         telemetry.update();
     }
 
@@ -197,7 +207,7 @@ public class AutoRedLeft extends LinearOpMode {
         intakeMotor.setPower(0);
     }
 
-    private void driveInchesEnc(int distance, double driveSpeed) {
+    private void driveInchesEnc(double distance, double driveSpeed) {
         telemetry.addData("Status", "Dist: " + distance);
         telemetry.addData("Status", "Speed: " + driveSpeed);
         telemetry.update();
@@ -213,10 +223,11 @@ public class AutoRedLeft extends LinearOpMode {
         driveFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         driveFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        //If encoders are behaving weird and it isn't going in a straight line, mess around with these values
         driveBackRight.setPower(-1*driveSpeed);
         driveFrontRight.setPower(-1*driveSpeed);
-        driveBackLeft.setPower(driveSpeed);
-        driveFrontLeft.setPower(driveSpeed);
+        driveBackLeft.setPower(.8*driveSpeed);
+        driveFrontLeft.setPower(.8*driveSpeed);
 
         while (opModeIsActive() && Math.abs(driveFrontRight.getCurrentPosition()) < Math.abs(distance)) {
             sleep(5);
@@ -327,7 +338,7 @@ public class AutoRedLeft extends LinearOpMode {
 //        driveFrontLeft.setPower(0);
 //    }
 
-    private void turnDumbEnc(int distance, double driveSpeed) {
+    private void turnDumbEnc(double distance, double driveSpeed) {
         telemetry.addData("Status", "Dist: " + distance);
         telemetry.addData("Status", "Speed: " + driveSpeed);
         telemetry.addData("FL", driveFrontLeft.getCurrentPosition());
