@@ -22,8 +22,8 @@ public class RedDuck extends AbstractAuto {
 
     public static Pose2d FORWARD  = new Pose2d(-36, -30, Math.toRadians(-90));
     public static Pose2d BACK  = new Pose2d(-36, -55, Math.toRadians(-90));
-    public static Pose2d DEPOSIT  = new Pose2d(-26, -33, Math.toRadians(-135));
-    public static Pose2d READY_TO_SPIN  = new Pose2d(-59, -58, Math.toRadians(-135));
+    public static Pose2d DEPOSIT  = new Pose2d(-29, -36, Math.toRadians(-135));
+    public static Pose2d READY_TO_SPIN  = new Pose2d(-58, -59, Math.toRadians(-135));
     public static Pose2d PARK  = new Pose2d(-61, -33.5, Math.toRadians(-180));
 
     @Override
@@ -64,12 +64,16 @@ public class RedDuck extends AbstractAuto {
                 addHopper(0, HOPPER_MID.l);
                 addSlide(0);
                 break;
+//            case MIDDLE:
+//            case LEFT:
             case MIDDLE:
+//            case RIGHT:
+//            case UNKNOWN:
                 addSlide(SLIDE_DROP_MIDDLE);
                 addHopper(1, HOPPER_DROP_MIDDLE);
                 addHopper(0.2, HOPPER_MID.l);
                 addSlide(0);
-                break;
+//                break;
             case RIGHT:
             case UNKNOWN:
                 addSlide(SLIDE_DROP_HIGH);

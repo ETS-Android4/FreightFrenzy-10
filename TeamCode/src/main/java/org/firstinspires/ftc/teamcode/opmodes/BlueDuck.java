@@ -23,7 +23,7 @@ public class BlueDuck extends AbstractAuto {
 
     public static Pose2d FORWARD  = new Pose2d(-36, 30, Math.toRadians(90));
     public static Pose2d BACK  = new Pose2d(-36, 55, Math.toRadians(90));
-    public static Pose2d DEPOSIT  = new Pose2d(-26, 33, Math.toRadians(135));
+    public static Pose2d DEPOSIT  = new Pose2d(-28, 36, Math.toRadians(135));
     public static Pose2d READY_TO_SPIN  = new Pose2d(-61.5, 59, Math.toRadians(135));
     public static Pose2d PARK  = new Pose2d(-63, 33.5, Math.toRadians(180));
 

@@ -22,7 +22,7 @@ public class RedWarehouse extends AbstractAuto {
 
     public static Pose2d FORWARD  = new Pose2d(10, -30, Math.toRadians(-90));
     public static Pose2d BACK  = new Pose2d(10, -55, Math.toRadians(-90));
-    public static Pose2d DEPOSIT  = new Pose2d(2.5, -33, Math.toRadians(-45));
+    public static Pose2d DEPOSIT  = new Pose2d(5.5, -36, Math.toRadians(-45));
     public static Pose2d READY_TO_PARK  = new Pose2d(9, -44, Math.toRadians(0));
     public static Pose2d PARK  = new Pose2d(60, -38, Math.toRadians(0));
 
@@ -57,6 +57,9 @@ public class RedWarehouse extends AbstractAuto {
         followTrajectory(deposit);
         switch(location) {
             case LEFT:
+//            case MIDDLE:
+//            case RIGHT:
+//            case UNKNOWN:
                 addSlide(SLIDE_DROP_HIGH);
                 addHopper(0, HOPPER_DROP_LOW_POS1);
                 addSlide(SLIDE_DROP_LOW);

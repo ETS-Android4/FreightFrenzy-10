@@ -23,7 +23,7 @@ public class BlueWarehouse extends AbstractAuto {
 
     public static Pose2d FORWARD  = new Pose2d(10, 30, Math.toRadians(90));
     public static Pose2d BACK  = new Pose2d(10, 55, Math.toRadians(90));
-    public static Pose2d DEPOSIT  = new Pose2d(0.5, 33, Math.toRadians(45));
+    public static Pose2d DEPOSIT  = new Pose2d(3.5, 36, Math.toRadians(45));
     public static Pose2d READY_TO_PARK  = new Pose2d(9, 44, Math.toRadians(0));
     public static Pose2d PARK  = new Pose2d(60, 38, Math.toRadians(0));
 
