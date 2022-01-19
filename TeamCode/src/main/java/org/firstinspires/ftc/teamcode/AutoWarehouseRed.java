@@ -80,12 +80,12 @@ public class AutoWarehouseRed extends LinearOpMode {
     Camera camera;
 
     //Variables
-    double LinearSPos = 0;
+    double LinearSPos = 40;
     int noLinear = 1;
     double turnModifier = 1;
     double driveModifier = 1;
     double leftTurnModifier = 1;
-    double rightTurnModifier = .57;
+    double rightTurnModifier = 1;
 
     double TICKS_PER_INCH = 28.53; // Ticks per revolution = 537.7;
 
@@ -133,7 +133,7 @@ public class AutoWarehouseRed extends LinearOpMode {
 
         double driveSpeed = 0.3;
         int sleeptime = 1000;
-        int firstMoveDist = 25;
+        int firstMoveDist = 30;
 
         //Read Camera
         if(teamElementLocation == Cvhelper.BarcodeLocation.LEFT){
@@ -148,7 +148,7 @@ public class AutoWarehouseRed extends LinearOpMode {
         //Drive forward
         driveInchesEnc(firstMoveDist*driveModifier, driveSpeed);
         sleep(sleeptime);
-        driveInchesEnc(-10*driveModifier, -driveSpeed);
+        driveInchesEnc(-15*driveModifier, -driveSpeed);
         sleep(sleeptime);
         telemetry.addData("Status", "Run beater");
         telemetry.update();
@@ -163,7 +163,7 @@ public class AutoWarehouseRed extends LinearOpMode {
         sleep(sleeptime);
 
         //Turn left to score
-        turnDumbEnc(9*turnModifier*leftTurnModifier, driveSpeed);
+        turnDumbEnc(11.5*turnModifier*leftTurnModifier, driveSpeed);
         sleep(sleeptime);
         driveInchesEnc(4.5*driveModifier, driveSpeed);
         sleep(sleeptime);
@@ -181,7 +181,7 @@ public class AutoWarehouseRed extends LinearOpMode {
         //Line up with warehouse
         driveInchesEnc(-2*driveModifier, -driveSpeed);
         sleep(sleeptime);
-        turnDumbEnc(4*turnModifier*leftTurnModifier, driveSpeed);
+        turnDumbEnc(7*turnModifier*leftTurnModifier, driveSpeed);
         sleep(sleeptime);
 
         //Back in to warehouse
@@ -220,8 +220,8 @@ public class AutoWarehouseRed extends LinearOpMode {
 
         driveBackRight.setPower(-1*driveSpeed);
         driveFrontRight.setPower(-1*driveSpeed);
-        driveBackLeft.setPower(.8*driveSpeed);
-        driveFrontLeft.setPower(.8*driveSpeed);
+        driveBackLeft.setPower(1*driveSpeed);
+        driveFrontLeft.setPower(1*driveSpeed);
 
         while (opModeIsActive() && Math.abs(driveFrontRight.getCurrentPosition()) < Math.abs(distance)) {
             sleep(5);

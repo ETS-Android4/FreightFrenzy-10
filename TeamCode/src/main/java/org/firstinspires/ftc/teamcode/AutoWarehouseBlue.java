@@ -81,12 +81,12 @@ public class AutoWarehouseBlue extends LinearOpMode {
     Camera camera;
 
     //Variables
-    double LinearSPos = 0;
+    double LinearSPos = 40;
     int noLinear = 1;
     double turnModifier = 1;
     double driveModifier = 1;
     double leftTurnModifier = 1;
-    double rightTurnModifier = .57;
+    double rightTurnModifier = 1;
 
     double TICKS_PER_INCH = 28.53; // Ticks per revolution = 537.7;
 
@@ -221,8 +221,8 @@ public class AutoWarehouseBlue extends LinearOpMode {
 
         driveBackRight.setPower(-1*driveSpeed);
         driveFrontRight.setPower(-1*driveSpeed);
-        driveBackLeft.setPower(.8*driveSpeed);
-        driveFrontLeft.setPower(.8*driveSpeed);
+        driveBackLeft.setPower(1*driveSpeed);
+        driveFrontLeft.setPower(1*driveSpeed);
 
         while (opModeIsActive() && Math.abs(driveFrontRight.getCurrentPosition()) < Math.abs(distance)) {
             sleep(5);

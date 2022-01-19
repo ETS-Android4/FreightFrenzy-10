@@ -83,12 +83,12 @@ public class AutoDuckRed extends LinearOpMode {
     Camera camera;
 
     //Variables
-    double LinearSPos = 0;
+    double LinearSPos = 40;
     int noLinear = 1;
     double turnModifier = 1;
     double driveModifier = 1;
     double leftTurnModifier = 1;
-    double rightTurnModifier = .57;
+    double rightTurnModifier = 1;
 
     double TICKS_PER_INCH = 28.53; // Ticks per revolution = 537.7;
 
@@ -136,7 +136,7 @@ public class AutoDuckRed extends LinearOpMode {
 
         double driveSpeed = 0.3;
         int sleeptime = 1000;
-        int firstMoveDist = 25;
+        int firstMoveDist = 30;
 
         //Read Camera
         if(teamElementLocation == Cvhelper.BarcodeLocation.LEFT){
@@ -151,7 +151,7 @@ public class AutoDuckRed extends LinearOpMode {
         //Drive forward
         driveInchesEnc(firstMoveDist*driveModifier, driveSpeed);
         sleep(sleeptime);
-        driveInchesEnc(-14*driveModifier, -driveSpeed);
+        driveInchesEnc(-19*driveModifier, -driveSpeed);
         sleep(sleeptime);
         telemetry.addData("Status", "Run beater");
         telemetry.update();
@@ -159,7 +159,7 @@ public class AutoDuckRed extends LinearOpMode {
         sleep(sleeptime);
 
         //Turn right towards score
-        turnDumbEnc(8.5*turnModifier*rightTurnModifier, -driveSpeed);
+        turnDumbEnc(4*turnModifier*rightTurnModifier, -driveSpeed);
         sleep(sleeptime);
 
         //Drive slightly forward before score
@@ -177,21 +177,21 @@ public class AutoDuckRed extends LinearOpMode {
         linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //Line up with Duck Wheel
-        turnDumbEnc(.5*turnModifier*rightTurnModifier, -driveSpeed);
+        turnDumbEnc(1.5*turnModifier*rightTurnModifier, -driveSpeed);
         sleep(sleeptime);
 
         //Spin wheel and back up
-        duckWheel.setPower(1.0);
+        duckWheel.setPower(1.5);
         driveInchesEnc(-34.5*driveModifier, -driveSpeed/3);
         sleep(sleeptime/2);
         driveInchesEnc(-.75*driveModifier, -driveSpeed/12);
-        sleep(sleeptime*3);
+        sleep(sleeptime);
         duckWheel.setPower(0);
 
         //Park
         driveInchesEnc(2*driveModifier, driveSpeed);
         sleep(sleeptime/2);
-        turnDumbEnc(9*turnModifier*leftTurnModifier, driveSpeed);
+        turnDumbEnc(10*turnModifier*leftTurnModifier, driveSpeed);
         sleep(sleeptime);
         driveInchesEnc(8*driveModifier, driveSpeed);
         sleep(sleeptime);
@@ -230,8 +230,8 @@ public class AutoDuckRed extends LinearOpMode {
         //If encoders are behaving weird and it isn't going in a straight line, mess around with these values
         driveBackRight.setPower(-1*driveSpeed);
         driveFrontRight.setPower(-1*driveSpeed);
-        driveBackLeft.setPower(.8*driveSpeed);
-        driveFrontLeft.setPower(.8*driveSpeed);
+        driveBackLeft.setPower(1*driveSpeed);
+        driveFrontLeft.setPower(1*driveSpeed);
 
         while (opModeIsActive() && Math.abs(driveFrontRight.getCurrentPosition()) < Math.abs(distance)) {
             sleep(5);
