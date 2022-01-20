@@ -162,7 +162,7 @@ public class AutoDuckBlue extends LinearOpMode {
         sleep(sleeptime);
 
         //Drive slightly forward before score
-        driveInchesEnc(6*driveModifier, driveSpeed);
+        driveInchesEnc(8.5*driveModifier, driveSpeed);
         sleep(sleeptime);
 
         //Score
@@ -176,23 +176,23 @@ public class AutoDuckBlue extends LinearOpMode {
         linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //Line up to Duck Wheel
-        turnDumbEnc(1*turnModifier*leftTurnModifier, driveSpeed);
+        turnDumbEnc(1.15*turnModifier*leftTurnModifier, driveSpeed);
         sleep(sleeptime/3);
 
         //Turn on Duck Wheel and move to it
         duckWheel.setPower(-1.5);
-        driveInchesEnc(-32*driveModifier, -driveSpeed/3);
-        sleep(sleeptime/2);
-        driveInchesEnc(-2*driveModifier, -driveSpeed/15);
-        sleep(sleeptime*3);
+        driveInchesEnc(-35*driveModifier, -driveSpeed/3);
+        sleep(sleeptime*2);
+        driveInchesEnc(-.75, -driveSpeed/12);
+        sleep(sleeptime*2);
         duckWheel.setPower(0);
 
         //Park
         driveInchesEnc(2*driveModifier, driveSpeed);
         sleep(sleeptime/2);
-        turnDumbEnc(15*turnModifier*rightTurnModifier, -driveSpeed);
+        turnDumbEnc(17*turnModifier*rightTurnModifier, -driveSpeed);
         sleep(sleeptime);
-        driveInchesEnc(8*driveModifier, driveSpeed);
+        driveInchesEnc(10*driveModifier, driveSpeed);
         sleep(sleeptime);
 
         // Show the elapsed game time and wheel power.
@@ -245,7 +245,38 @@ public class AutoDuckBlue extends LinearOpMode {
         driveFrontRight.setPower(0);
         driveFrontLeft.setPower(0);
     }
+    private void spinDucks(double driveSpeed, double time) {
+        driveFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        driveFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        driveBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        driveBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        driveBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        driveBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        driveFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        driveFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        //If encoders are behaving weird and it isn't going in a straight line, mess around with these values
+
+        while (opModeIsActive() && time > 0) {
+            driveBackRight.setPower(-1*driveSpeed);
+            driveFrontRight.setPower(-1*driveSpeed);
+            driveBackLeft.setPower(1*driveSpeed);
+            driveFrontLeft.setPower(1*driveSpeed);
+            sleep(5);
+            driveBackRight.setPower(0);
+            driveBackLeft.setPower(0);
+            driveFrontRight.setPower(0);
+            driveFrontLeft.setPower(0);
+            sleep(5);
+            time = time-10;
+        }
+
+        driveBackRight.setPower(0);
+        driveBackLeft.setPower(0);
+        driveFrontRight.setPower(0);
+        driveFrontLeft.setPower(0);
+    }
     private void driveLinearSlide(double distance, double slideSpeed) {
         telemetry.addData("Status", "Dist: " + distance);
         telemetry.addData("Status", "Speed: " + slideSpeed);
@@ -259,10 +290,7 @@ public class AutoDuckBlue extends LinearOpMode {
 
         while (opModeIsActive() && Math.abs(linearSlide.getCurrentPosition()) < Math.abs(distance)) {
             sleep(5);
-            telemetry.addData("FL", driveFrontLeft.getCurrentPosition());
-            telemetry.addData("FR", driveFrontRight.getCurrentPosition());
-            telemetry.addData("BL", driveBackLeft.getCurrentPosition());
-            telemetry.addData("BR", driveBackRight.getCurrentPosition());
+            telemetry.addData("LS", linearSlide.getCurrentPosition());
             telemetry.update();
         }
 

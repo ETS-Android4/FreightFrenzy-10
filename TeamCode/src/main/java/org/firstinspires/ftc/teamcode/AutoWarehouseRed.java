@@ -187,6 +187,11 @@ public class AutoWarehouseRed extends LinearOpMode {
         //Back in to warehouse
         driveInchesEnc(-40*driveModifier, -2.5*driveSpeed);
 
+        //Get a block
+        intakeMotor.setPower(1.0);
+        sleep(sleeptime*2);
+        intakeMotor.setPower(0);
+
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
         telemetry.update();

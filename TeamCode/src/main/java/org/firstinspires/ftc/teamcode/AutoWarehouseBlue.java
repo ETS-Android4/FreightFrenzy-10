@@ -164,9 +164,9 @@ public class AutoWarehouseBlue extends LinearOpMode {
         sleep(sleeptime);
 
         //Turn right to score
-        turnDumbEnc(16*turnModifier*rightTurnModifier, -driveSpeed);
+        turnDumbEnc(8.7*turnModifier*rightTurnModifier, -driveSpeed);
         sleep(sleeptime);
-        driveInchesEnc(5*driveModifier, driveSpeed);
+        driveInchesEnc(6.5*driveModifier, driveSpeed);
         sleep(sleeptime);
 
         //Score
@@ -180,13 +180,18 @@ public class AutoWarehouseBlue extends LinearOpMode {
         linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //Line up with warehouse
-        driveInchesEnc(-2*driveModifier, -driveSpeed);
+        driveInchesEnc(-3.5*driveModifier, -driveSpeed);
         sleep(sleeptime);
-        turnDumbEnc(7*turnModifier*rightTurnModifier, -driveSpeed);
+        turnDumbEnc(6.5*turnModifier*rightTurnModifier, -driveSpeed);
         sleep(sleeptime);
 
         //Back in to warehouse
-        driveInchesEnc(-45*driveModifier, -2.5*driveSpeed);
+        driveInchesEnc(-40*driveModifier, -2.5*driveSpeed);
+
+        //Get a block
+        intakeMotor.setPower(1.0);
+        sleep(sleeptime*2);
+        intakeMotor.setPower(0);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
@@ -251,10 +256,7 @@ public class AutoWarehouseBlue extends LinearOpMode {
 
         while (opModeIsActive() && Math.abs(linearSlide.getCurrentPosition()) < Math.abs(distance)) {
             sleep(5);
-            telemetry.addData("FL", driveFrontLeft.getCurrentPosition());
-            telemetry.addData("FR", driveFrontRight.getCurrentPosition());
-            telemetry.addData("BL", driveBackLeft.getCurrentPosition());
-            telemetry.addData("BR", driveBackRight.getCurrentPosition());
+            telemetry.addData("LS", linearSlide.getCurrentPosition());
             telemetry.update();
         }
 
