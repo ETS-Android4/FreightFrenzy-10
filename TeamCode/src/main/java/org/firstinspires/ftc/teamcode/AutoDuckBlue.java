@@ -175,7 +175,7 @@ public class AutoDuckBlue extends LinearOpMode {
         sleep(1000);
         intakeMotor.setPower(0);
         hopper.setPosition(0.5);
-        driveLinearSlide((-109.6+LinearSPos)*noLinear, -1);
+        driveLinearSlide((-110+LinearSPos)*noLinear, -1);
         linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //Line up to Duck Wheel

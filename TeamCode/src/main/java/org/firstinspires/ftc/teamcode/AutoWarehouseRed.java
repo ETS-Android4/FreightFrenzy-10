@@ -155,7 +155,7 @@ public class AutoWarehouseRed extends LinearOpMode {
         //Drive forward
         driveInchesEnc(firstMoveDist*driveModifier, driveSpeed);
         sleep(sleeptime);
-        driveInchesEnc(-10*driveModifier, -driveSpeed);
+        driveInchesEnc(-7*driveModifier, -driveSpeed);
         sleep(sleeptime);
         telemetry.addData("Status", "Run beater");
         telemetry.update();
@@ -164,15 +164,15 @@ public class AutoWarehouseRed extends LinearOpMode {
 
 
         //Turn right to dodge obstacle
-        turnDumbEnc(6*turnModifier*rightTurnModifier, -driveSpeed);
+        turnDumbEnc(-8*turnModifier*rightTurnModifier, -driveSpeed);
         sleep(sleeptime);
-        driveInchesEnc(-1.5*driveModifier,-driveSpeed);
+        driveInchesEnc(-4*driveModifier,-driveSpeed);
         sleep(sleeptime);
 
         //Turn left to score
-        turnDumbEnc(11.5*turnModifier*leftTurnModifier, driveSpeed);
+        turnDumbEnc(20*turnModifier*leftTurnModifier, driveSpeed);
         sleep(sleeptime);
-        driveInchesEnc(4.5*driveModifier, driveSpeed);
+        driveInchesEnc(10.5*driveModifier, driveSpeed);
         sleep(sleeptime);
 
         //Score
@@ -182,13 +182,13 @@ public class AutoWarehouseRed extends LinearOpMode {
         sleep(1000);
         intakeMotor.setPower(0);
         hopper.setPosition(0.5);
-        driveLinearSlide((-109.6+LinearSPos)*noLinear, -1);
+        driveLinearSlide((-110+LinearSPos)*noLinear, -1);
         linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //Line up with warehouse
-        driveInchesEnc(-2*driveModifier, -driveSpeed);
+        driveInchesEnc(-5.5*driveModifier, -driveSpeed);
         sleep(sleeptime);
-        turnDumbEnc(7*turnModifier*leftTurnModifier, driveSpeed);
+        turnDumbEnc(14*turnModifier*leftTurnModifier, driveSpeed);
         sleep(sleeptime);
 
         //Back in to warehouse
@@ -230,8 +230,8 @@ public class AutoWarehouseRed extends LinearOpMode {
         driveFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         driveFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        driveBackRight.setPower(-1*driveSpeed);
-        driveFrontRight.setPower(-1*driveSpeed);
+        driveBackRight.setPower(-.625*driveSpeed);
+        driveFrontRight.setPower(-.625*driveSpeed);
         driveBackLeft.setPower(1*driveSpeed);
         driveFrontLeft.setPower(1*driveSpeed);
 

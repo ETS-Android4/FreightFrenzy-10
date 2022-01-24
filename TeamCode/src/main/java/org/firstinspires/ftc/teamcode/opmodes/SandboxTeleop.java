@@ -23,6 +23,8 @@ public class SandboxTeleop extends OpMode {
     public void loop() {
         this.robot.setInput(this.gamepad1, this.gamepad2);
         telemetry.addLine(robot.getTelemetry());
+        //New Code 3/5
+        telemetry.addLine(robot.getLSTelemetry());
         telemetry.update();
     }
 }

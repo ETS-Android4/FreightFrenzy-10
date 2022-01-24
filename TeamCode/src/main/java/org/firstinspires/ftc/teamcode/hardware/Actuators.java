@@ -41,7 +41,6 @@ public class Actuators {
     private void initialize() {
         this.linearSlideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         this.linearSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
         this.elementHolderServo.scaleRange(0.08, 1.0);
         //this.elementHolderServo.setPosition(0);
 
@@ -50,6 +49,8 @@ public class Actuators {
 
     public void setInput(Gamepad gamepad) {
         boolean intakePress = gamepad.right_bumper;
+        //New Stuff 4/5
+        final double initLSPos = Math.abs(this.linearSlideMotor.getCurrentPosition());
         boolean slideUp = gamepad.y;
         boolean slideDown = gamepad.x;
         double duckSpinLeft = gamepad.left_trigger;
@@ -78,7 +79,8 @@ public class Actuators {
         int currentPosition = this.linearSlideMotor.getCurrentPosition();
         if(slideUp && currentPosition > Constants.LINEAR_SLIDE_MAX_POSITION) {
             this.linearSlidePower = -1;
-        } else if(slideDown) { //&& currentPosition < Constants.LINEAR_SLIDE_DEADZONE
+            //New Stuff 5/5
+        } else if(slideDown && this.linearSlideMotor.getCurrentPosition() < 170) { //&& currentPosition < Constants.LINEAR_SLIDE_DEADZONE
             this.linearSlidePower = 1;
         } else{
             this.linearSlidePower = 0;
@@ -108,7 +110,12 @@ public class Actuators {
     public int getLiftPosition() {
         return this.linearSlideMotor.getCurrentPosition();
     }
-
+    //New Stuff 1/5
+    public String getLSTelemetry() {
+        String telemetryLS;
+        telemetryLS = String.format("LS %s", linearSlideMotor.getCurrentPosition());
+        return telemetryLS;
+    }
     public static class Constants {
         public static final double HOPPER_RANGE_MIN = 0.2;
         public static final double HOPPER_RANGE_MAX = 1.0;

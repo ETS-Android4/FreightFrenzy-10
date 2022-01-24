@@ -25,6 +25,10 @@ public class Robot {
     public String getTelemetry() {
         return drive.getTelemetry();
     }
+    //New Stuff 2/5
+    public String getLSTelemetry() {
+        return actuators.getLSTelemetry();
+    }
 
     private void initialize() {
         this.drive = Drive.builder()
