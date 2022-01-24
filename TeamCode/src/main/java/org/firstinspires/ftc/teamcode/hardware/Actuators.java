@@ -43,7 +43,7 @@ public class Actuators {
         this.linearSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         this.elementHolderServo.scaleRange(0.08, 1.0);
-        this.elementHolderServo.setPosition(0);
+        //this.elementHolderServo.setPosition(0);
 
         this.hopperServo.scaleRange(Constants.HOPPER_RANGE_MIN, Constants.HOPPER_RANGE_MAX);
     }
@@ -78,7 +78,7 @@ public class Actuators {
         int currentPosition = this.linearSlideMotor.getCurrentPosition();
         if(slideUp && currentPosition > Constants.LINEAR_SLIDE_MAX_POSITION) {
             this.linearSlidePower = -1;
-        } else if(slideDown && currentPosition < Constants.LINEAR_SLIDE_DEADZONE) {
+        } else if(slideDown) { //&& currentPosition < Constants.LINEAR_SLIDE_DEADZONE
             this.linearSlidePower = 1;
         } else{
             this.linearSlidePower = 0;

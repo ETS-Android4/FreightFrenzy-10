@@ -110,14 +110,9 @@ public class AutoDuckBlue extends LinearOpMode {
         linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         linearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+
         duckWheel = this.hardwareMap.get(CRServo.class, "duckWheel");
 
-        elementHolder = this.hardwareMap.get(Servo.class, "elementHolder");
-        elementHolder.setPosition(0.1);
-
-        hopper = this.hardwareMap.get(Servo.class, "hopper");
-        hopper.scaleRange(0.25, 1.0);
-        hopper.setPosition(0.5);
 
         while (camera.getFrameCount() < 1) {
             idle();
@@ -146,6 +141,14 @@ public class AutoDuckBlue extends LinearOpMode {
         } else if(teamElementLocation == Cvhelper.BarcodeLocation.RIGHT){
             LinearSPos = 40;
         }
+
+        //Finish Init
+        hopper = this.hardwareMap.get(Servo.class, "hopper");
+        hopper.scaleRange(0.25, 1.0);
+        hopper.setPosition(0.5);
+        elementHolder = this.hardwareMap.get(Servo.class, "elementHolder");
+        elementHolder.setPosition(0);
+        sleep(sleeptime);
 
         //Push Element out of the Way
         driveInchesEnc(firstMoveDist*driveModifier, driveSpeed);

@@ -111,12 +111,12 @@ public class AutoWarehouseRed extends LinearOpMode {
 
         duckWheel = this.hardwareMap.get(CRServo.class, "duckWheel");
 
-        elementHolder = this.hardwareMap.get(Servo.class, "elementHolder");
-        elementHolder.setPosition(0.1);
-
-        hopper = this.hardwareMap.get(Servo.class, "hopper");
-        hopper.scaleRange(0.25, 1.0);
-        hopper.setPosition(0.5);
+//        elementHolder = this.hardwareMap.get(Servo.class, "elementHolder");
+//        elementHolder.setPosition(0.1);
+//
+//        hopper = this.hardwareMap.get(Servo.class, "hopper");
+//        hopper.scaleRange(0.25, 1.0);
+//        hopper.setPosition(0.5);
 
         while (camera.getFrameCount() < 1) {
             idle();
@@ -133,7 +133,7 @@ public class AutoWarehouseRed extends LinearOpMode {
 
         double driveSpeed = 0.3;
         int sleeptime = 1000;
-        int firstMoveDist = 30;
+        int firstMoveDist = 25;
 
         //Read Camera
         if(teamElementLocation == Cvhelper.BarcodeLocation.LEFT){
@@ -144,11 +144,18 @@ public class AutoWarehouseRed extends LinearOpMode {
         } else if(teamElementLocation == Cvhelper.BarcodeLocation.RIGHT){
             LinearSPos = 40;
         }
+        //Finish Init
+        hopper = this.hardwareMap.get(Servo.class, "hopper");
+        hopper.scaleRange(0.25, 1.0);
+        hopper.setPosition(0.5);
+        elementHolder = this.hardwareMap.get(Servo.class, "elementHolder");
+        elementHolder.setPosition(0);
+        sleep(sleeptime);
 
         //Drive forward
         driveInchesEnc(firstMoveDist*driveModifier, driveSpeed);
         sleep(sleeptime);
-        driveInchesEnc(-15*driveModifier, -driveSpeed);
+        driveInchesEnc(-10*driveModifier, -driveSpeed);
         sleep(sleeptime);
         telemetry.addData("Status", "Run beater");
         telemetry.update();
