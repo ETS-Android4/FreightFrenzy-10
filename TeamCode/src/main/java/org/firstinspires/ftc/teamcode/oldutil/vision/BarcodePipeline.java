@@ -5,6 +5,7 @@ import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.apriltag.AprilTagDetectorJNI;
@@ -24,6 +25,8 @@ import static org.firstinspires.ftc.teamcode.oldutil.Constants.ANCHOR;
 import static org.firstinspires.ftc.teamcode.oldutil.Constants.ERODE_DILATE_ITERATIONS;
 import static org.firstinspires.ftc.teamcode.oldutil.Constants.STRUCTURING_ELEMENT;
 import static org.firstinspires.ftc.teamcode.oldutil.Constants.WHITE;
+import static org.firstinspires.ftc.teamcode.oldutil.vision.OpenCVUtil.getBottomLeftOfContour;
+import static org.firstinspires.ftc.teamcode.oldutil.vision.OpenCVUtil.getTopLeftOfContour;
 
 // Class for the pipeline that is used to detect the StarterStack
 public class BarcodePipeline extends OpenCvPipeline  {
@@ -50,27 +53,27 @@ public class BarcodePipeline extends OpenCvPipeline  {
     @Override
     public void init(Mat input) {
         teamElement = new Detection(input.size(), 0.01);
-        nativeApriltagPtr = AprilTagDetectorJNI.createApriltagDetector(AprilTagDetectorJNI.TagFamily.TAG_36h11.string, 3, 3);
+//        nativeApriltagPtr = AprilTagDetectorJNI.createApriltagDetector(AprilTagDetectorJNI.TagFamily.TAG_36h11.string, 3, 3);
     }
 
-    @Override
-    public void finalize() {
-        AprilTagDetectorJNI.releaseApriltagDetector(nativeApriltagPtr);
-    }
+//    @Override
+//    public void finalize() {
+//        AprilTagDetectorJNI.releaseApriltagDetector(nativeApriltagPtr);
+//    }
 
     // Process each frame that is received from the webcam
     @Override
     public Mat processFrame(Mat input)
     {
-//        Imgproc.GaussianBlur(input, blurred, new Size(7, 7), 0);
-//        Imgproc.cvtColor(blurred, hsv, Imgproc.COLOR_RGB2HSV);
-//
-//        findTeamElement(input);
+        Imgproc.GaussianBlur(input, blurred, new Size(7, 7), 0);
+        Imgproc.cvtColor(blurred, hsv, Imgproc.COLOR_RGB2HSV);
+
+        findTeamElement(input);
 
         //aruco stuff
-        Imgproc.cvtColor(input, grayMask, Imgproc.COLOR_RGB2GRAY);
-        Core.bitwise_not(grayMask, grayMask);
-        findTeamElementUsingAprilTags(grayMask);
+//        Imgproc.cvtColor(input, grayMask, Imgproc.COLOR_RGB2GRAY);
+//        Core.bitwise_not(grayMask, grayMask);
+//        findTeamElementUsingAprilTags(grayMask);
 
         return input;
     }
@@ -83,6 +86,15 @@ public class BarcodePipeline extends OpenCvPipeline  {
         // set the largest detection that was found to be the Team Element
         ArrayList<MatOfPoint> contours = new ArrayList<>();
         Imgproc.findContours(yellowMask, contours, new Mat(), Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+        for (int i = 0; i < contours.size(); i++) {
+            if (getTopLeftOfContour(contours.get(i)).y < 45) {
+                contours.remove(i);
+                i--;
+            } else if (getBottomLeftOfContour(contours.get(i)).y > 240-45) {
+                contours.remove(i);
+                i--;
+            }
+        }
         teamElement.setContour(OpenCVUtil.getLargestContour(contours));
 
         // draw the Team Element detection

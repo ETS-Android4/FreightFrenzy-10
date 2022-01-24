@@ -37,6 +37,10 @@ public class OpenCVUtil {
         return new Point(boundingRect.x+boundingRect.width, boundingRect.y+boundingRect.height);
     }
 
+    public static Point getTopLeftOfContour(MatOfPoint contour) {
+        Rect boundingRect = Imgproc.boundingRect(contour);
+        return new Point(boundingRect.x, boundingRect.y);
+    }
     // Draw a contour
     public static void drawContour(Mat img, MatOfPoint contour, Scalar color) {
         Imgproc.drawContours(img, Collections.singletonList(contour), 0, color, 2);

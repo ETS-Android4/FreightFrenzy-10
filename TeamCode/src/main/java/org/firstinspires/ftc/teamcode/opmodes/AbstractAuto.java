@@ -60,7 +60,8 @@ public abstract class AbstractAuto extends LinearOpMode {
 
         // wait for start
         while (!(isStarted() || isStopRequested())) {
-            teamElementLocation = robot.camera.checkTeamElementLocationUsingAprilTags();
+            teamElementLocation = robot.camera.checkTeamElementLocation();
+//            teamElementLocation = robot.camera.checkTeamElementLocationUsingAprilTags();
             telemetry.addLine("Initialized");
             telemetry.addLine(String.format(Locale.US, "Location: %s", teamElementLocation));
             telemetry.addLine(String.format(Locale.US, "Size: %.4f", robot.camera.getTeamElement().getArea()));
