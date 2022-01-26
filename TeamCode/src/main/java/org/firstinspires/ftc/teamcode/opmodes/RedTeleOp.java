@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import static org.firstinspires.ftc.teamcode.oldutil.Alliance.RED;
+import static org.firstinspires.ftc.teamcode.util.Alliance.RED;
 
 @TeleOp(name = "Red TeleOp", group = "Competition")
 public class RedTeleOp extends AbstractTeleOp {
