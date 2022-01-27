@@ -31,8 +31,8 @@ public class AbstractTeleOp extends OpMode {
 //    public static double SLIDES_SERVO_UP = 0.8;
 //    public static double HOPPER_SERVO_DEPOSIT = 0.99;
 //    public static double SLIDES_SERVO_DEPOSIT = 0.99;
-    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.32, 0.46, 0.76, 0.99);
-    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.66, 0.85, 0.78, 0.7);
+    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.01, 0.05, 0.42, 0.69);
+    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.65, 0.7, 0.74, 0.54);
 
     public static int TURRET_ALLIANCE = 750;
     public static int TURRET_SHARED = -800;
