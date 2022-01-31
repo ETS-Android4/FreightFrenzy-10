@@ -23,7 +23,7 @@ import java.util.Locale;
 
 @Config
 public class Actuators {
-    public static int TURRET_SPEED = 2;
+    public static int TURRET_SPEED = 5;
     public static int SLIDES_SPEED = 10;
     public static double ARM_HOPPER_SPEED = 0.003;
     public static double ARM_PIVOT_SPEED = 0.003;
@@ -33,13 +33,13 @@ public class Actuators {
     public static Range ARM_HOPPER_RANGE = new Range(0.01, 0.99);
     public static Range ARM_PIVOT_RANGE = new Range(0.01, 0.99);
 
-    public static double TURRET_TOLERANCE = 90*5;
+    public static double TURRET_TOLERANCE = 90;
     public static double SLIDES_TOLERANCE = 50000000;
     public static double INTAKE_TOLERANCE = 10;
 
     public static double DUCKY_SPEED = 1.0;
 
-    public static PIDCoefficients TURRET_COEFFICIENTS = new PIDCoefficients(0.0000003, 0.00001, 0.00001);
+    public static PIDCoefficients TURRET_COEFFICIENTS = new PIDCoefficients(0.01, 0.00001, 0.00001);
     public static PIDCoefficients SLIDES_COEFFICIENTS = new PIDCoefficients(0.002, 0, 0);
     public static PIDCoefficients INTAKE_COEFFICIENTS = new PIDCoefficients(0.002, 0, 0);
 

@@ -31,18 +31,24 @@ public class AbstractTeleOp extends OpMode {
 //    public static double SLIDES_SERVO_UP = 0.8;
 //    public static double HOPPER_SERVO_DEPOSIT = 0.99;
 //    public static double SLIDES_SERVO_DEPOSIT = 0.99;
-    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.01, 0.05, 0.42, 0.69);
-    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.65, 0.7, 0.74, 0.54);
+    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.01, 0.1, 0.42, 0.75);
+    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.66, 0.75, 0.74, 0.59);
 
-    public static int TURRET_ALLIANCE = 750;
+    public static int TURRET_ALLIANCE = 650;
     public static int TURRET_SHARED = -800;
-    public static int SLIDES_ALLIANCE = 3000;
+    public static int SLIDES_ALLIANCE = 2400;
     public static int SLIDES_SHARED = 0;
 
-    public static double WAIT1 = 2.0;
-    public static double WAIT2 = 2.1;
-    public static double WAIT3 = 2.2;
-    public static double WAIT4 = 2.3;
+    public static double DEPOSIT1 = .7;
+    public static double DEPOSIT2 = 1.0;
+    public static double DEPOSIT3 = 1.1;
+    public static double DEPOSIT4 = 0.1;
+
+    public static double RETRACT1 = 0.7;
+    public static double RETRACT2 = 2.1;
+    public static double RETRACT3 = 1.5;
+    public static double RETRACT4 = 0.7;
+    public static double RETRACT5 = 0.25;
 
     public static double INTAKE_SPEED = 1.0;
     public static double INTAKE_SLOW_SPEED = 0.25;
@@ -172,7 +178,7 @@ public class AbstractTeleOp extends OpMode {
                     state++;
                     break;
                 case 1:
-                    if (getRuntime() > time + WAIT1) { state++; }
+                    if (getRuntime() > time + DEPOSIT1) { state++; }
                     break;
                 case 2:
                     time = getRuntime();
@@ -181,7 +187,7 @@ public class AbstractTeleOp extends OpMode {
                     state++;
                     break;
                 case 3:
-                    if (getRuntime() > time + WAIT2) { state++; }
+                    if (getRuntime() > time + DEPOSIT2) { state++; }
                     break;
                 case 4:
                     time = getRuntime();
@@ -189,17 +195,17 @@ public class AbstractTeleOp extends OpMode {
                     state++;
                     break;
                 case 5:
-                    if (getRuntime() > time + WAIT3) { state++; }
+                    if (getRuntime() > time + DEPOSIT3) { state++; }
                     break;
                 case 6:
                     time = getRuntime();
                     robot.actuators.setSlides(SLIDES_ALLIANCE);
                     robot.actuators.setArmPivot(ARM_PIVOT_POSITION.getDeposit());
-                    robot.actuators.setArmHopper(ARM_HOPPER_POSITION.getDown());
+                    robot.actuators.setArmHopper(.99);
                     state++;
                     break;
                 case 7:
-                    if (getRuntime() > time + WAIT4) { state++; }
+                    if (getRuntime() > time + DEPOSIT4) { state++; }
                     break;
                 case 8:
                     runningAlliance = false;
@@ -240,7 +246,7 @@ public class AbstractTeleOp extends OpMode {
                     time = getRuntime();
                     robot.actuators.setSlides(SLIDES_SHARED);
                     robot.actuators.setArmPivot(ARM_PIVOT_POSITION.getDeposit());
-                    robot.actuators.setArmHopper(ARM_HOPPER_POSITION.getDown());
+                    robot.actuators.setArmHopper(.99);
                     state++;
                     break;
                 case 7:
@@ -261,7 +267,7 @@ public class AbstractTeleOp extends OpMode {
                     state++;
                     break;
                 case 1:
-                    if (getRuntime() > time + 2) { state++; }
+                    if (getRuntime() > time + RETRACT1) { state++; }
                     break;
                 case 2:
                     time = getRuntime();
@@ -271,7 +277,7 @@ public class AbstractTeleOp extends OpMode {
                     state++;
                     break;
                 case 3:
-                    if (getRuntime() > time + 2.1) { state++; }
+                    if (getRuntime() > time + RETRACT2) { state++; }
                     break;
                 case 4:
                     time = getRuntime();
@@ -279,7 +285,7 @@ public class AbstractTeleOp extends OpMode {
                     state++;
                     break;
                 case 5:
-                    if (getRuntime() > time + 2.2) { state++; }
+                    if (getRuntime() > time + RETRACT3) { state++; }
                     break;
                 case 6:
                     time = getRuntime();
@@ -288,7 +294,7 @@ public class AbstractTeleOp extends OpMode {
                     state++;
                     break;
                 case 7:
-                    if (getRuntime() > time + 2.3) { state++; }
+                    if (getRuntime() > time + RETRACT4) { state++; }
                     break;
                 case 8:
                     time = getRuntime();
@@ -297,7 +303,7 @@ public class AbstractTeleOp extends OpMode {
                     state++;
                     break;
                 case 9:
-                    if (getRuntime() > time + 2.4) { state++; }
+                    if (getRuntime() > time + RETRACT5) { state++; }
                     break;
                 case 10:
                     runningDeposit = false;
