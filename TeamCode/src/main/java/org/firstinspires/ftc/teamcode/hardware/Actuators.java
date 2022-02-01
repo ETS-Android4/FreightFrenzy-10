@@ -91,27 +91,39 @@ public class Actuators {
     }
 
     public void setIntakePosition(int position){
-        this.intake.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        this.intake.setTargetPosition(position);
+        //this.intake.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //this.intake.setTargetPosition(position);
+        setIntakePositionPID(position);
     }
 
+    public void setIntakePositionPID(int position) {
+        intakeController.setPID(INTAKE_COEFFICIENTS.kP, INTAKE_COEFFICIENTS.kI, INTAKE_COEFFICIENTS.kD);
+        intakeController.setTolerance(INTAKE_TOLERANCE);
+        intakeController.setSetPoint(position);
+        intake.setPower(intakeController.calculate(intake.getCurrentPosition()));
+    }
 
-    public void resetIntake(double speed, int position) {
+    public void resetIntake() {
         double currentPosition = this.intake.getCurrentPosition();
-        int newPosition = (int)(position);
-        this.intake.setTargetPosition(newPosition);
-        this.intake.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        int newPosition = (int) (currentPosition + currentPosition % 145.1);
+//        this.intake.setTargetPosition(newPosition);
+//        this.intake.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 //        this.intake.setPower(0.1);
+        intakeController.setTolerance(INTAKE_TOLERANCE);
+        intakeController.setPID(INTAKE_COEFFICIENTS.kP, INTAKE_COEFFICIENTS.kI, INTAKE_COEFFICIENTS.kD);
         intakeController.setSetPoint(newPosition);
-        intake.setPower(speed);
+        intake.setPower(intakeController.calculate());
+
+
+
     }
 
-    public int getIntakePosition(){
+    public int getIntakePosition() {
         return this.intake.getCurrentPosition();
     }
 
     //left here just in case renaming it to getIntakePosition breaks something in the future
-    public int getIntake(){
+    public int getIntake() {
         return this.intake.getCurrentPosition();
     }
 
@@ -138,10 +150,8 @@ public class Actuators {
     public void update() {
         turretController.setPID(TURRET_COEFFICIENTS.kP, TURRET_COEFFICIENTS.kI, TURRET_COEFFICIENTS.kD);
         slidesController.setPID(SLIDES_COEFFICIENTS.kP, SLIDES_COEFFICIENTS.kI, SLIDES_COEFFICIENTS.kD);
-        intakeController = new PIDController(INTAKE_COEFFICIENTS.kP, INTAKE_COEFFICIENTS.kI, INTAKE_COEFFICIENTS.kD);
         turretController.setTolerance(TURRET_TOLERANCE);
         slidesController.setTolerance(SLIDES_TOLERANCE);
-        intakeController.setTolerance(INTAKE_TOLERANCE);
         this.turret.setPower(turretController.calculate(turret.getCurrentPosition()));
         this.slides.setPower(slidesController.calculate(slides.getCurrentPosition()));
     }
