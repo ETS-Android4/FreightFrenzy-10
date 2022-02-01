@@ -34,8 +34,8 @@ public class Actuators {
     public static Range ARM_PIVOT_RANGE = new Range(0.01, 0.99);
 
     public static double TURRET_TOLERANCE = 90;
-    public static double SLIDES_TOLERANCE = 50000000;
-    public static double INTAKE_TOLERANCE = 10;
+    public static double SLIDES_TOLERANCE = 5000;
+    public static double INTAKE_TOLERANCE = 100;
 
     public static double DUCKY_SPEED = 1.0;
 
@@ -91,8 +91,9 @@ public class Actuators {
     }
 
     public void setIntakePosition(int position){
-        //this.intake.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        //this.intake.setTargetPosition(position);
+//        this.intake.setTargetPosition(position);
+//        this.intake.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        this.intake.setPower(Math.abs(position-getIntakePosition())/145.1*0.9);
         setIntakePositionPID(position);
     }
 

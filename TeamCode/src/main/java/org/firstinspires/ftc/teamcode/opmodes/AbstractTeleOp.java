@@ -147,7 +147,11 @@ public class AbstractTeleOp extends OpMode {
             }
         } else if(driver2.getRightBumper().isPressed()){
             //robot.actuators.setIntakePosition((int) intakeVerticalPos); //swap with next line when it unwinds completly
-            robot.actuators.setIntakePosition((int) (robot.actuators.getIntakePosition() + intakeVerticalPos - (robot.actuators.getIntakePosition()  % (145.1))));
+            int newPos = (int) (robot.actuators.getIntakePosition() + intakeVerticalPos - (robot.actuators.getIntakePosition()  % (145.1)));
+//            if (robot.actuators.getIntakePosition()  % (145.1)   >   145.1/2){
+//                newPos = (int) (newPos - 145.1);
+//            }
+            robot.actuators.setIntakePosition(newPos);
         } else {
             if (driver2.getRightTrigger().getValue() > 0.1) {
                 robot.actuators.setIntake(-driver2.getRightTrigger().getValue() * INTAKE_SPEED);
