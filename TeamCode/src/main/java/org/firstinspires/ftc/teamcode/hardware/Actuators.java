@@ -90,14 +90,29 @@ public class Actuators {
         this.intake.setPower(power);
     }
 
-    public void resetIntake() {
+    public void setIntakePosition(int position){
+        this.intake.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        this.intake.setTargetPosition(position);
+    }
+
+
+    public void resetIntake(double speed, int position) {
         double currentPosition = this.intake.getCurrentPosition();
-        int newPosition = (int)(currentPosition - (currentPosition % 145.1));
-//        this.intake.setTargetPosition(newPosition);
-//        this.intake.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        int newPosition = (int)(position);
+        this.intake.setTargetPosition(newPosition);
+        this.intake.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 //        this.intake.setPower(0.1);
         intakeController.setSetPoint(newPosition);
-        intake.setPower(intakeController.calculate());
+        intake.setPower(speed);
+    }
+
+    public int getIntakePosition(){
+        return this.intake.getCurrentPosition();
+    }
+
+    //left here just in case renaming it to getIntakePosition breaks something in the future
+    public int getIntake(){
+        return this.intake.getCurrentPosition();
     }
 
     public void setTurret(int position) {

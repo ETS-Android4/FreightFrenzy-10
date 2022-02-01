@@ -16,6 +16,7 @@ import static org.firstinspires.ftc.teamcode.util.Alliance.RED;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 import org.firstinspires.ftc.teamcode.util.Alliance;
@@ -39,15 +40,21 @@ public class AbstractTeleOp extends OpMode {
     public static int SLIDES_ALLIANCE = 2400;
     public static int SLIDES_SHARED = 0;
 
-    public static double DEPOSIT1 = .7;
-    public static double DEPOSIT2 = 1.0;
-    public static double DEPOSIT3 = 1.1;
-    public static double DEPOSIT4 = 0.1;
+    public static double DEPOSIT1 = 0.4;
+    public static double DEPOSIT2 = 0.6;
+    public static double DEPOSIT3 = 0.6;
+    public static double DEPOSIT4 = 1.3;
 
-    public static double RETRACT1 = 0.7;
-    public static double RETRACT2 = 2.1;
-    public static double RETRACT3 = 1.5;
-    public static double RETRACT4 = 0.7;
+    //this is for telling when we should be doing the memory stuff for adjusting the macro.
+    public boolean justFinishedAllianceMacro = false;
+
+    //this is for reseting the intake to the upright position
+    public double intakeVerticalPos = 0;
+
+    public static double RETRACT1 = 0.4;
+    public static double RETRACT2 = 0.6;
+    public static double RETRACT3 = 0.6;
+    public static double RETRACT4 = 0.6;
     public static double RETRACT5 = 0.25;
 
     public static double INTAKE_SPEED = 1.0;
@@ -95,6 +102,8 @@ public class AbstractTeleOp extends OpMode {
         driver2 = new Controller(gamepad2);
 
         robot = new Robot(hardwareMap);
+
+        intakeVerticalPos = robot.actuators.getIntakePosition();
     }
 
     @Override
@@ -104,6 +113,8 @@ public class AbstractTeleOp extends OpMode {
 //            telemetry.addLine(robot.getTelemetry());
 //            telemetry.update();
 //        }
+        telemetry.addLine(("Initialized: "+alliance+" alliance selected."));
+        telemetry.update();
     }
 
     @Override
@@ -134,6 +145,9 @@ public class AbstractTeleOp extends OpMode {
             } else {
                 robot.actuators.setIntake(0);
             }
+        } else if(driver2.getRightBumper().isPressed()){
+            robot.actuators.setIntakePosition((int) intakeVerticalPos); //swap with next line when it unwinds completly
+            //robot.actuators.setIntakePosition((int) (intakeVerticalPos - (robot.actuators.getIntakePosition()  % (537.6))));
         } else {
             if (driver2.getRightTrigger().getValue() > 0.1) {
                 robot.actuators.setIntake(-driver2.getRightTrigger().getValue() * INTAKE_SPEED);
@@ -213,6 +227,7 @@ public class AbstractTeleOp extends OpMode {
                     slidesPosition = robot.actuators.getSlides();
                     armPivotPosition = robot.actuators.getArmPivot();
                     armHopperPosition = robot.actuators.getArmHopper();
+                    justFinishedAllianceMacro = true;
             }
         } else if (runningShared) {
             switch (state) {
@@ -223,7 +238,7 @@ public class AbstractTeleOp extends OpMode {
                     state++;
                     break;
                 case 1:
-                    if (getRuntime() > time + 2) { state++; }
+                    if (getRuntime() > time + 1) { state++; }
                     break;
                 case 2:
                     time = getRuntime();
@@ -232,7 +247,7 @@ public class AbstractTeleOp extends OpMode {
                     state++;
                     break;
                 case 3:
-                    if (getRuntime() > time + 2.1) { state++; }
+                    if (getRuntime() > time + 1.1) { state++; }
                     break;
                 case 4:
                     time = getRuntime();
@@ -240,7 +255,7 @@ public class AbstractTeleOp extends OpMode {
                     state++;
                     break;
                 case 5:
-                    if (getRuntime() > time + 2.2) { state++; }
+                    if (getRuntime() > time + 1.2) { state++; }
                     break;
                 case 6:
                     time = getRuntime();
@@ -250,7 +265,7 @@ public class AbstractTeleOp extends OpMode {
                     state++;
                     break;
                 case 7:
-                    if (getRuntime() > time + 2.3) { state++; }
+                    if (getRuntime() > time + 1.3) { state++; }
                     break;
                 case 8:
                     runningAlliance = false;
@@ -262,6 +277,13 @@ public class AbstractTeleOp extends OpMode {
         } else if (runningDeposit) {
             switch (state) {
                 case 0:
+                    //"memory" stuff
+                    if (justFinishedAllianceMacro){
+                        TURRET_ALLIANCE = robot.actuators.getTurret();
+                        SLIDES_ALLIANCE = robot.actuators.getSlides();
+                        //robot.actuators.getArmPivot();
+                        //robot.actuators.getArmHopper();
+                    }
                     time = getRuntime();
                     robot.actuators.setArmHopper(ARM_HOPPER_POSITION.getDeposit());
                     state++;
