@@ -15,6 +15,7 @@ import static org.firstinspires.ftc.teamcode.util.Alliance.RED;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
@@ -33,7 +34,7 @@ public class AbstractTeleOp extends OpMode {
 //    public static double HOPPER_SERVO_DEPOSIT = 0.99;
 //    public static double SLIDES_SERVO_DEPOSIT = 0.99;
     public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.01, 0.1, 0.42, 0.75);
-    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.66, 0.75, 0.74, 0.59);
+    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.65, 0.75, 0.74, 0.59);
 
     public static int TURRET_ALLIANCE = 650;
     public static int TURRET_SHARED = -800;
@@ -47,6 +48,7 @@ public class AbstractTeleOp extends OpMode {
 
     //this is for telling when we should be doing the memory stuff for adjusting the macro.
     public boolean justFinishedAllianceMacro = false;
+    public boolean justFinishedSharedMacro = false;
 
     //this is for reseting the intake to the upright position
     public double intakeVerticalPos = 0;
@@ -79,6 +81,7 @@ public class AbstractTeleOp extends OpMode {
     private boolean runningAlliance;
     private boolean runningShared;
     private boolean runningDeposit;
+    private boolean depositQueue;
 
     private double currentTime;
     private int state;
@@ -181,11 +184,14 @@ public class AbstractTeleOp extends OpMode {
         } else if (driver2.getBack().isPressed() && driver2.getB().isJustPressed() && !(runningAlliance || runningShared || runningDeposit)) {
             runningShared = true;
             state = 0;
-        } else if (driver2.getBack().isPressed() && driver2.getA().isJustPressed() && !(runningAlliance || runningShared || runningDeposit)) {
-            runningDeposit = true;
-            state = 0;
+        } else if (driver2.getBack().isPressed() && driver2.getA().isJustPressed()) {
+            if ((runningAlliance || runningShared) && !runningDeposit) {
+                depositQueue = true;
+            } else if (!(runningAlliance || runningShared || runningDeposit)) {
+                runningDeposit = true;
+                state = 0;
+            }
         }
-
 
         if (runningAlliance) {
             switch (state) {
@@ -232,6 +238,11 @@ public class AbstractTeleOp extends OpMode {
                     armPivotPosition = robot.actuators.getArmPivot();
                     armHopperPosition = robot.actuators.getArmHopper();
                     justFinishedAllianceMacro = true;
+                    if (depositQueue) {
+                        depositQueue = false;
+                        state = 0;
+                        runningDeposit = true;
+                    }
             }
         } else if (runningShared) {
             switch (state) {
@@ -277,6 +288,12 @@ public class AbstractTeleOp extends OpMode {
                     slidesPosition = robot.actuators.getSlides();
                     armPivotPosition = robot.actuators.getArmPivot();
                     armHopperPosition = robot.actuators.getArmHopper();
+                    justFinishedSharedMacro = true;
+                    if (depositQueue) {
+                        depositQueue = false;
+                        state = 0;
+                        runningDeposit = true;
+                    }
             }
         } else if (runningDeposit) {
             switch (state) {
@@ -288,6 +305,11 @@ public class AbstractTeleOp extends OpMode {
                         //robot.actuators.getArmPivot();
                         //robot.actuators.getArmHopper();
                     }
+                    else if (justFinishedSharedMacro) {
+                        TURRET_SHARED = robot.actuators.getTurret();
+                        SLIDES_SHARED = robot.actuators.getSlides();
+                    }
+
                     time = getRuntime();
                     robot.actuators.setArmHopper(ARM_HOPPER_POSITION.getDeposit());
                     state++;
