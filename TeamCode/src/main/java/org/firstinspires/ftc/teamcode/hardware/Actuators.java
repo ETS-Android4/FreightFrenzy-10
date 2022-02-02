@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
+import static org.firstinspires.ftc.teamcode.util.Alliance.RED;
 import static org.firstinspires.ftc.teamcode.util.Constants.HOPPER_SERVO;
 import static org.firstinspires.ftc.teamcode.util.Constants.INTAKE;
 import static org.firstinspires.ftc.teamcode.util.Constants.LEFT_DUCKY;
@@ -17,6 +18,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.teamcode.util.Alliance;
+import org.firstinspires.ftc.teamcode.util.ArmPosition;
 import org.firstinspires.ftc.teamcode.util.Range;
 
 import java.util.Locale;
@@ -29,12 +31,12 @@ public class Actuators {
     public static double ARM_PIVOT_SPEED = 0.003;
 
     public static Range TURRET_RANGE = new Range(-1000,1000);
-    public static Range SLIDES_RANGE = new Range(0, 2400);
+    public static Range SLIDES_RANGE = new Range(0, 2500);
     public static Range ARM_HOPPER_RANGE = new Range(0.01, 0.99);
     public static Range ARM_PIVOT_RANGE = new Range(0.01, 0.99);
 
     public static double TURRET_TOLERANCE = 90;
-    public static double SLIDES_TOLERANCE = 5000;
+    public static double SLIDES_TOLERANCE = 500;
     public static double INTAKE_TOLERANCE = 100;
 
     public static double DUCKY_SPEED = 1.0;
@@ -42,6 +44,25 @@ public class Actuators {
     public static PIDCoefficients TURRET_COEFFICIENTS = new PIDCoefficients(0.01, 0.00001, 0.00001);
     public static PIDCoefficients SLIDES_COEFFICIENTS = new PIDCoefficients(0.002, 0, 0);
     public static PIDCoefficients INTAKE_COEFFICIENTS = new PIDCoefficients(0.002, 0, 0);
+
+    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.01, 0.1, 0.42, 0.75);
+    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.65, 0.75, 0.74, 0.59);
+
+    public static int TURRET_ALLIANCE = 650;
+    public static int TURRET_SHARED = -800;
+    public static int SLIDES_ALLIANCE = 2400;
+    public static int SLIDES_SHARED = 0;
+
+    public static double DEPOSIT1 = 0.4;
+    public static double DEPOSIT2 = 0.6;
+    public static double DEPOSIT3 = 0.6;
+    public static double DEPOSIT4 = 1.3;
+
+    public static double RETRACT1 = 0.4;
+    public static double RETRACT2 = 0.6;
+    public static double RETRACT3 = 0.6;
+    public static double RETRACT4 = 0.6;
+    public static double RETRACT5 = 0.25;
 
     private PIDController turretController;
     private PIDController slidesController;
@@ -54,6 +75,18 @@ public class Actuators {
     private Servo slidesServo;
     private CRServo leftDucky;
     private CRServo rightDucky;
+
+    // state machine variables
+    public boolean runningAlliance;
+    public boolean runningShared;
+    public boolean runningDeposit;
+    public boolean depositQueue;
+    public boolean justFinishedAllianceMacro;
+    public boolean justFinishedSharedMacro;
+    public boolean justFinishedAMacro;
+
+    private int state;
+    private double time;
 
     public Actuators(HardwareMap hardwareMap) {
         this.intake = hardwareMap.get(DcMotor.class, INTAKE);
@@ -104,23 +137,14 @@ public class Actuators {
         intake.setPower(intakeController.calculate(intake.getCurrentPosition()));
     }
 
-    public void resetIntake() {
-        double currentPosition = this.intake.getCurrentPosition();
-        int newPosition = (int) (currentPosition + currentPosition % 145.1);
-//        this.intake.setTargetPosition(newPosition);
-//        this.intake.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        this.intake.setPower(0.1);
-        intakeController.setTolerance(INTAKE_TOLERANCE);
-        intakeController.setPID(INTAKE_COEFFICIENTS.kP, INTAKE_COEFFICIENTS.kI, INTAKE_COEFFICIENTS.kD);
-        intakeController.setSetPoint(newPosition);
-        intake.setPower(intakeController.calculate());
-
-
-
-    }
-
     public int getIntakePosition() {
         return this.intake.getCurrentPosition();
+    }
+
+    public void resetIntake() {
+        intakeController.setPID(INTAKE_COEFFICIENTS.kP, INTAKE_COEFFICIENTS.kI, INTAKE_COEFFICIENTS.kD);
+        intakeController.setTolerance(INTAKE_TOLERANCE);
+        intake.setPower(intakeController.calculate(intake.getCurrentPosition()));
     }
 
     //left here just in case renaming it to getIntakePosition breaks something in the future
@@ -184,6 +208,182 @@ public class Actuators {
 
     public void setRightDucky(double power, Alliance alliance) {
         this.rightDucky.setPower(alliance == Alliance.RED ? -power : power);
+    }
+
+    public void runningAlliance(double currentTime, Alliance alliance) {
+        if (runningAlliance) {
+            switch (state) {
+                case 0:
+                    runningAlliance = true;
+                    time = currentTime;
+                    setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
+                    setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
+                    state++;
+                    break;
+                case 1:
+                    if (currentTime > time + DEPOSIT1) {
+                        state++;
+                    }
+                    break;
+                case 2:
+                    time = currentTime;
+                    setArmPivot(ARM_PIVOT_POSITION.getUp());
+                    setArmHopper(ARM_HOPPER_POSITION.getUp());
+                    state++;
+                    break;
+                case 3:
+                    if (currentTime > time + DEPOSIT2) {
+                        state++;
+                    }
+                    break;
+                case 4:
+                    time = currentTime;
+                    setTurret(alliance == RED ? TURRET_ALLIANCE : -TURRET_ALLIANCE);
+                    state++;
+                    break;
+                case 5:
+                    if (currentTime > time + DEPOSIT3) {
+                        state++;
+                    }
+                    break;
+                case 6:
+                    time = currentTime;
+                    setSlides(SLIDES_ALLIANCE);
+                    setArmPivot(ARM_PIVOT_POSITION.getDeposit());
+                    setArmHopper(.99);
+                    state++;
+                    break;
+                case 7:
+                    if (currentTime > time + DEPOSIT4) {
+                        state++;
+                    }
+                    break;
+                case 8:
+                    runningAlliance = false;
+                    justFinishedAllianceMacro = true;
+                    if (depositQueue) {
+                        depositQueue = false;
+                        runningDeposit = true;
+                    } else {
+                        justFinishedAMacro = true;
+                    }
+                    state = 0;
+            }
+        }
+    }
+
+    public void runningShared(double currentTime, Alliance alliance) {
+        switch (state) {
+            case 0:
+                runningShared = true;
+                time = currentTime;
+                setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
+                setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
+                state++;
+                break;
+            case 1:
+                if (currentTime > time + DEPOSIT1) { state++; }
+                break;
+            case 2:
+                time = currentTime;
+                setArmPivot(ARM_PIVOT_POSITION.getUp());
+                setArmHopper(ARM_HOPPER_POSITION.getUp());
+                state++;
+                break;
+            case 3:
+                if (currentTime > time + DEPOSIT2) { state++; }
+                break;
+            case 4:
+                time = currentTime;
+                setTurret(alliance == RED ? TURRET_SHARED : -TURRET_SHARED);
+                state++;
+                break;
+            case 5:
+                if (currentTime > time + DEPOSIT3) { state++; }
+                break;
+            case 6:
+                time = currentTime;
+                setSlides(SLIDES_ALLIANCE);
+                setArmPivot(ARM_PIVOT_POSITION.getDeposit());
+                setArmHopper(.99);
+                state++;
+                break;
+            case 7:
+                if (currentTime > time + DEPOSIT4) { state++; }
+                break;
+            case 8:
+                runningShared = false;
+                justFinishedSharedMacro = true;
+                if (depositQueue) {
+                    depositQueue = false;
+                    runningDeposit = true;
+                } else {
+                    justFinishedAMacro = true;
+                }
+                state = 0;
+        }
+    }
+
+    public void runningDeposit(double currentTime, Alliance alliance) {
+        switch (state) {
+            case 0:
+                //"memory" stuff
+                if (justFinishedAllianceMacro) {
+                    TURRET_ALLIANCE = getTurret();
+                    SLIDES_ALLIANCE = getSlides();
+                } else if (justFinishedSharedMacro) {
+                    TURRET_SHARED = getTurret();
+                    SLIDES_SHARED = getSlides();
+                }
+
+                time = currentTime;
+                setArmHopper(ARM_HOPPER_POSITION.getDeposit());
+                state++;
+                break;
+            case 1:
+                if (currentTime > time + RETRACT1) { state++; }
+                break;
+            case 2:
+                time = currentTime;
+                setSlides(0);
+                setArmPivot(ARM_PIVOT_POSITION.getUp());
+                setArmHopper(ARM_HOPPER_POSITION.getUp());
+                state++;
+                break;
+            case 3:
+                if (currentTime > time + RETRACT2) { state++; }
+                break;
+            case 4:
+                time = currentTime;
+                setTurret(0);
+                state++;
+                break;
+            case 5:
+                if (currentTime > time + RETRACT3) { state++; }
+                break;
+            case 6:
+                time = currentTime;
+                setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
+                setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
+                state++;
+                break;
+            case 7:
+                if (currentTime > time + RETRACT4) { state++; }
+                break;
+            case 8:
+                time = currentTime;
+                setArmPivot(ARM_PIVOT_POSITION.getDown());
+                setArmHopper(ARM_HOPPER_POSITION.getDown());
+                state++;
+                break;
+            case 9:
+                if (currentTime > time + RETRACT5) { state++; }
+                break;
+            case 10:
+                runningDeposit = false;
+                justFinishedAMacro = true;
+                state = 0;
+        }
     }
 
     public String getTelemetry() {
