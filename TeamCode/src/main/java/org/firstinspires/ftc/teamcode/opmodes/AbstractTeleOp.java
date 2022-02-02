@@ -42,7 +42,7 @@ public class AbstractTeleOp extends OpMode {
     public static int SLIDES_SHARED = 0;
 
     public static double DEPOSIT1 = 0.4;
-    public static double DEPOSIT2 = 0.6;
+    public static double DEPOSIT2 = 0.7;
     public static double DEPOSIT3 = 0.6;
     public static double DEPOSIT4 = 1.3;
 
@@ -60,7 +60,7 @@ public class AbstractTeleOp extends OpMode {
     public static double RETRACT5 = 0.25;
 
     public static double INTAKE_SPEED = 1.0;
-    public static double INTAKE_SLOW_SPEED = 0.25;
+    public static double INTAKE_SLOW_SPEED = 0.1;
 
 
     Alliance alliance;
