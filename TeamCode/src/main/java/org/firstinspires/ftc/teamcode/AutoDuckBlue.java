@@ -29,6 +29,9 @@
 //Right now, Auto Blue Right is testing all new features except pushing element out of way
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -36,6 +39,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.drive.SampleTankDrive;
 import org.firstinspires.ftc.teamcode.visioncode.BarcodePipeline;
 import org.firstinspires.ftc.teamcode.visioncode.Cvhelper;
 import org.firstinspires.ftc.teamcode.visioncode.Detection;
@@ -79,7 +83,7 @@ public class AutoDuckBlue extends LinearOpMode {
     Servo hopper;
     int CLocation;
     Camera camera;
-
+    SampleTankDrive drive;
     //Variables
     double LinearSPos = 40;
     int noLinear = 1;
@@ -105,14 +109,18 @@ public class AutoDuckBlue extends LinearOpMode {
         camera = new Camera(hardwareMap);
         camera.initBarcodeWebcam();
         intakeMotor = this.hardwareMap.get(DcMotor.class, "intakeMotor");
-
         linearSlide = this.hardwareMap.get(DcMotor.class, "linearSlide");
         linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         linearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-
+        drive = new SampleTankDrive(hardwareMap);
         duckWheel = this.hardwareMap.get(CRServo.class, "duckWheel");
 
+//        //Roadrunner
+//        Pose2d startPose = new Pose2d(0, 0, 0);
+//        drive.setPoseEstimate(startPose);
+//        Trajectory path = drive.trajectoryBuilder(startPose)
+//                .splineTo(new Vector2d(60, 60), 0)
+//                .build();
 
         while (camera.getFrameCount() < 1) {
             idle();
@@ -141,6 +149,9 @@ public class AutoDuckBlue extends LinearOpMode {
         } else if(teamElementLocation == Cvhelper.BarcodeLocation.RIGHT){
             LinearSPos = 40;
         }
+//        drive.followTrajectory(path);
+//        sleep(sleeptime);
+//        //drive.turn(Math.toRadians(90));
 
         //Finish Init
         hopper = this.hardwareMap.get(Servo.class, "hopper");

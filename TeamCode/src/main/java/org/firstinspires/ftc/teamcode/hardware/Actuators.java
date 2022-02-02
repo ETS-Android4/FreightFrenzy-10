@@ -1,9 +1,16 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
+import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.CM;
+import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.MM;
+
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 import lombok.Builder;
 import lombok.Data;
@@ -17,11 +24,22 @@ public class Actuators {
     private final DcMotor linearSlideMotor;
     private final CRServo duckWheelServo;
     private final Servo elementHolderServo;
+    public RevColorSensorV3 hopperSensor;
+    public RevBlinkinLedDriver hopperLights;
+    public RevBlinkinLedDriver.BlinkinPattern hopperPatternBlock;
+    public RevBlinkinLedDriver.BlinkinPattern hopperPatternNoBlock;
+    public RevBlinkinLedDriver.BlinkinPattern hopperPatternNeutral;
 
     private double targetHopperPosition;
     private double intakePower;
     private double linearSlidePower;
     private double duckWheelServoPower;
+
+    private boolean intakeWasPressed;
+    private JiggleState jiggleState = JiggleState.Idle;
+
+    private enum JiggleState { Idle, FirstUp, Down, SecondUp }
+    private long jiggleStartTime;
 
     @Builder
     private Actuators(
@@ -29,12 +47,16 @@ public class Actuators {
             Servo hopperServo,
             DcMotor linearSlideMotor,
             CRServo duckWheelServo,
-            Servo elementHolderServo) {
+            Servo elementHolderServo,
+            RevColorSensorV3 hopperSensor,
+            RevBlinkinLedDriver hopperLights) {
         this.intakeMotor = intakeMotor;
         this.hopperServo = hopperServo;
         this.linearSlideMotor = linearSlideMotor;
         this.duckWheelServo = duckWheelServo;
         this.elementHolderServo = elementHolderServo;
+        this.hopperSensor = hopperSensor;
+        this.hopperLights = hopperLights;
         this.initialize();
     }
 
@@ -45,6 +67,11 @@ public class Actuators {
         //this.elementHolderServo.setPosition(0);
 
         this.hopperServo.scaleRange(Constants.HOPPER_RANGE_MIN, Constants.HOPPER_RANGE_MAX);
+        this.hopperPatternBlock = RevBlinkinLedDriver.BlinkinPattern.GREEN;
+        this.hopperPatternNoBlock = RevBlinkinLedDriver.BlinkinPattern.RED;
+        this.hopperPatternNeutral = RevBlinkinLedDriver.BlinkinPattern.RED;
+        hopperLights.setPattern(hopperPatternNeutral);
+
     }
 
     public void setInput(Gamepad gamepad) {
@@ -57,6 +84,8 @@ public class Actuators {
         double duckSpinRight = gamepad.right_trigger;
         boolean hopperPress = gamepad.a;
         double elementStick = gamepad.left_stick_y;
+
+        // Middle Element Position
         if(gamepad.left_bumper){
             elementStick = .5;
         }
@@ -67,20 +96,63 @@ public class Actuators {
             this.targetHopperPosition = 0;
         } else {
             this.intakePower = 0;
-            this.targetHopperPosition = 0.5;
+            this.targetHopperPosition = .5;
+
         }
+
+        if(!intakePress && this.intakeWasPressed){
+            this.jiggleState = JiggleState.FirstUp;
+            this.jiggleStartTime = System.currentTimeMillis();
+        }
+
+        // First up takes 300ms
+//        if(this.jiggleState != JiggleState.Idle) {
+//            switch(this.jiggleState) {
+//                case FirstUp:
+//                    if (System.currentTimeMillis() >= this.jiggleStartTime + 150) {
+//                        this.jiggleState = JiggleState.Down;
+//                    } else {
+//                        // set servo position
+//                        this.targetHopperPosition = .15;
+//                    }
+//                    break;
+//                case Down:
+//                    if (System.currentTimeMillis() >= this.jiggleStartTime + 350){
+//                        this.jiggleState = JiggleState.SecondUp;
+//                    } else {
+//                        //set servo position
+//                        this.targetHopperPosition = 0;
+//                    }
+//                    break;
+//                case SecondUp:
+//                    if (System.currentTimeMillis() >= this.jiggleStartTime + 850){
+//                        this.jiggleState = JiggleState.Idle;
+//                    } else {
+//                        //set servo position
+//                        this.targetHopperPosition = .5;
+//                    }
+//                    break;
+//            }
+//        }
 
         // Hopper
         if(hopperPress) {
             this.targetHopperPosition = 1.0;
         }
 
+        //Hopper Lights
+        double distance = hopperSensor.getDistance(DistanceUnit.MM);
+        if(distance >= 10 && distance <= 55){
+            hopperLights.setPattern(hopperPatternBlock);
+        } else{
+            hopperLights.setPattern(hopperPatternNeutral);
+        }
         // Linear Slide
         int currentPosition = this.linearSlideMotor.getCurrentPosition();
         if(slideUp && currentPosition > Constants.LINEAR_SLIDE_MAX_POSITION) {
             this.linearSlidePower = -1;
             //New Stuff 5/5
-        } else if(slideDown && this.linearSlideMotor.getCurrentPosition() < 170) { //&& currentPosition < Constants.LINEAR_SLIDE_DEADZONE
+        } else if(slideDown && this.linearSlideMotor.getCurrentPosition() < 125) { //&& currentPosition < Constants.LINEAR_SLIDE_DEADZONE
             this.linearSlidePower = 1;
         } else{
             this.linearSlidePower = 0;
@@ -91,6 +163,7 @@ public class Actuators {
 
         // Element Holder
         this.elementHolderServo.setPosition(elementStick);
+        this.intakeWasPressed = intakePress;
         this.setPower();
     }
 
@@ -113,7 +186,7 @@ public class Actuators {
     //New Stuff 1/5
     public String getLSTelemetry() {
         String telemetryLS;
-        telemetryLS = String.format("LS %s", linearSlideMotor.getCurrentPosition());
+        telemetryLS = String.format("LS %s \n %s %s %s", linearSlideMotor.getCurrentPosition(), hopperSensor.red(), hopperSensor.green(), hopperSensor.blue());
         return telemetryLS;
     }
     public static class Constants {

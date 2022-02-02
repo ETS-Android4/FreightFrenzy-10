@@ -1,6 +1,10 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
+import android.hardware.Sensor;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
@@ -45,6 +49,8 @@ public class Robot {
                 .linearSlideMotor(this.hardwareMap.get(DcMotor.class, Constants.LINEAR_SLIDE_NAME))
                 .duckWheelServo(this.hardwareMap.get(CRServo.class, Constants.DUCK_WHEEL_NAME))
                 .elementHolderServo(this.hardwareMap.get(Servo.class,Constants.ELEMENT_HOLDER_NAME))
+                .hopperSensor(this.hardwareMap.get(RevColorSensorV3.class,Constants.HOPPER_SENSOR_NAME))
+                .hopperLights(this.hardwareMap.get(RevBlinkinLedDriver.class,Constants.HOPPER_LIGHTS_NAME))
                 .build();
         drive2 = new SampleTankDrive(hardwareMap);
     }
@@ -67,6 +73,8 @@ public class Robot {
         public static final String LINEAR_SLIDE_NAME = "linearSlide";
         public static final String DUCK_WHEEL_NAME = "duckWheel";
         public static final String ELEMENT_HOLDER_NAME = "elementHolder";
+        public static final String HOPPER_SENSOR_NAME = "hopperSensor";
+        public static final String HOPPER_LIGHTS_NAME = "hopperLights";
         public static final String IMU_NAME = "imu";
     }
 }
