@@ -54,7 +54,7 @@ public class Actuators {
     public static int SLIDES_SHARED = 0;
 
     public static double DEPOSIT1 = 0.4;
-    public static double DEPOSIT2 = 0.6;
+    public static double DEPOSIT2 = 0.7;
     public static double DEPOSIT3 = 0.6;
     public static double DEPOSIT4 = 1.3;
 
