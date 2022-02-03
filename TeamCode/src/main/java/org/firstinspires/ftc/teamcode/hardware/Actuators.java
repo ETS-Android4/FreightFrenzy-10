@@ -273,116 +273,120 @@ public class Actuators {
     }
 
     public void runningShared(double currentTime, Alliance alliance) {
-        switch (state) {
-            case 0:
-                runningShared = true;
-                time = currentTime;
-                setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
-                setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
-                state++;
-                break;
-            case 1:
-                if (currentTime > time + DEPOSIT1) { state++; }
-                break;
-            case 2:
-                time = currentTime;
-                setArmPivot(ARM_PIVOT_POSITION.getUp());
-                setArmHopper(ARM_HOPPER_POSITION.getUp());
-                state++;
-                break;
-            case 3:
-                if (currentTime > time + DEPOSIT2) { state++; }
-                break;
-            case 4:
-                time = currentTime;
-                setTurret(alliance == RED ? TURRET_SHARED : -TURRET_SHARED);
-                state++;
-                break;
-            case 5:
-                if (currentTime > time + DEPOSIT3) { state++; }
-                break;
-            case 6:
-                time = currentTime;
-                setSlides(SLIDES_ALLIANCE);
-                setArmPivot(ARM_PIVOT_POSITION.getDeposit());
-                setArmHopper(.99);
-                state++;
-                break;
-            case 7:
-                if (currentTime > time + DEPOSIT4) { state++; }
-                break;
-            case 8:
-                runningShared = false;
-                justFinishedSharedMacro = true;
-                if (depositQueue) {
-                    depositQueue = false;
-                    runningDeposit = true;
-                } else {
-                    justFinishedAMacro = true;
-                }
-                state = 0;
+        if (runningShared) {
+            switch (state) {
+                case 0:
+                    runningShared = true;
+                    time = currentTime;
+                    setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
+                    setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
+                    state++;
+                    break;
+                case 1:
+                    if (currentTime > time + DEPOSIT1) { state++; }
+                    break;
+                case 2:
+                    time = currentTime;
+                    setArmPivot(ARM_PIVOT_POSITION.getUp());
+                    setArmHopper(ARM_HOPPER_POSITION.getUp());
+                    state++;
+                    break;
+                case 3:
+                    if (currentTime > time + DEPOSIT2) { state++; }
+                    break;
+                case 4:
+                    time = currentTime;
+                    setTurret(alliance == RED ? TURRET_SHARED : -TURRET_SHARED);
+                    state++;
+                    break;
+                case 5:
+                    if (currentTime > time + DEPOSIT3) { state++; }
+                    break;
+                case 6:
+                    time = currentTime;
+                    setSlides(SLIDES_ALLIANCE);
+                    setArmPivot(ARM_PIVOT_POSITION.getDeposit());
+                    setArmHopper(.99);
+                    state++;
+                    break;
+                case 7:
+                    if (currentTime > time + DEPOSIT4) { state++; }
+                    break;
+                case 8:
+                    runningShared = false;
+                    justFinishedSharedMacro = true;
+                    if (depositQueue) {
+                        depositQueue = false;
+                        runningDeposit = true;
+                    } else {
+                        justFinishedAMacro = true;
+                    }
+                    state = 0;
+            }
         }
     }
 
     public void runningDeposit(double currentTime, Alliance alliance) {
-        switch (state) {
-            case 0:
-                //"memory" stuff
-                if (justFinishedAllianceMacro) {
-                    TURRET_ALLIANCE = getTurret();
-                    SLIDES_ALLIANCE = getSlides();
-                } else if (justFinishedSharedMacro) {
-                    TURRET_SHARED = getTurret();
-                    SLIDES_SHARED = getSlides();
-                }
+        if (runningDeposit) {
+            switch (state) {
+                case 0:
+                    //"memory" stuff
+                    if (justFinishedAllianceMacro) {
+                        TURRET_ALLIANCE = getTurret();
+                        SLIDES_ALLIANCE = getSlides();
+                    } else if (justFinishedSharedMacro) {
+                        TURRET_SHARED = getTurret();
+                        SLIDES_SHARED = getSlides();
+                    }
 
-                time = currentTime;
-                setArmHopper(ARM_HOPPER_POSITION.getDeposit());
-                state++;
-                break;
-            case 1:
-                if (currentTime > time + RETRACT1) { state++; }
-                break;
-            case 2:
-                time = currentTime;
-                setSlides(0);
-                setArmPivot(ARM_PIVOT_POSITION.getUp());
-                setArmHopper(ARM_HOPPER_POSITION.getUp());
-                state++;
-                break;
-            case 3:
-                if (currentTime > time + RETRACT2) { state++; }
-                break;
-            case 4:
-                time = currentTime;
-                setTurret(0);
-                state++;
-                break;
-            case 5:
-                if (currentTime > time + RETRACT3) { state++; }
-                break;
-            case 6:
-                time = currentTime;
-                setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
-                setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
-                state++;
-                break;
-            case 7:
-                if (currentTime > time + RETRACT4) { state++; }
-                break;
-            case 8:
-                time = currentTime;
-                setArmPivot(ARM_PIVOT_POSITION.getDown());
-                setArmHopper(ARM_HOPPER_POSITION.getDown());
-                state++;
-                break;
-            case 9:
-                if (currentTime > time + RETRACT5) { state++; }
-                break;
-            case 10:
-                runningDeposit = false;
-                justFinishedAMacro = true;
-                state = 0;
+                    time = currentTime;
+                    setArmHopper(ARM_HOPPER_POSITION.getDeposit());
+                    state++;
+                    break;
+                case 1:
+                    if (currentTime > time + RETRACT1) { state++; }
+                    break;
+                case 2:
+                    time = currentTime;
+                    setSlides(0);
+                    setArmPivot(ARM_PIVOT_POSITION.getUp());
+                    setArmHopper(ARM_HOPPER_POSITION.getUp());
+                    state++;
+                    break;
+                case 3:
+                    if (currentTime > time + RETRACT2) { state++; }
+                    break;
+                case 4:
+                    time = currentTime;
+                    setTurret(0);
+                    state++;
+                    break;
+                case 5:
+                    if (currentTime > time + RETRACT3) { state++; }
+                    break;
+                case 6:
+                    time = currentTime;
+                    setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
+                    setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
+                    state++;
+                    break;
+                case 7:
+                    if (currentTime > time + RETRACT4) { state++; }
+                    break;
+                case 8:
+                    time = currentTime;
+                    setArmPivot(ARM_PIVOT_POSITION.getDown());
+                    setArmHopper(ARM_HOPPER_POSITION.getDown());
+                    state++;
+                    break;
+                case 9:
+                    if (currentTime > time + RETRACT5) { state++; }
+                    break;
+                case 10:
+                    runningDeposit = false;
+                    justFinishedAMacro = true;
+                    state = 0;
+            }
         }
     }
 
