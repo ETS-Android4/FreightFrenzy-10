@@ -77,6 +77,7 @@ public abstract class AbstractAuto extends LinearOpMode {
 
             // while the step is running display telemetry
             step.whileRunning();
+            robot.actuators.update();
             telemetry.addLine(String.format(Locale.US, "Runtime: %.0f", currentRuntime));
             telemetry.addLine("Step "+(stepNumber+1)+" of "+steps.size()+", "+step.getTelemetry()+"\n");
             telemetry.addLine(robot.getTelemetry());
@@ -293,7 +294,6 @@ public abstract class AbstractAuto extends LinearOpMode {
             @Override
             public void whileRunning() {
                 robot.actuators.runningAlliance(getRuntime(), alliance);
-                robot.actuators.update();
             }
             @Override
             public void end() {}
@@ -312,7 +312,6 @@ public abstract class AbstractAuto extends LinearOpMode {
             @Override
             public void whileRunning() {
                 robot.actuators.runningShared(getRuntime(), alliance);
-                robot.actuators.update();
             }
             @Override
             public void end() {}
@@ -331,7 +330,6 @@ public abstract class AbstractAuto extends LinearOpMode {
             @Override
             public void whileRunning() {
                 robot.actuators.runningDeposit(getRuntime(), alliance);
-                robot.actuators.update();
             }
             @Override
             public void end() {}

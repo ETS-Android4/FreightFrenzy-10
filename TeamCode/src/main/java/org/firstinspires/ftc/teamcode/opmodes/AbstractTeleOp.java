@@ -89,6 +89,7 @@ public class AbstractTeleOp extends OpMode {
             z = driver1.getRightStick().getX() * DRIVE_SPEED;
         }
         robot.drive.setWeightedDrivePower(new Pose2d(y,-x,-z));
+        robot.drive.update();
 
         // intake
         if (driver2.getLeftBumper().isPressed()) {

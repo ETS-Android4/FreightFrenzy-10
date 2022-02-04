@@ -9,8 +9,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.util.BarcodeLocation;
 
-@Autonomous(name = "Blue Warehouse", group = "Competition", preselectTeleOp = "Blue TeleOp")
-public class BlueWarehouse extends AbstractAuto {
+@Autonomous(name = "Red Warehouse", group = "Competition", preselectTeleOp = "Red TeleOp")
+public class RedWarehouse extends AbstractAuto {
     public static Pose2d START_POSE = new Pose2d(12, -63, Math.toRadians(0));
 
     @Override
@@ -30,17 +30,19 @@ public class BlueWarehouse extends AbstractAuto {
                 .build();
 
         // score preloaded
-        addAlliance(4, alliance);
-        addDeposit(4, alliance);
+        addAlliance(10, alliance);
+//        addDelay(3);
+        addDeposit(10, alliance);
         addDelay(2);
 
         // 1 block
         addIntake(0, -1);
         followTrajectory(forward);
+//        addDelay(3);
         followTrajectory(back);
-        resetIntake(2);
-        addAlliance(4, alliance);
-        addDeposit(4, alliance);
+        resetIntake(3);
+        addAlliance(10, alliance);
+        addDeposit(10, alliance);
 
         // park
         followTrajectory(forward);

@@ -99,13 +99,6 @@ public class Actuators {
 
         this.intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-//        this.turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        this.turret.setTargetPosition(0);
-//        this.turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//
-//        this.slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        this.slides.setTargetPosition(0);
-//        this.slides.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         this.turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         this.slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         this.turret.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -161,6 +154,10 @@ public class Actuators {
     public int getTurret() {
         return this.turret.getCurrentPosition();
     }
+
+//    public int getTurretAngle() {
+//        int
+//    }
 
     public void setSlides(int position) {
         slidesController.setSetPoint(position);
