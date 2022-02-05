@@ -105,35 +105,35 @@ public class Actuators {
             this.jiggleStartTime = System.currentTimeMillis();
         }
 
-        // First up takes 300ms
-//        if(this.jiggleState != JiggleState.Idle) {
-//            switch(this.jiggleState) {
-//                case FirstUp:
-//                    if (System.currentTimeMillis() >= this.jiggleStartTime + 150) {
-//                        this.jiggleState = JiggleState.Down;
-//                    } else {
-//                        // set servo position
-//                        this.targetHopperPosition = .15;
-//                    }
-//                    break;
-//                case Down:
-//                    if (System.currentTimeMillis() >= this.jiggleStartTime + 350){
-//                        this.jiggleState = JiggleState.SecondUp;
-//                    } else {
-//                        //set servo position
-//                        this.targetHopperPosition = 0;
-//                    }
-//                    break;
-//                case SecondUp:
-//                    if (System.currentTimeMillis() >= this.jiggleStartTime + 850){
-//                        this.jiggleState = JiggleState.Idle;
-//                    } else {
-//                        //set servo position
-//                        this.targetHopperPosition = .5;
-//                    }
-//                    break;
-//            }
-//        }
+         //First up takes 300ms
+        if(this.jiggleState != JiggleState.Idle) {
+            switch(this.jiggleState) {
+                case FirstUp:
+                    if (System.currentTimeMillis() >= this.jiggleStartTime + 150) {
+                        this.jiggleState = JiggleState.Down;
+                    } else {
+                        // set servo position
+                        this.targetHopperPosition = .15;
+                    }
+                    break;
+                case Down:
+                    if (System.currentTimeMillis() >= this.jiggleStartTime + 350){
+                        this.jiggleState = JiggleState.SecondUp;
+                    } else {
+                        //set servo position
+                        this.targetHopperPosition = 0;
+                    }
+                    break;
+                case SecondUp:
+                    if (System.currentTimeMillis() >= this.jiggleStartTime + 850){
+                        this.jiggleState = JiggleState.Idle;
+                    } else {
+                        //set servo position
+                        this.targetHopperPosition = .5;
+                    }
+                    break;
+            }
+        }
 
         // Hopper
         if(hopperPress) {

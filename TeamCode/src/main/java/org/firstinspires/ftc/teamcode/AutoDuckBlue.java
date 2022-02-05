@@ -83,14 +83,14 @@ public class AutoDuckBlue extends LinearOpMode {
     Servo hopper;
     int CLocation;
     Camera camera;
-    SampleTankDrive drive;
+
     //Variables
     double LinearSPos = 40;
     int noLinear = 1;
     double turnModifier = 1;
     double driveModifier = 1;
     double leftTurnModifier = 1;
-    double rightTurnModifier = .57;
+    double rightTurnModifier = 1;
 
     double TICKS_PER_INCH = 28.53; // Ticks per revolution = 537.7;
 
@@ -112,15 +112,7 @@ public class AutoDuckBlue extends LinearOpMode {
         linearSlide = this.hardwareMap.get(DcMotor.class, "linearSlide");
         linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         linearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        drive = new SampleTankDrive(hardwareMap);
         duckWheel = this.hardwareMap.get(CRServo.class, "duckWheel");
-
-//        //Roadrunner
-//        Pose2d startPose = new Pose2d(0, 0, 0);
-//        drive.setPoseEstimate(startPose);
-//        Trajectory path = drive.trajectoryBuilder(startPose)
-//                .splineTo(new Vector2d(60, 60), 0)
-//                .build();
 
         while (camera.getFrameCount() < 1) {
             idle();
@@ -149,9 +141,6 @@ public class AutoDuckBlue extends LinearOpMode {
         } else if(teamElementLocation == Cvhelper.BarcodeLocation.RIGHT){
             LinearSPos = 40;
         }
-//        drive.followTrajectory(path);
-//        sleep(sleeptime);
-//        //drive.turn(Math.toRadians(90));
 
         //Finish Init
         hopper = this.hardwareMap.get(Servo.class, "hopper");
@@ -164,7 +153,7 @@ public class AutoDuckBlue extends LinearOpMode {
         //Push Element out of the Way
         driveInchesEnc(firstMoveDist*driveModifier, driveSpeed);
         sleep(sleeptime);
-        driveInchesEnc(-19*driveModifier, -driveSpeed);
+        driveInchesEnc(-17*driveModifier, -driveSpeed);
         sleep(sleeptime);
         telemetry.addData("Status", "Run beater");
         telemetry.update();
@@ -172,11 +161,11 @@ public class AutoDuckBlue extends LinearOpMode {
         sleep(sleeptime);
 
         //Turn left towards score
-        turnDumbEnc(5.5*turnModifier*leftTurnModifier, driveSpeed);
+        turnDumbEnc(5*turnModifier*leftTurnModifier, driveSpeed);
         sleep(sleeptime);
 
         //Drive slightly forward before score
-        driveInchesEnc(8.5*driveModifier, driveSpeed);
+        driveInchesEnc(10*driveModifier, driveSpeed);
         sleep(sleeptime);
 
         //Score
@@ -195,7 +184,7 @@ public class AutoDuckBlue extends LinearOpMode {
 
         //Turn on Duck Wheel and move to it
         duckWheel.setPower(-1.5);
-        driveInchesEnc(-35*driveModifier, -driveSpeed/3);
+        driveInchesEnc(-36.25*driveModifier, -driveSpeed/3);
         sleep(sleeptime*2);
         driveInchesEnc(-.75, -driveSpeed/12);
         sleep(sleeptime*2);
@@ -204,7 +193,7 @@ public class AutoDuckBlue extends LinearOpMode {
         //Park
         driveInchesEnc(2*driveModifier, driveSpeed);
         sleep(sleeptime/2);
-        turnDumbEnc(17*turnModifier*rightTurnModifier, -driveSpeed);
+        turnDumbEnc(13*turnModifier*rightTurnModifier, -driveSpeed);
         sleep(sleeptime);
         driveInchesEnc(10*driveModifier, driveSpeed);
         sleep(sleeptime);

@@ -174,7 +174,7 @@ public class AutoWarehouseBlue extends LinearOpMode {
         //Turn right to score
         turnDumbEnc(8.7*turnModifier*rightTurnModifier, -driveSpeed);
         sleep(sleeptime);
-        driveInchesEnc(6.5*driveModifier, driveSpeed);
+        driveInchesEnc(7*driveModifier, driveSpeed);
         sleep(sleeptime);
 
         //Score
@@ -188,7 +188,7 @@ public class AutoWarehouseBlue extends LinearOpMode {
         linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //Line up with warehouse
-        driveInchesEnc(-3.5*driveModifier, -driveSpeed);
+        driveInchesEnc(-4.5*driveModifier, -driveSpeed);
         sleep(sleeptime);
         turnDumbEnc(6.5*turnModifier*rightTurnModifier, -driveSpeed);
         sleep(sleeptime);
@@ -198,8 +198,11 @@ public class AutoWarehouseBlue extends LinearOpMode {
 
         //Get a block
         intakeMotor.setPower(1.0);
+        hopper.setPosition(0);
         sleep(sleeptime*2);
         intakeMotor.setPower(0);
+        hopper.setPosition(.5);
+        sleep(sleeptime);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());

@@ -164,15 +164,15 @@ public class AutoWarehouseRed extends LinearOpMode {
 
 
         //Turn right to dodge obstacle
-        turnDumbEnc(-8*turnModifier*rightTurnModifier, -driveSpeed);
+        turnDumbEnc(-5*turnModifier*rightTurnModifier, -driveSpeed);
         sleep(sleeptime);
-        driveInchesEnc(-4*driveModifier,-driveSpeed);
+        driveInchesEnc(-3*driveModifier,-driveSpeed);
         sleep(sleeptime);
 
         //Turn left to score
-        turnDumbEnc(20*turnModifier*leftTurnModifier, driveSpeed);
+        turnDumbEnc(10.5*turnModifier*leftTurnModifier, driveSpeed);
         sleep(sleeptime);
-        driveInchesEnc(10.5*driveModifier, driveSpeed);
+        driveInchesEnc(7*driveModifier, driveSpeed);
         sleep(sleeptime);
 
         //Score
@@ -186,9 +186,9 @@ public class AutoWarehouseRed extends LinearOpMode {
         linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //Line up with warehouse
-        driveInchesEnc(-5.5*driveModifier, -driveSpeed);
+        driveInchesEnc(-5*driveModifier, -driveSpeed);
         sleep(sleeptime);
-        turnDumbEnc(14*turnModifier*leftTurnModifier, driveSpeed);
+        turnDumbEnc(6.5*turnModifier*leftTurnModifier, driveSpeed);
         sleep(sleeptime);
 
         //Back in to warehouse
@@ -196,8 +196,11 @@ public class AutoWarehouseRed extends LinearOpMode {
 
         //Get a block
         intakeMotor.setPower(1.0);
+        hopper.setPosition(0);
         sleep(sleeptime*2);
         intakeMotor.setPower(0);
+        hopper.setPosition(.5);
+        sleep(sleeptime);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
@@ -230,8 +233,8 @@ public class AutoWarehouseRed extends LinearOpMode {
         driveFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         driveFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        driveBackRight.setPower(-.625*driveSpeed);
-        driveFrontRight.setPower(-.625*driveSpeed);
+        driveBackRight.setPower(-1*driveSpeed);
+        driveFrontRight.setPower(-1*driveSpeed);
         driveBackLeft.setPower(1*driveSpeed);
         driveFrontLeft.setPower(1*driveSpeed);
 

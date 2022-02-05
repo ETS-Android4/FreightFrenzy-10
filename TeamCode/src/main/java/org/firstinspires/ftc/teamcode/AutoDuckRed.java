@@ -110,6 +110,7 @@ public class AutoDuckRed extends LinearOpMode {
 
         linearSlide = this.hardwareMap.get(DcMotor.class, "linearSlide");
         linearSlide.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         linearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         duckWheel = this.hardwareMap.get(CRServo.class, "duckWheel");
@@ -171,7 +172,7 @@ public class AutoDuckRed extends LinearOpMode {
         sleep(sleeptime);
 
         //Drive slightly forward before score
-        driveInchesEnc(5*driveModifier, driveSpeed);
+        driveInchesEnc(6*driveModifier, driveSpeed);
         sleep(sleeptime/2);
 
         //Score
@@ -190,7 +191,7 @@ public class AutoDuckRed extends LinearOpMode {
 
         //Spin wheel and back up
         duckWheel.setPower(1.5);
-        driveInchesEnc(-34.5*driveModifier, -driveSpeed/3);
+        driveInchesEnc(-36*driveModifier, -driveSpeed/3);
         sleep(sleeptime/2);
         driveInchesEnc(-.75*driveModifier, -driveSpeed/12);
         sleep(sleeptime);
