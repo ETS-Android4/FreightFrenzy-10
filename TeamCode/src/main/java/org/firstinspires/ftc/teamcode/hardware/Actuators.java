@@ -62,6 +62,8 @@ public class Actuators {
 
     private void initialize() {
         this.linearSlideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        this.linearSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        this.linearSlideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         this.linearSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.elementHolderServo.scaleRange(0.08, 1.0);
         //this.elementHolderServo.setPosition(0);
@@ -106,34 +108,34 @@ public class Actuators {
         }
 
          //First up takes 300ms
-        if(this.jiggleState != JiggleState.Idle) {
-            switch(this.jiggleState) {
-                case FirstUp:
-                    if (System.currentTimeMillis() >= this.jiggleStartTime + 150) {
-                        this.jiggleState = JiggleState.Down;
-                    } else {
-                        // set servo position
-                        this.targetHopperPosition = .15;
-                    }
-                    break;
-                case Down:
-                    if (System.currentTimeMillis() >= this.jiggleStartTime + 350){
-                        this.jiggleState = JiggleState.SecondUp;
-                    } else {
-                        //set servo position
-                        this.targetHopperPosition = 0;
-                    }
-                    break;
-                case SecondUp:
-                    if (System.currentTimeMillis() >= this.jiggleStartTime + 850){
-                        this.jiggleState = JiggleState.Idle;
-                    } else {
-                        //set servo position
-                        this.targetHopperPosition = .5;
-                    }
-                    break;
-            }
-        }
+//        if(this.jiggleState != JiggleState.Idle) {
+//            switch(this.jiggleState) {
+//                case FirstUp:
+//                    if (System.currentTimeMillis() >= this.jiggleStartTime + 150) {
+//                        this.jiggleState = JiggleState.Down;
+//                    } else {
+//                        // set servo position
+//                        this.targetHopperPosition = .15;
+//                    }
+//                    break;
+//                case Down:
+//                    if (System.currentTimeMillis() >= this.jiggleStartTime + 350){
+//                        this.jiggleState = JiggleState.SecondUp;
+//                    } else {
+//                        //set servo position
+//                        this.targetHopperPosition = 0;
+//                    }
+//                    break;
+//                case SecondUp:
+//                    if (System.currentTimeMillis() >= this.jiggleStartTime + 850){
+//                        this.jiggleState = JiggleState.Idle;
+//                    } else {
+//                        //set servo position
+//                        this.targetHopperPosition = .5;
+//                    }
+//                    break;
+//            }
+//        }
 
         // Hopper
         if(hopperPress) {
@@ -152,7 +154,7 @@ public class Actuators {
         if(slideUp && currentPosition > Constants.LINEAR_SLIDE_MAX_POSITION) {
             this.linearSlidePower = -1;
             //New Stuff 5/5
-        } else if(slideDown && this.linearSlideMotor.getCurrentPosition() < 125) { //&& currentPosition < Constants.LINEAR_SLIDE_DEADZONE
+        } else if(slideDown && this.linearSlideMotor.getCurrentPosition() < 10) { //&& currentPosition < Constants.LINEAR_SLIDE_DEADZONE
             this.linearSlidePower = 1;
         } else{
             this.linearSlidePower = 0;
