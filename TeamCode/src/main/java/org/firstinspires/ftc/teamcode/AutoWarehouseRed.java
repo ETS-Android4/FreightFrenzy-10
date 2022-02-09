@@ -137,10 +137,10 @@ public class AutoWarehouseRed extends LinearOpMode {
 
         //Read Camera
         if(teamElementLocation == Cvhelper.BarcodeLocation.LEFT){
-            LinearSPos = 100;
+            LinearSPos = 110;
             noLinear = 1;
         } else if(teamElementLocation == Cvhelper.BarcodeLocation.MIDDLE){
-            LinearSPos = 70;
+            LinearSPos = 75;
         } else if(teamElementLocation == Cvhelper.BarcodeLocation.RIGHT){
             LinearSPos = 40;
         }
@@ -149,6 +149,7 @@ public class AutoWarehouseRed extends LinearOpMode {
         hopper.scaleRange(0.25, 1.0);
         hopper.setPosition(0.5);
         elementHolder = this.hardwareMap.get(Servo.class, "elementHolder");
+        this.elementHolder.scaleRange(0.08, 1.0);
         elementHolder.setPosition(0);
         sleep(sleeptime);
 
@@ -172,7 +173,7 @@ public class AutoWarehouseRed extends LinearOpMode {
         //Turn left to score
         turnDumbEnc(10.5*turnModifier*leftTurnModifier, driveSpeed);
         sleep(sleeptime);
-        driveInchesEnc(7*driveModifier, driveSpeed);
+        driveInchesEnc(5*driveModifier, driveSpeed);
         sleep(sleeptime);
 
         //Score
@@ -186,9 +187,9 @@ public class AutoWarehouseRed extends LinearOpMode {
         linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //Line up with warehouse
-        driveInchesEnc(-5*driveModifier, -driveSpeed);
+        driveInchesEnc(-6*driveModifier, -driveSpeed);
         sleep(sleeptime);
-        turnDumbEnc(6.5*turnModifier*leftTurnModifier, driveSpeed);
+        turnDumbEnc(5*turnModifier*leftTurnModifier, driveSpeed);
         sleep(sleeptime);
 
         //Back in to warehouse

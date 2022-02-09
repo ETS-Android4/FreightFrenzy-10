@@ -68,7 +68,7 @@ public class BarcodePipeline extends OpenCvPipeline {
 
     public Cvhelper.BarcodeLocation getTeamElementLocation() {
         if (teamElement.isValid()) {
-            if (teamElement.getCenter().x < -25) {
+            if (teamElement.getCenter().x < -10) {
                 return LEFT;
             } else if (teamElement.getCenter().x > 25) {
                 return RIGHT;

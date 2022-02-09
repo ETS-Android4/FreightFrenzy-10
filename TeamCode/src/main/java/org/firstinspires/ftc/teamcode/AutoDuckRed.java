@@ -154,6 +154,7 @@ public class AutoDuckRed extends LinearOpMode {
         hopper.scaleRange(0.25, 1.0);
         hopper.setPosition(0.5);
         elementHolder = this.hardwareMap.get(Servo.class, "elementHolder");
+        this.elementHolder.scaleRange(0.08, 1.0);
         elementHolder.setPosition(0);
         sleep(sleeptime);
 
@@ -161,14 +162,13 @@ public class AutoDuckRed extends LinearOpMode {
         driveInchesEnc(firstMoveDist*driveModifier, driveSpeed);
         sleep(sleeptime);
         driveInchesEnc(-19*driveModifier, -driveSpeed);
-        sleep(sleeptime);
         telemetry.addData("Status", "Run beater");
         telemetry.update();
         runBeater(1000, -1.0);
         sleep(sleeptime);
 
         //Turn right towards score
-        turnDumbEnc(4*turnModifier*rightTurnModifier, -driveSpeed);
+        turnDumbEnc(4.2*turnModifier*rightTurnModifier, -driveSpeed);
         sleep(sleeptime);
 
         //Drive slightly forward before score
@@ -179,14 +179,14 @@ public class AutoDuckRed extends LinearOpMode {
         driveLinearSlide((110-LinearSPos)*noLinear, 1);
         intakeMotor.setPower(1.0);
         hopper.setPosition(1.0);
-        sleep(1000);
+        sleep(500);
         intakeMotor.setPower(0);
         hopper.setPosition(0.5);
         driveLinearSlide((-110+LinearSPos)*noLinear, -1);
         linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //Line up with Duck Wheel
-        turnDumbEnc(1.5*turnModifier*rightTurnModifier, -driveSpeed);
+        turnDumbEnc(1.15*turnModifier*rightTurnModifier, -driveSpeed);
         sleep(sleeptime);
 
         //Spin wheel and back up
@@ -200,10 +200,10 @@ public class AutoDuckRed extends LinearOpMode {
         //Park
         driveInchesEnc(2*driveModifier, driveSpeed);
         sleep(sleeptime/2);
-        turnDumbEnc(10*turnModifier*leftTurnModifier, driveSpeed);
+        turnDumbEnc(-6*turnModifier*leftTurnModifier, -driveSpeed);
         sleep(sleeptime);
-        driveInchesEnc(8*driveModifier, driveSpeed);
-        sleep(sleeptime);
+//        driveInchesEnc(-5*driveModifier, -driveSpeed);
+//        sleep(sleeptime);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());

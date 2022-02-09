@@ -151,6 +151,7 @@ public class AutoWarehouseBlue extends LinearOpMode {
         hopper.scaleRange(0.25, 1.0);
         hopper.setPosition(0.5);
         elementHolder = this.hardwareMap.get(Servo.class, "elementHolder");
+        this.elementHolder.scaleRange(0.08, 1.0);
         elementHolder.setPosition(0);
         sleep(sleeptime);
 
