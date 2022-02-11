@@ -55,8 +55,8 @@ public class Actuators {
 //    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.65, 0.75, 0.74, 0.59);
 //    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.99, 0.83, 0.4, 0.01);
 //    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.67, 0.74, 0.74, 0.44);//0.97
-    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.51, 0.09, 0.16, 0.51, 0.5, 0.5, 0.76, 0.5, 0.5, 0.76);
-    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.74, 0.81, 0.72, 0.74, 0.5, 0.5, 0.92, 0.5, 0.5, 0.49);
+    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.51, 0.08, 0.17, 0.51, 0.5, 0.5, 0.76, 0.5, 0.5, 0.76);
+    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.74, 0.66, 0.72, 0.74, 0.5, 0.5, 0.92, 0.5, 0.5, 0.49);
 
     public static int TURRET_ALLIANCE = 650;
     public static int TURRET_SHARED = -800;
