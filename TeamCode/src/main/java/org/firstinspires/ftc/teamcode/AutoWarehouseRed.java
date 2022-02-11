@@ -173,7 +173,7 @@ public class AutoWarehouseRed extends LinearOpMode {
         //Turn left to score
         turnDumbEnc(10.5*turnModifier*leftTurnModifier, driveSpeed);
         sleep(sleeptime);
-        driveInchesEnc(5*driveModifier, driveSpeed);
+        driveInchesEnc(4.8*driveModifier, driveSpeed);
         sleep(sleeptime);
 
         //Score
@@ -189,11 +189,11 @@ public class AutoWarehouseRed extends LinearOpMode {
         //Line up with warehouse
         driveInchesEnc(-6*driveModifier, -driveSpeed);
         sleep(sleeptime);
-        turnDumbEnc(5*turnModifier*leftTurnModifier, driveSpeed);
+        turnDumbEnc(8*turnModifier*leftTurnModifier, driveSpeed);
         sleep(sleeptime);
 
         //Back in to warehouse
-        driveInchesEnc(-40*driveModifier, -2.5*driveSpeed);
+        driveInchesEnc(-35*driveModifier, -2.5*driveSpeed);
 
         //Get a block
         intakeMotor.setPower(1.0);
