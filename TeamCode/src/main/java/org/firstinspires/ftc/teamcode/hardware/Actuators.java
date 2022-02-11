@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
-import static org.firstinspires.ftc.teamcode.opmodes.AbstractTeleOp.INTAKE_SPEED;
 import static org.firstinspires.ftc.teamcode.util.Alliance.RED;
 import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.LEFT;
 import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.MIDDLE;
@@ -21,7 +20,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.apache.commons.math3.ode.nonstiff.HighamHall54FieldIntegrator;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.ArmPosition;
 import org.firstinspires.ftc.teamcode.util.BarcodeLocation;
@@ -57,8 +55,8 @@ public class Actuators {
 //    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.65, 0.75, 0.74, 0.59);
 //    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.99, 0.83, 0.4, 0.01);
 //    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.67, 0.74, 0.74, 0.44);//0.97
-    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.51, 0.09, 0.15, 0.51, 0.5, 0.5, 0.76, 0.5, 0.5, 0.76);
-    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.74, 0.62, 0.71, 0.74, 0.5, 0.5, 0.92, 0.5, 0.5, 0.49);
+    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.51, 0.09, 0.16, 0.51, 0.5, 0.5, 0.76, 0.5, 0.5, 0.76);
+    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.74, 0.81, 0.72, 0.74, 0.5, 0.5, 0.92, 0.5, 0.5, 0.49);
 
     public static int TURRET_ALLIANCE = 650;
     public static int TURRET_SHARED = -800;
@@ -68,16 +66,16 @@ public class Actuators {
     public static double FREIGHT1 = 2;
     public static double FREIGHT2 = 0.5;
 
-    public static double DEPOSIT1 = 0.4;
-    public static double DEPOSIT2 = 0.7;
-    public static double DEPOSIT3 = 2;
+    public static double DEPOSIT1_ALMOST = 0.4;
+    public static double DEPOSIT2_ARM = 0.7;
+    public static double DEPOSIT3_EXTEND = 2;
     public static double DEPOSIT4 = 10;
 
-    public static double RETRACT1 = 0.4;
-    public static double RETRACT2 = 0.6;
-    public static double RETRACT3 = 0.6;
-    public static double RETRACT4 = 0.6;
-    public static double RETRACT5 = 0.75;
+    public static double RETRACT1_SCORE = 0.4;
+    public static double RETRACT2_RETRACT = 1.6;//.8
+    public static double RETRACT3_TURRET = 0.6;
+    public static double RETRACT4_ALMOST = 0.6;
+    public static double RETRACT5_DOWN = 0.75;
 
     private PIDController turretController;
     private PIDController slidesController;
@@ -287,12 +285,13 @@ public class Actuators {
                 case 0:
                     time = currentTime;
                     setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
-                    setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
                     state++;
                     break;
                 case 1:
-                    if (currentTime > time + DEPOSIT1) {
+                    if (currentTime > time + DEPOSIT1_ALMOST) {
                         state++;
+                    } else if (currentTime > time + DEPOSIT1_ALMOST/2.0) {
+                        setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
                     }
                     break;
                 case 2:
@@ -307,7 +306,7 @@ public class Actuators {
                     state++;
                     break;
                 case 3:
-                    if (currentTime > time + DEPOSIT2) {
+                    if (currentTime > time + DEPOSIT2_ARM) {
                         state++;
                     }
                     break;
@@ -321,11 +320,11 @@ public class Actuators {
                         setArmHopper(ARM_HOPPER_POSITION.getAlmostHigh());
                     }
                     setTurret(alliance == RED ? TURRET_ALLIANCE : -TURRET_ALLIANCE);
-                    setSlides(alliance == RED ? SLIDES_ALLIANCE : -SLIDES_ALLIANCE);
+                    setSlides(alliance == RED ? SLIDES_ALLIANCE : SLIDES_ALLIANCE);
                     state++;
                     break;
                 case 5:
-                    if (currentTime > time + DEPOSIT3 || (turretController.atSetPoint() && slidesController.atSetPoint())) {
+                    if (currentTime > time + DEPOSIT3_EXTEND || (turretController.atSetPoint() && slidesController.atSetPoint())) {
                         state++;
                     }
                     break;
@@ -341,65 +340,6 @@ public class Actuators {
                     state = 0;
             }
         }
-
-//        if (runningAlliance) {
-//            switch (state) {
-//                case 0:
-//                    runningAlliance = true;
-//                    time = currentTime;
-//                    setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
-//                    setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
-//                    state++;
-//                    break;
-//                case 1:
-//                    if (currentTime > time + DEPOSIT1) {
-//                        state++;
-//                    }
-//                    break;
-//                case 2:
-//                    time = currentTime;
-//                    setArmPivot(ARM_PIVOT_POSITION.getUp());
-//                    setArmHopper(ARM_HOPPER_POSITION.getUp());
-//                    state++;
-//                    break;
-//                case 3:
-//                    if (currentTime > time + DEPOSIT2) {
-//                        state++;
-//                    }
-//                    break;
-//                case 4:
-//                    time = currentTime;
-//                    setTurret(alliance == RED ? TURRET_ALLIANCE : -TURRET_ALLIANCE);
-//                    state++;
-//                    break;
-//                case 5:
-//                    if (currentTime > time + DEPOSIT3 || turretController.atSetPoint()) {
-//                        state++;
-//                    }
-//                    break;
-//                case 6:
-//                    time = currentTime;
-//                    setSlides(SLIDES_ALLIANCE);
-//                    setArmPivot(ARM_PIVOT_POSITION.getDeposit());
-//                    setArmHopper(.99);
-//                    state++;
-//                    break;
-//                case 7:
-//                    if (currentTime > time + DEPOSIT4 || slidesController.atSetPoint()) {
-//                        state++;
-//                    }
-//                    break;
-//                case 8:
-//                    runningAlliance = false;
-//                    justFinishedAllianceMacro = true;
-//                    if (depositQueue) {
-//                        depositQueue = false;
-//                        runningDeposit = true;
-//                    } else {
-//                        justFinishedAMacro = true;
-//                    }
-//                    state = 0;
-//            }
     }
 
     public void runningShared(double currentTime, Alliance alliance, BarcodeLocation barcodeLocation) {
@@ -412,7 +352,7 @@ public class Actuators {
                     state++;
                     break;
                 case 1:
-                    if (currentTime > time + DEPOSIT1) {
+                    if (currentTime > time + DEPOSIT1_ALMOST) {
                         state++;
                     }
                     break;
@@ -431,18 +371,18 @@ public class Actuators {
                     state++;
                     break;
                 case 3:
-                    if (currentTime > time + DEPOSIT2) {
+                    if (currentTime > time + DEPOSIT2_ARM) {
                         state++;
                     }
                     break;
                 case 4:
                     time = currentTime;
                     setTurret(alliance == RED ? TURRET_SHARED : -TURRET_SHARED);
-                    setSlides(alliance == RED ? SLIDES_SHARED : -SLIDES_SHARED);
+                    setSlides(alliance == RED ? SLIDES_SHARED : SLIDES_SHARED);
                     state++;
                     break;
                 case 5:
-                    if (currentTime > time + DEPOSIT3 || (turretController.atSetPoint() && slidesController.atSetPoint())) {
+                    if (currentTime > time + DEPOSIT3_EXTEND || (turretController.atSetPoint() && slidesController.atSetPoint())) {
                         state++;
                     }
                     break;
@@ -504,17 +444,19 @@ public class Actuators {
                     state++;
                     break;
                 case 1:
-                    if (currentTime > time + RETRACT1) { state++; }
+                    if (currentTime > time + RETRACT1_SCORE) { state++; }
                     break;
                 case 2:
                     time = currentTime;
-                    setSlides(0);
                     setArmPivot(ARM_PIVOT_POSITION.getUp());
                     setArmHopper(ARM_HOPPER_POSITION.getUp());
                     state++;
                     break;
                 case 3:
-                    if (currentTime > time + RETRACT2 || slidesController.atSetPoint()) { state++; }
+                    if (currentTime > time + 1) {
+                        setSlides(0);
+                    }
+                    if (currentTime > time + RETRACT2_RETRACT || (slidesController.atSetPoint() && currentTime > time + 1.2)) { state++; }
                     break;
                 case 4:
                     time = currentTime;
@@ -522,7 +464,7 @@ public class Actuators {
                     state++;
                     break;
                 case 5:
-                    if (currentTime > time + RETRACT3 || turretController.atSetPoint()) { state++; }
+                    if (currentTime > time + RETRACT3_TURRET || turretController.atSetPoint()) { state++; }
                     break;
                 case 6:
                     time = currentTime;
@@ -531,7 +473,7 @@ public class Actuators {
                     state++;
                     break;
                 case 7:
-                    if (currentTime > time + RETRACT4) { state++; }
+                    if (currentTime > time + RETRACT4_ALMOST) { state++; }
                     break;
                 case 8:
                     time = currentTime;
@@ -540,7 +482,7 @@ public class Actuators {
                     state++;
                     break;
                 case 9:
-                    if (currentTime > time + RETRACT5) { state++; }
+                    if (currentTime > time + RETRACT5_DOWN) { state++; }
                     break;
                 case 10:
                     runningDeposit = false;
@@ -562,8 +504,4 @@ public class Actuators {
                 slides.getCurrentPosition(), slides.getPower(), hopperServo.getPosition(), pivotServo.getPosition(),
                 leftDucky.getPower(), rightDucky.getPower());
     }
-}
-
-enum State {
-    ArmUp, ArmDown
 }
