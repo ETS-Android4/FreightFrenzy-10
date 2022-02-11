@@ -187,13 +187,13 @@ public class AutoWarehouseRed extends LinearOpMode {
         linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //Line up with warehouse
-        driveInchesEnc(-6*driveModifier, -driveSpeed);
+        driveInchesEnc(-6.5*driveModifier, -driveSpeed);
         sleep(sleeptime);
-        turnDumbEnc(8*turnModifier*leftTurnModifier, driveSpeed);
+        turnDumbEnc(9.5*turnModifier*leftTurnModifier, driveSpeed);
         sleep(sleeptime);
 
         //Back in to warehouse
-        driveInchesEnc(-35*driveModifier, -2.5*driveSpeed);
+        driveInchesEnc(-30*driveModifier, -2.5*driveSpeed);
 
         //Get a block
         intakeMotor.setPower(1.0);
