@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_HOPPER_POSITION;
+import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_PIVOT_POSITION;
 import static org.firstinspires.ftc.teamcode.util.Alliance.NEITHER;
 import static org.firstinspires.ftc.teamcode.util.Alliance.RED;
 
@@ -22,9 +24,7 @@ public abstract class AbstractAuto extends LinearOpMode {
     private double currentRuntime;
     private boolean stopWasNotRequested;
 
-    public void setAlliance() {
-        this.alliance = RED;
-    }
+    public abstract void setAlliance();
 
     // Main method to run all the steps for autonomous
     @Override
@@ -36,6 +36,8 @@ public abstract class AbstractAuto extends LinearOpMode {
         setAlliance();
 
         robot = new Robot(hardwareMap);
+        robot.actuators.setArmPivot(ARM_PIVOT_POSITION.getDown());
+        robot.actuators.setArmHopper(ARM_HOPPER_POSITION.getDown());
 
         // wait for start
         while (!(isStarted() || isStopRequested())) {
@@ -285,7 +287,25 @@ public abstract class AbstractAuto extends LinearOpMode {
             }
         });
     }
-    public void addAlliance(double timeout, Alliance alliance) {
+    public void addIntakeReset(double timeout) {
+        steps.add(new Step("Resetting Intake", timeout) {
+            @Override
+            public void start() {
+                robot.actuators.pickingUpFreight = true;
+            }
+            @Override
+            public void whileRunning() {
+                robot.actuators.pickingUpFreight(getRuntime());
+            }
+            @Override
+            public void end() {}
+            @Override
+            public boolean isFinished() {
+                return !robot.actuators.pickingUpFreight;
+            }
+        });
+    }
+    public void addAlliance(double timeout, Alliance alliance, BarcodeLocation barcodeLocation) {
         steps.add(new Step("Scoring Alliance Hub ", timeout) {
             @Override
             public void start() {
@@ -293,7 +313,7 @@ public abstract class AbstractAuto extends LinearOpMode {
             }
             @Override
             public void whileRunning() {
-                robot.actuators.runningAlliance(getRuntime(), alliance);
+                robot.actuators.runningAlliance(getRuntime(), alliance, barcodeLocation);
             }
             @Override
             public void end() {}
@@ -303,7 +323,7 @@ public abstract class AbstractAuto extends LinearOpMode {
             }
         });
     }
-    public void addShared(double timeout, Alliance alliance) {
+    public void addShared(double timeout, Alliance alliance, BarcodeLocation barcodeLocation) {
         steps.add(new Step("Scoring Shared Hub ", timeout) {
             @Override
             public void start() {
@@ -311,7 +331,7 @@ public abstract class AbstractAuto extends LinearOpMode {
             }
             @Override
             public void whileRunning() {
-                robot.actuators.runningShared(getRuntime(), alliance);
+                robot.actuators.runningShared(getRuntime(), alliance, barcodeLocation);
             }
             @Override
             public void end() {}
@@ -321,7 +341,7 @@ public abstract class AbstractAuto extends LinearOpMode {
             }
         });
     }
-    public void addDeposit(double timeout, Alliance alliance) {
+    public void addDeposit(double timeout, Alliance alliance, BarcodeLocation barcodeLocation) {
         steps.add(new Step("Depositing", timeout) {
             @Override
             public void start() {
@@ -329,7 +349,7 @@ public abstract class AbstractAuto extends LinearOpMode {
             }
             @Override
             public void whileRunning() {
-                robot.actuators.runningDeposit(getRuntime(), alliance);
+                robot.actuators.runningDeposit(getRuntime(), alliance, barcodeLocation);
             }
             @Override
             public void end() {}

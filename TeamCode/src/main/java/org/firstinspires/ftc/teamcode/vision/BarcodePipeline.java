@@ -4,7 +4,9 @@ import org.firstinspires.ftc.teamcode.util.BarcodeLocation;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
 import org.opencv.core.Scalar;
+import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.apriltag.AprilTagDetectorJNI;
@@ -18,6 +20,7 @@ import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.RIGHT;
 import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.UNKNOWN;
 import static org.firstinspires.ftc.teamcode.util.Constants.ANCHOR;
 import static org.firstinspires.ftc.teamcode.util.Constants.ERODE_DILATE_ITERATIONS;
+import static org.firstinspires.ftc.teamcode.util.Constants.GREEN;
 import static org.firstinspires.ftc.teamcode.util.Constants.STRUCTURING_ELEMENT;
 import static org.firstinspires.ftc.teamcode.util.Constants.WHITE;
 import static org.firstinspires.ftc.teamcode.vision.OpenCVUtil.LEFT_BOUNDARY;
@@ -62,15 +65,17 @@ public class BarcodePipeline extends OpenCvPipeline  {
     @Override
     public Mat processFrame(Mat input)
     {
-//        Imgproc.GaussianBlur(input, blurred, new Size(7, 7), 0);
-//        Imgproc.cvtColor(blurred, hsv, Imgproc.COLOR_RGB2HSV);
-//
-//        findTeamElement(input);
+        Imgproc.GaussianBlur(input, blurred, new Size(7, 7), 0);
+        Imgproc.cvtColor(blurred, hsv, Imgproc.COLOR_RGB2HSV);
+
+        findTeamElement(input);
+
+
 
         //aruco stuff
-        Imgproc.cvtColor(input, grayMask, Imgproc.COLOR_RGB2GRAY);
-        Core.bitwise_not(grayMask, grayMask);
-        findTeamElementUsingAprilTags(grayMask);
+//        Imgproc.cvtColor(input, grayMask, Imgproc.COLOR_RGB2GRAY);
+//        Core.bitwise_not(grayMask, grayMask);
+////        findTeamElementUsingAprilTags(grayMask);
 
         return input;
     }
@@ -87,6 +92,9 @@ public class BarcodePipeline extends OpenCvPipeline  {
 
         // draw the Team Element detection
         teamElement.draw(input, WHITE);
+        Imgproc.line(input, new Point(320-(230*.33), 0), new Point(320-(230*.33), 240), GREEN, 2);
+        Imgproc.line(input, new Point(320*.33, 0), new Point(320*.33,240), GREEN, 2);
+        //320x240
     }
 
     // Get the StarterStack
