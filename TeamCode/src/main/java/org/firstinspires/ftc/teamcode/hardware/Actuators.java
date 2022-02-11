@@ -75,7 +75,7 @@ public class Actuators {
     public static double FREIGHT2 = 0.5;
 
     public static double DEPOSIT1_ALMOST = 0.4;
-    public static double DEPOSIT2_ARM = 0.7;
+    public static double DEPOSIT2_ARM = 1.0;
     public static double DEPOSIT3_EXTEND = 2;
     public static double DEPOSIT4 = 10;
 
