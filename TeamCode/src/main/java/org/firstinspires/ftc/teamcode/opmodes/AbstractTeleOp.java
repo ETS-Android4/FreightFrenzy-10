@@ -67,7 +67,7 @@ public class AbstractTeleOp extends OpMode {
         intakeVerticalPos = robot.actuators.getIntakePosition();
 //        armHopperPosition = robot.actuators.getArmHopper();
 //        armPivotPosition = robot.actuators.getArmPivot();
-
+        setAlliance();
     }
 
     @Override

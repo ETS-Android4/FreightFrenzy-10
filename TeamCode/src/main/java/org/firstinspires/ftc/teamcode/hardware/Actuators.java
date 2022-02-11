@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
+import static org.firstinspires.ftc.teamcode.util.Alliance.BLUE;
 import static org.firstinspires.ftc.teamcode.util.Alliance.RED;
 import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.LEFT;
 import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.MIDDLE;
@@ -59,7 +60,14 @@ public class Actuators {
     public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.74, 0.66, 0.72, 0.74, 0.5, 0.5, 0.92, 0.5, 0.5, 0.49);
 
     public static int TURRET_ALLIANCE = 650;
+    public static int TURRET_ALLIANCE_RED = TURRET_ALLIANCE;
+    public static int TURRET_ALLIANCE_BLUE = -TURRET_ALLIANCE;
+
     public static int TURRET_SHARED = -800;
+    public static int TURRET_SHARED_RED = TURRET_SHARED;
+    public static int TURRET_SHARED_BLUE = -TURRET_SHARED;
+
+
     public static int SLIDES_ALLIANCE = 2200;
     public static int SLIDES_SHARED = 0;
 
@@ -319,8 +327,13 @@ public class Actuators {
                     } else {
                         setArmHopper(ARM_HOPPER_POSITION.getAlmostHigh());
                     }
+                    if(alliance == RED){
+                        setTurret(TURRET_ALLIANCE_RED);
+                    }else if (alliance==BLUE){
+                        setTurret((TURRET_ALLIANCE_BLUE));
+                    }
                     setTurret(alliance == RED ? TURRET_ALLIANCE : -TURRET_ALLIANCE);
-                    setSlides(alliance == RED ? SLIDES_ALLIANCE : SLIDES_ALLIANCE);
+                    setSlides(SLIDES_ALLIANCE);
                     state++;
                     break;
                 case 5:
@@ -377,7 +390,7 @@ public class Actuators {
                     break;
                 case 4:
                     time = currentTime;
-                    setTurret(alliance == RED ? TURRET_SHARED : -TURRET_SHARED);
+                    setTurret(alliance == RED ? TURRET_SHARED : TURRET_SHARED);
                     setSlides(alliance == RED ? SLIDES_SHARED : SLIDES_SHARED);
                     state++;
                     break;
@@ -404,9 +417,12 @@ public class Actuators {
         if (runningDeposit) {
             switch (state) {
                 case 0:
+                    //reset intake at the begining of retract macro
+                    //resetIntake();
                     //"memory" stuff
                     if (justFinishedAllianceMacro) {
-                        TURRET_ALLIANCE = getTurret();
+                        if(alliance==BLUE) {TURRET_ALLIANCE_BLUE = getTurret();}
+                        else if(alliance==RED) {TURRET_ALLIANCE_RED = getTurret();}
                         SLIDES_ALLIANCE = getSlides();
                         if (barcodeLocation == LEFT) {
                             ARM_PIVOT_POSITION.setAlmostLow(pivotServo.getPosition());
@@ -419,7 +435,8 @@ public class Actuators {
                             ARM_HOPPER_POSITION.setAlmostHigh(hopperServo.getPosition());
                         }
                     } else if (justFinishedSharedMacro) {
-                        TURRET_SHARED = getTurret();
+                        if(alliance==BLUE) {TURRET_SHARED_BLUE = getTurret();}
+                        else if(alliance==RED) {TURRET_SHARED_RED = getTurret();}
                         SLIDES_SHARED = getSlides();
                         if (barcodeLocation == LEFT) {
                             ARM_PIVOT_POSITION.setAlmostLow(pivotServo.getPosition());
