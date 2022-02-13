@@ -1,9 +1,10 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
 import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.UNKNOWN;
-import static org.firstinspires.ftc.teamcode.util.Constants.BARCODE_WEBCAM;
 import static org.firstinspires.ftc.teamcode.util.Constants.INVALID_DETECTION;
 import static org.firstinspires.ftc.teamcode.util.Constants.WEBCAM_HEIGHT;
+import static org.firstinspires.ftc.teamcode.util.Constants.WEBCAM_LEFT;
+import static org.firstinspires.ftc.teamcode.util.Constants.WEBCAM_RIGHT;
 import static org.firstinspires.ftc.teamcode.util.Constants.WEBCAM_ROTATION;
 import static org.firstinspires.ftc.teamcode.util.Constants.WEBCAM_WIDTH;
 
@@ -12,6 +13,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.util.BarcodeLocation;
+import org.firstinspires.ftc.teamcode.util.CameraPosition;
 import org.firstinspires.ftc.teamcode.vision.BarcodePipeline;
 import org.firstinspires.ftc.teamcode.vision.Detection;
 import org.openftc.easyopencv.OpenCvCamera;
@@ -26,16 +28,23 @@ public class Camera {
     private BarcodePipeline barcodePipeline;
 
     private boolean barcodeWebcamInitialized;
+    private CameraPosition cameraPosition;
+
 
     // Constructor
-    public Camera(HardwareMap hardwareMap) {
+    public Camera(HardwareMap hardwareMap, CameraPosition cameraPosition) {
         this.hardwareMap = hardwareMap;
+        this.cameraPosition = cameraPosition;
     }
 
     // Initiate the Barcode Camera
     public void initBarcodeWebcam() {
         int stackCameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        this.barcodeWebcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, BARCODE_WEBCAM), stackCameraMonitorViewId);
+        if (cameraPosition == CameraPosition.LEFT) {
+            this.barcodeWebcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, WEBCAM_LEFT), stackCameraMonitorViewId);
+        } else {
+            this.barcodeWebcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, WEBCAM_RIGHT), stackCameraMonitorViewId);
+        }
         this.barcodePipeline = new BarcodePipeline();
         barcodeWebcam.setPipeline(barcodePipeline);
         barcodeWebcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {

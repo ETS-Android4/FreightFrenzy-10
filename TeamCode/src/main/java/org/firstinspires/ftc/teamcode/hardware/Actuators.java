@@ -1,12 +1,12 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
-import static org.firstinspires.ftc.teamcode.util.Alliance.BLUE;
 import static org.firstinspires.ftc.teamcode.util.Alliance.RED;
 import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.LEFT;
 import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.MIDDLE;
 import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.RIGHT;
 import static org.firstinspires.ftc.teamcode.util.Constants.HOPPER_SERVO;
 import static org.firstinspires.ftc.teamcode.util.Constants.INTAKE;
+import static org.firstinspires.ftc.teamcode.util.Constants.INTAKE_SERVO;
 import static org.firstinspires.ftc.teamcode.util.Constants.LEFT_DUCKY;
 import static org.firstinspires.ftc.teamcode.util.Constants.RIGHT_DUCKY;
 import static org.firstinspires.ftc.teamcode.util.Constants.SLIDES;
@@ -30,60 +30,65 @@ import java.util.Locale;
 
 @Config
 public class Actuators {
-    public static int TURRET_SPEED = 30;
+    public static double INTAKE_STOP_TIME = 0.2;
+    public static double INTAKE_RESET_TIME = 3;
+
+    public static int TURRET_SPEED = 15;
     public static int SLIDES_SPEED = 50;
     public static double ARM_HOPPER_SPEED = 0.015;
     public static double ARM_PIVOT_SPEED = 0.01;
+    public static double INTAKE_SERVO_SPEED = 0.02;
 
     public static Range TURRET_RANGE = new Range(-1000,1000);
     public static Range SLIDES_RANGE = new Range(0, 2500);
     public static Range ARM_HOPPER_RANGE = new Range(0.01, 0.99);
     public static Range ARM_PIVOT_RANGE = new Range(0.01, 0.99);
 
-    public static double TURRET_TOLERANCE = 50;
+    public static double TURRET_TOLERANCE = 2;
     public static double SLIDES_TOLERANCE = 3;
     public static double INTAKE_TOLERANCE = 50;
 
     public static double DUCKY_SPEED = 1.0;
 
+    public int auto_intake_orient_pos = 0;
+
 //    public static PIDCoefficients TURRET_COEFFICIENTS = new PIDCoefficients(0.01, 0.00001, 0.00001);
 //    public static PIDCoefficients SLIDES_COEFFICIENTS = new PIDCoefficients(0.002, 0, 0);
     public static PIDCoefficients TURRET_COEFFICIENTS = new PIDCoefficients(0.003, 0, 0);
     public static PIDCoefficients SLIDES_COEFFICIENTS = new PIDCoefficients(0.0025, 0, 0);
-    public static PIDCoefficients INTAKE_COEFFICIENTS = new PIDCoefficients(0.007, 0, 0.0001);
+    public static PIDCoefficients INTAKE_COEFFICIENTS = new PIDCoefficients(0.005, 0, 0.0001);
 
 //    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.02, 0.1, 0.42, 0.75);
 //    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.65, 0.75, 0.74, 0.59);
 //    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.99, 0.83, 0.4, 0.01);
 //    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.67, 0.74, 0.74, 0.44);//0.97
-    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.51, 0.08, 0.17, 0.51, 0.5, 0.5, 0.76, 0.5, 0.5, 0.76);
-    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.74, 0.66, 0.72, 0.74, 0.5, 0.5, 0.92, 0.5, 0.5, 0.49);
+    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.06, 0.03, 0.12, 0.51, 0.95, 0.8, 0.8, 0.95, 0.85, 0.8);
+    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.62, 0.62, 0.68, 0.74, 0.92, 0.92, 0.92, 0.68, 0.64, 0.49);
+    // intake servo positions: down 0.01 up 0.99
+    public static double INTAKE_SERVO_DOWN = 0.01;
+    public static double INTAKE_SERVO_UP = 0.99;
 
     public static int TURRET_ALLIANCE = 650;
-    public static int TURRET_ALLIANCE_RED = TURRET_ALLIANCE;
-    public static int TURRET_ALLIANCE_BLUE = -TURRET_ALLIANCE;
-
     public static int TURRET_SHARED = -800;
-    public static int TURRET_SHARED_RED = TURRET_SHARED;
-    public static int TURRET_SHARED_BLUE = -TURRET_SHARED;
 
-
-    public static int SLIDES_ALLIANCE = 2200;
+    public static int SLIDES_ALLIANCE_HIGH = 2100;
+    public static int SLIDES_ALLIANCE_MID = 1649;
+    public static int SLIDES_ALLIANCE_LOW = 1422;
     public static int SLIDES_SHARED = 0;
 
     public static double FREIGHT1 = 2;
     public static double FREIGHT2 = 0.5;
 
-    public static double DEPOSIT1_ALMOST = 0.4;
+    public static double DEPOSIT1_ALMOST = 0.6;
     public static double DEPOSIT2_ARM = 1.0;
-    public static double DEPOSIT3_EXTEND = 2;
+    public static double DEPOSIT3_EXTEND = 1;
     public static double DEPOSIT4 = 10;
 
     public static double RETRACT1_SCORE = 0.4;
-    public static double RETRACT2_RETRACT = 1.6;//.8
+    public static double RETRACT2_RETRACT = 0.7;//.8
     public static double RETRACT3_TURRET = 0.6;
-    public static double RETRACT4_ALMOST = 0.6;
-    public static double RETRACT5_DOWN = 0.75;
+    public static double RETRACT4_ALMOST = 1.2;//1.2
+    public static double RETRACT5_DOWN = 0.4;
 
     private PIDController turretController;
     private PIDController slidesController;
@@ -96,6 +101,7 @@ public class Actuators {
     private Servo pivotServo;
     private CRServo leftDucky;
     private CRServo rightDucky;
+    private Servo intakeServo;
 
     // state machine variables
     public boolean pickingUpFreight;
@@ -109,6 +115,11 @@ public class Actuators {
     public boolean justFinishedSharedMacro;
     public boolean justFinishedAMacro;
 
+    public static double SLOW_DEPOSIT_TIME = 10;
+    public static double SLOW_DEPOSIT_INCREMENT = 0.01;
+
+    public boolean runningSharedDeposit = false;
+
     private int state;
     private double time;
 
@@ -120,6 +131,7 @@ public class Actuators {
         this.pivotServo = hardwareMap.get(Servo.class, SLIDES_SERVO);
         this.leftDucky = hardwareMap.get(CRServo.class, LEFT_DUCKY);
         this.rightDucky = hardwareMap.get(CRServo.class, RIGHT_DUCKY);
+        this.intakeServo = hardwareMap.get(Servo.class, INTAKE_SERVO);
 
         this.intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         this.intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -138,6 +150,14 @@ public class Actuators {
         intakeController = new PIDController(INTAKE_COEFFICIENTS.kP, INTAKE_COEFFICIENTS.kI, INTAKE_COEFFICIENTS.kD);
     }
 
+    public void setIntakeServo(double position) {
+        intakeServo.setPosition(position);
+    }
+
+    public double getIntakeServo() {
+        return intakeServo.getPosition();
+    }
+
     public void setIntake(double power) {
         this.intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         this.intake.setPower(power);
@@ -151,8 +171,6 @@ public class Actuators {
     }
 
     public void setIntakePositionPID(int position) {
-        intakeController.setPID(INTAKE_COEFFICIENTS.kP, INTAKE_COEFFICIENTS.kI, INTAKE_COEFFICIENTS.kD);
-        intakeController.setTolerance(INTAKE_TOLERANCE);
         intakeController.setSetPoint(position);
         intake.setPower(intakeController.calculate(intake.getCurrentPosition()));
     }
@@ -176,6 +194,17 @@ public class Actuators {
         turretController.setSetPoint(position);
 //        this.turret.setTargetPosition(position);
 //        this.turret.setPower(TURRET_POWER);
+    }
+
+    public void setIntakeVerticalPositionInAuto(int pos) {
+        auto_intake_orient_pos = pos;
+    }
+
+    public void orientIntakeInAuto() {
+        int newPos = (int) (getIntakePosition() + auto_intake_orient_pos - (getIntakePosition() % (145.1)));
+        setIntakePosition(newPos);
+        resetIntake();
+
     }
 
     public int getTurret() {
@@ -298,7 +327,8 @@ public class Actuators {
                 case 1:
                     if (currentTime > time + DEPOSIT1_ALMOST) {
                         state++;
-                    } else if (currentTime > time + DEPOSIT1_ALMOST/2.0) {
+                    }
+                    if (currentTime > time + DEPOSIT1_ALMOST/2.0) {
                         setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
                     }
                     break;
@@ -317,23 +347,20 @@ public class Actuators {
                     if (currentTime > time + DEPOSIT2_ARM) {
                         state++;
                     }
+                    if (currentTime > time + DEPOSIT2_ARM/2.0) {
+                        if (barcodeLocation == LEFT) {
+                            setArmHopper(ARM_HOPPER_POSITION.getAlmostLow());
+                        } else if (barcodeLocation == MIDDLE) {
+                            setArmHopper(ARM_HOPPER_POSITION.getAlmostMid());
+                        } else {
+                            setArmHopper(ARM_HOPPER_POSITION.getAlmostHigh());
+                        }
+                    }
                     break;
                 case 4:
                     time = currentTime;
-                    if (barcodeLocation == LEFT) {
-                        setArmHopper(ARM_HOPPER_POSITION.getAlmostLow());
-                    } else if (barcodeLocation == MIDDLE) {
-                        setArmHopper(ARM_HOPPER_POSITION.getAlmostMid());
-                    } else {
-                        setArmHopper(ARM_HOPPER_POSITION.getAlmostHigh());
-                    }
-                    if(alliance == RED){
-                        setTurret(TURRET_ALLIANCE_RED);
-                    }else if (alliance==BLUE){
-                        setTurret((TURRET_ALLIANCE_BLUE));
-                    }
                     setTurret(alliance == RED ? TURRET_ALLIANCE : -TURRET_ALLIANCE);
-                    setSlides(SLIDES_ALLIANCE);
+                    setSlides(SLIDES_ALLIANCE_HIGH);
                     state++;
                     break;
                 case 5:
@@ -361,25 +388,24 @@ public class Actuators {
                 case 0:
                     time = currentTime;
                     setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
-                    setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
                     state++;
                     break;
                 case 1:
                     if (currentTime > time + DEPOSIT1_ALMOST) {
                         state++;
                     }
+                    if (currentTime > time + DEPOSIT1_ALMOST/2.0) {
+                        setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
+                    }
                     break;
                 case 2:
                     time = currentTime;
                     if (barcodeLocation == LEFT) {
                         setArmPivot(ARM_PIVOT_POSITION.getAlmostLow());
-                        setArmHopper(ARM_HOPPER_POSITION.getAlmostLow());
                     } else if (barcodeLocation == MIDDLE) {
                         setArmPivot(ARM_PIVOT_POSITION.getAlmostMid());
-                        setArmHopper(ARM_HOPPER_POSITION.getAlmostMid());
                     } else {
                         setArmPivot(ARM_PIVOT_POSITION.getAlmostHigh());
-                        setArmHopper(ARM_HOPPER_POSITION.getAlmostHigh());
                     }
                     state++;
                     break;
@@ -387,11 +413,27 @@ public class Actuators {
                     if (currentTime > time + DEPOSIT2_ARM) {
                         state++;
                     }
+                    if (currentTime > time + DEPOSIT2_ARM/2.0) {
+                        if (barcodeLocation == LEFT) {
+                            setArmHopper(ARM_HOPPER_POSITION.getAlmostLow());
+                        } else if (barcodeLocation == MIDDLE) {
+                            setArmHopper(ARM_HOPPER_POSITION.getAlmostMid());
+                        } else {
+                            setArmHopper(ARM_HOPPER_POSITION.getAlmostHigh());
+                        }
+                    }
                     break;
                 case 4:
                     time = currentTime;
-                    setTurret(alliance == RED ? TURRET_SHARED : TURRET_SHARED);
-                    setSlides(alliance == RED ? SLIDES_SHARED : SLIDES_SHARED);
+//                    if (barcodeLocation == LEFT) {
+//                        setArmHopper(ARM_HOPPER_POSITION.getAlmostLow());
+//                    } else if (barcodeLocation == MIDDLE) {
+//                        setArmHopper(ARM_HOPPER_POSITION.getAlmostMid());
+//                    } else {
+//                        setArmHopper(ARM_HOPPER_POSITION.getAlmostHigh());
+//                    }
+                    setTurret(alliance == RED ? TURRET_SHARED : -TURRET_SHARED);
+                    setSlides(SLIDES_SHARED);
                     state++;
                     break;
                 case 5:
@@ -421,93 +463,126 @@ public class Actuators {
                     //resetIntake();
                     //"memory" stuff
                     if (justFinishedAllianceMacro) {
-                        if(alliance==BLUE) {TURRET_ALLIANCE_BLUE = getTurret();}
-                        else if(alliance==RED) {TURRET_ALLIANCE_RED = getTurret();}
-                        SLIDES_ALLIANCE = getSlides();
-                        if (barcodeLocation == LEFT) {
-                            ARM_PIVOT_POSITION.setAlmostLow(pivotServo.getPosition());
-                            ARM_HOPPER_POSITION.setAlmostLow(hopperServo.getPosition());
-                        } else if (barcodeLocation == MIDDLE) {
-                            ARM_PIVOT_POSITION.setAlmostMid(pivotServo.getPosition());
-                            ARM_HOPPER_POSITION.setAlmostMid(hopperServo.getPosition());
-                        } else if (barcodeLocation == RIGHT) {
-                            ARM_PIVOT_POSITION.setAlmostHigh(pivotServo.getPosition());
-                            ARM_HOPPER_POSITION.setAlmostHigh(hopperServo.getPosition());
-                        }
+                        TURRET_ALLIANCE = alliance == RED ? getTurret() : -getTurret();
+//                        if(alliance==BLUE) {TURRET_ALLIANCE_BLUE = getTurret();}
+//                        else if(alliance==RED) {TURRET_ALLIANCE_RED = getTurret();}
+                        SLIDES_ALLIANCE_HIGH = getSlides();
+//                        if (barcodeLocation == LEFT) {
+//                            ARM_PIVOT_POSITION.setAlmostLow(pivotServo.getPosition());
+//                            ARM_HOPPER_POSITION.setAlmostLow(hopperServo.getPosition());
+//                        } else if (barcodeLocation == MIDDLE) {
+//                            ARM_PIVOT_POSITION.setAlmostMid(pivotServo.getPosition());
+//                            ARM_HOPPER_POSITION.setAlmostMid(hopperServo.getPosition());
+//                        } else if (barcodeLocation == RIGHT) {
+//                            ARM_PIVOT_POSITION.setAlmostHigh(pivotServo.getPosition());
+//                            ARM_HOPPER_POSITION.setAlmostHigh(hopperServo.getPosition());
+//                        }
                     } else if (justFinishedSharedMacro) {
-                        if(alliance==BLUE) {TURRET_SHARED_BLUE = getTurret();}
-                        else if(alliance==RED) {TURRET_SHARED_RED = getTurret();}
+                        TURRET_SHARED = alliance == RED ? getTurret() : -getTurret();
                         SLIDES_SHARED = getSlides();
-                        if (barcodeLocation == LEFT) {
-                            ARM_PIVOT_POSITION.setAlmostLow(pivotServo.getPosition());
-                            ARM_HOPPER_POSITION.setAlmostLow(hopperServo.getPosition());
-                        } else if (barcodeLocation == MIDDLE) {
-                            ARM_PIVOT_POSITION.setAlmostMid(pivotServo.getPosition());
-                            ARM_HOPPER_POSITION.setAlmostMid(hopperServo.getPosition());
-                        } else if (barcodeLocation == RIGHT) {
-                            ARM_PIVOT_POSITION.setAlmostHigh(pivotServo.getPosition());
-                            ARM_HOPPER_POSITION.setAlmostHigh(hopperServo.getPosition());
-                        }
+
+//                        if(alliance==BLUE) {TURRET_SHARED_BLUE = getTurret();}
+//                        else if(alliance==RED) {TURRET_SHARED_RED = getTurret();}
+//                        SLIDES_SHARED = getSlides();
+//                        if (barcodeLocation == LEFT) {
+//                            ARM_PIVOT_POSITION.setAlmostLow(pivotServo.getPosition());
+//                            ARM_HOPPER_POSITION.setAlmostLow(hopperServo.getPosition());
+//                        } else if (barcodeLocation == MIDDLE) {
+//                            ARM_PIVOT_POSITION.setAlmostMid(pivotServo.getPosition());
+//                            ARM_HOPPER_POSITION.setAlmostMid(hopperServo.getPosition());
+//                        } else if (barcodeLocation == RIGHT) {
+//                            ARM_PIVOT_POSITION.setAlmostHigh(pivotServo.getPosition());
+//                            ARM_HOPPER_POSITION.setAlmostHigh(hopperServo.getPosition());
+//                        }
                     }
 
                     time = currentTime;
-                    if (barcodeLocation == LEFT) {
-                        setArmPivot(ARM_PIVOT_POSITION.getLow());
-                    } else if (barcodeLocation == MIDDLE) {
-                        setArmPivot(ARM_PIVOT_POSITION.getMid());
-                    } else if (barcodeLocation == RIGHT) {
-                        setArmHopper(ARM_HOPPER_POSITION.getHigh());
-                    }
+                        if (barcodeLocation == LEFT) {
+                            setArmHopper(ARM_HOPPER_POSITION.getLow());
+                            setArmPivot(ARM_PIVOT_POSITION.getLow());
+                        } else if (barcodeLocation == MIDDLE) {
+                            setArmHopper(ARM_HOPPER_POSITION.getMid());
+                            setArmPivot(ARM_PIVOT_POSITION.getMid());
+                        } else if (barcodeLocation == RIGHT) {
+                            setArmHopper(ARM_HOPPER_POSITION.getHigh());
+                            setArmPivot(ARM_PIVOT_POSITION.getHigh());
+                        }
+
                     state++;
                     break;
                 case 1:
-                    if (currentTime > time + RETRACT1_SCORE) { state++; }
+                    if (currentTime > time + RETRACT1_SCORE) {
+                        state++;
+                    }
+//                    if (justFinishedSharedMacro && currentTime > time + SLOW_DEPOSIT_TIME) {
+//                        if(getArmHopper()>ARM_HOPPER_POSITION.getLow())
+//                        {
+//                            setArmHopper(getArmHopper()+SLOW_DEPOSIT_INCREMENT);
+//                        }
+//                    }
                     break;
                 case 2:
                     time = currentTime;
-                    setArmPivot(ARM_PIVOT_POSITION.getUp());
-                    setArmHopper(ARM_HOPPER_POSITION.getUp());
+                    setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
                     state++;
                     break;
                 case 3:
-                    if (currentTime > time + 1) {
-                        setSlides(0);
+                    if (currentTime > time + 0.25) {
+                        state++;
                     }
-                    if (currentTime > time + RETRACT2_RETRACT || (slidesController.atSetPoint() && currentTime > time + 1.2)) { state++; }
                     break;
                 case 4:
+                    time = currentTime;
+                    setSlides(0);
+                    state++;
+                    break;
+                case 5:
+                    if (currentTime > time + RETRACT2_RETRACT || slidesController.atSetPoint()) {
+                        state++;
+                    }
+                    break;
+                case 6:
                     time = currentTime;
                     setTurret(0);
                     state++;
                     break;
-                case 5:
-                    if (currentTime > time + RETRACT3_TURRET || turretController.atSetPoint()) { state++; }
+                case 7:
+                    if (currentTime > time + RETRACT3_TURRET || turretController.atSetPoint()) {
+                        state++;
+                    }
                     break;
-                case 6:
+                case 8:
                     time = currentTime;
                     setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
                     setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
                     state++;
                     break;
-                case 7:
-                    if (currentTime > time + RETRACT4_ALMOST) { state++; }
+                case 9:
+                    if (currentTime > time + RETRACT4_ALMOST) {
+                        state++;
+                    }
                     break;
-                case 8:
+                case 10:
                     time = currentTime;
                     setArmPivot(ARM_PIVOT_POSITION.getDown());
                     setArmHopper(ARM_HOPPER_POSITION.getDown());
                     state++;
                     break;
-                case 9:
-                    if (currentTime > time + RETRACT5_DOWN) { state++; }
+                case 11:
+                    if (currentTime > time + RETRACT5_DOWN) {
+                        state++;
+                    }
                     break;
-                case 10:
+                case 12:
                     runningDeposit = false;
                     justFinishedAMacro = true;
+                    justFinishedAllianceMacro = false;
+                    justFinishedSharedMacro = false;
                     state = 0;
             }
         }
     }
+
 
     public String getTelemetry() {
         return String.format(Locale.US, ""+
@@ -516,9 +591,10 @@ public class Actuators {
                         "Slides:      pos %s pow %.2f\n" +
                         "HopperServo: pos %.2f\n" +
                         "SlidesServo: pos %.2f\n" +
-                        "Duckies: left %.2f right %.2f",
+                        "Duckies: left %.2f right %.2f\n" +
+                        "IntakeServo: pos %.2f",
                 intake.getCurrentPosition(), intake.getPower(), turret.getCurrentPosition(), turret.getPower(), turretController.getPositionError(),
                 slides.getCurrentPosition(), slides.getPower(), hopperServo.getPosition(), pivotServo.getPosition(),
-                leftDucky.getPower(), rightDucky.getPower());
+                leftDucky.getPower(), rightDucky.getPower(), intakeServo.getPosition());
     }
 }

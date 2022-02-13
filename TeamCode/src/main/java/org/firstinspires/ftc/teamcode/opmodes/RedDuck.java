@@ -2,9 +2,8 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_HOPPER_POSITION;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_PIVOT_POSITION;
-import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_RESET_TIME;
+import static org.firstinspires.ftc.teamcode.hardware.Actuators.DUCKY_SPEED;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SERVO_DOWN;
-import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_STOP_TIME;
 import static org.firstinspires.ftc.teamcode.opmodes.AbstractTeleOp.INTAKE_SPEED;
 import static org.firstinspires.ftc.teamcode.opmodes.TestIntake.RESET_TIME;
 import static org.firstinspires.ftc.teamcode.opmodes.TestIntake.STOP_TIME;
@@ -19,16 +18,16 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import org.firstinspires.ftc.teamcode.util.BarcodeLocation;
 import org.firstinspires.ftc.teamcode.util.CameraPosition;
 
-@Autonomous(name = "Blue Warehouse", group = "Competition", preselectTeleOp = "Blue TeleOp")
-public class BlueWarehouse extends AbstractAuto {
-    public static Pose2d START_POSE = new Pose2d(12, 63, Math.toRadians(0));
-    public static Pose2d INTAKE1 = new Pose2d(40, 65, Math.toRadians(0));
-    public static Pose2d SCORE1 = new Pose2d(12, 67, Math.toRadians(0));
-    public static Pose2d INTAKE2 = new Pose2d(44, 69, Math.toRadians(0));
-    public static Pose2d SCORE2 = new Pose2d(12, 71, Math.toRadians(0));
-        public static Pose2d INTAKE3 = new Pose2d(48, 73, Math.toRadians(0));
-    public static Pose2d SCORE3 = new Pose2d(12, 75, Math.toRadians(0));
-    public static Pose2d PARK = new Pose2d(50, 77, Math.toRadians(0));
+@Autonomous(name = "Red Duck", group = "Competition", preselectTeleOp = "Red TeleOp")
+public class RedDuck extends AbstractAuto {
+    public static Pose2d START_POSE = new Pose2d(-36, -63, Math.toRadians(180));
+    public static Pose2d DUCK = new Pose2d(-60, -55, Math.toRadians(180));
+    public static Pose2d SCORE1 = new Pose2d(-69, -29, Math.toRadians(0));
+    public static Pose2d INTAKE2 = new Pose2d(44, -69, Math.toRadians(0));
+    public static Pose2d SCORE2 = new Pose2d(12, -71, Math.toRadians(0));
+    public static Pose2d INTAKE3 = new Pose2d(48, -73, Math.toRadians(0));
+    public static Pose2d SCORE3 = new Pose2d(12, -75, Math.toRadians(0));
+    public static Pose2d PARK = new Pose2d(52, -77, Math.toRadians(0));
 
     @Override
     public void setAlliance() {
@@ -45,7 +44,7 @@ public class BlueWarehouse extends AbstractAuto {
         robot.drive.setPoseEstimate(START_POSE);
 
         Trajectory intake1 = robot.drive.trajectoryBuilder(START_POSE)
-                .lineToLinearHeading(INTAKE1)
+                .lineToLinearHeading(DUCK)
                 .build();
         Trajectory score1 = robot.drive.trajectoryBuilder(intake1.end())
                 .lineToLinearHeading(SCORE1)
@@ -70,26 +69,28 @@ public class BlueWarehouse extends AbstractAuto {
                 .build();
 
         // score preloaded
-//        addAlliance(10000, alliance, RIGHT);
-//        addDeposit(10000, alliance, RIGHT);
 
         addArmPivot(0.1, ARM_PIVOT_POSITION.getDown());
         addArmHopper(0.1, ARM_HOPPER_POSITION.getDown());
 
         addIntakeServo(1, INTAKE_SERVO_DOWN);
 
-//        addIntake(INTAKE_STOP_TIME, 0);
-        resetIntake(INTAKE_RESET_TIME);
+        // 1 block
+        addIntake(STOP_TIME, 0);
+        resetIntake(RESET_TIME);
+
+        addDelay(0.1);//wait for alliance partner's auto to move
 
         addAlliance(10000, alliance, RIGHT);
         addDeposit(10000, alliance, RIGHT);
 
-        // 1 block
-//        addIntake(0, -INTAKE_SPEED);
-//        followTrajectory(intake1);
-//        followTrajectory(score1);
-//        addIntake(STOP_TIME, 0);
-//        resetIntake(RESET_TIME);
+
+        followTrajectory(intake1);
+        addDuckSpinner(7, -DUCKY_SPEED);
+        addDuckSpinner(0, 0);
+        followTrajectory(score1);
+//        resetIntake(2);
+//        addDelay(5);
 //        addAlliance(10000, alliance, RIGHT);
 //        addDeposit(10000, alliance, RIGHT);
 
@@ -97,21 +98,21 @@ public class BlueWarehouse extends AbstractAuto {
 //        addIntake(0, -INTAKE_SPEED);
 //        followTrajectory(intake2);
 //        followTrajectory(score2);
-//        addIntake(STOP_TIME, 0);
-//        resetIntake(RESET_TIME);
-//        addAlliance(10000, alliance, RIGHT);
-//        addDeposit(10000, alliance, RIGHT);
+//        resetIntake(2);
+////        addDelay(5);
+////        addAlliance(10000, alliance, RIGHT);
+////        addDeposit(10000, alliance, RIGHT);
 //
 //        // 3 block
 //        addIntake(0, -INTAKE_SPEED);
 //        followTrajectory(intake3);
 //        followTrajectory(score3);
-//        addIntake(STOP_TIME, 0);
-//        resetIntake(RESET_TIME);
+//        resetIntake(2);
+//        addDelay(5);
 //        addAlliance(10000, alliance, RIGHT);
 //        addDeposit(10000, alliance, RIGHT);
 
         // park
-        followTrajectory(park);
+//        followTrajectory(park);
     }
 }

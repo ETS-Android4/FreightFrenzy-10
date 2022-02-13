@@ -2,22 +2,22 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_HOPPER_POSITION;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_PIVOT_POSITION;
-import static org.firstinspires.ftc.teamcode.util.Alliance.NEITHER;
-import static org.firstinspires.ftc.teamcode.util.Alliance.RED;
+import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SERVO_UP;
 
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.BarcodeLocation;
+import org.firstinspires.ftc.teamcode.util.CameraPosition;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
 public abstract class AbstractAuto extends LinearOpMode {
     Alliance alliance;
+    CameraPosition cameraPosition;
     public Robot robot;
     private BarcodeLocation teamElementLocation;
     private ArrayList<Step> steps;
@@ -25,6 +25,8 @@ public abstract class AbstractAuto extends LinearOpMode {
     private boolean stopWasNotRequested;
 
     public abstract void setAlliance();
+
+    public abstract void setCameraPosition();
 
     // Main method to run all the steps for autonomous
     @Override
@@ -34,17 +36,40 @@ public abstract class AbstractAuto extends LinearOpMode {
         telemetry.update();
 
         setAlliance();
+        setCameraPosition();
 
-        robot = new Robot(hardwareMap);
+        robot = new Robot(hardwareMap, cameraPosition);
+
         robot.actuators.setArmPivot(ARM_PIVOT_POSITION.getDown());
         robot.actuators.setArmHopper(ARM_HOPPER_POSITION.getDown());
+
+        while (robot.camera.getFrameCount() < 1) {
+            idle();
+        }
+
+        // set up into box
+//        robot.actuators.setArmPivot(ARM_PIVOT_POSITION.almostDown);
+//        sleep(1000 * (long) DEPOSIT1_ALMOST/2);
+//        robot.actuators.setArmHopper(ARM_HOPPER_POSITION.almostDown);
+//        sleep(1000 * (long) DEPOSIT1_ALMOST/2);
+//        robot.actuators.setArmPivot(ARM_PIVOT_POSITION.getUp());
+//        robot.actuators.setArmHopper(ARM_HOPPER_POSITION.getUp());
+//        sleep(1000 * (long) DEPOSIT2_ARM);
+        robot.actuators.setIntakeServo(INTAKE_SERVO_UP);
+//        sleep(1000);
+
+        double time = getRuntime();
+        while (getRuntime() < time + 2) {
+            robot.actuators.resetIntake();
+        }
 
         // wait for start
         while (!(isStarted() || isStopRequested())) {
 //            teamElementLocation = robot.camera.checkTeamElementLocationUsingAprilTags();
+            teamElementLocation = robot.camera.checkTeamElementLocation();
             telemetry.addLine("Initialized");
-//            telemetry.addLine(String.format(Locale.US, "Location: %s", teamElementLocation));
-//            telemetry.addLine(String.format(Locale.US, "Size: %.4f", robot.camera.getTeamElement().getArea()));
+            telemetry.addLine(String.format(Locale.US, "Location: %s", teamElementLocation));
+            telemetry.addLine(String.format(Locale.US, "Size: %.4f", robot.camera.getTeamElement().getArea()));
             telemetry.update();
         }
         resetStartTime();
@@ -165,25 +190,26 @@ public abstract class AbstractAuto extends LinearOpMode {
         steps.add(new Step("Resetting Intake", timeout) {
             @Override
             public void start() {
-                robot.actuators.setIntake(0);
-                int newPos = (int) (robot.actuators.getIntakePosition() - (robot.actuators.getIntakePosition()  % (145.1)));
+//                robot.actuators.setIntake(0);
+                int newPos = (int) (robot.actuators.getIntakePosition() + (145.1/8.0) - (robot.actuators.getIntakePosition() % (145.1)));
+//                int newPos = (int) (robot.actuators.getIntakePosition() + 145.1*5 + (robot.actuators.getIntakePosition()  % (145.1)));
+//                int newPos = (int) (robot.actuators.getIntakePosition() - (robot.actuators.getIntakePosition()  % (145.1)));
                 robot.actuators.setIntakePosition(newPos);
-
             }
             @Override
             public void whileRunning() {
                 robot.actuators.resetIntake();
             }
             @Override
-            public void end() {}
+            public void end() {
+                robot.actuators.setIntake(0);
+            }
             @Override
             public boolean isFinished() {
                 return false;
             }
         });
     }
-
-
 
     public void addArmHopper(double timeout, final double armHopperPosition) {
         steps.add(new Step("Setting hopper to " + armHopperPosition, timeout) {
@@ -287,24 +313,24 @@ public abstract class AbstractAuto extends LinearOpMode {
             }
         });
     }
-    public void addIntakeReset(double timeout) {
-        steps.add(new Step("Resetting Intake", timeout) {
-            @Override
-            public void start() {
-                robot.actuators.pickingUpFreight = true;
-            }
-            @Override
-            public void whileRunning() {
-                robot.actuators.pickingUpFreight(getRuntime());
-            }
-            @Override
-            public void end() {}
-            @Override
-            public boolean isFinished() {
-                return !robot.actuators.pickingUpFreight;
-            }
-        });
-    }
+//    public void addIntakeReset(double timeout) {
+//        steps.add(new Step("Resetting Intake", timeout) {
+//            @Override
+//            public void start() {
+//                robot.actuators.pickingUpFreight = true;
+//            }
+//            @Override
+//            public void whileRunning() {
+//                robot.actuators.pickingUpFreight(getRuntime());
+//            }
+//            @Override
+//            public void end() {}
+//            @Override
+//            public boolean isFinished() {
+//                return !robot.actuators.pickingUpFreight;
+//            }
+//        });
+//    }
     public void addAlliance(double timeout, Alliance alliance, BarcodeLocation barcodeLocation) {
         steps.add(new Step("Scoring Alliance Hub ", timeout) {
             @Override
@@ -356,6 +382,22 @@ public abstract class AbstractAuto extends LinearOpMode {
             @Override
             public boolean isFinished() {
                 return !robot.actuators.runningDeposit;
+            }
+        });
+    }
+    public void addIntakeServo(double timeout, double position) {
+        steps.add(new Step("Depositing", timeout) {
+            @Override
+            public void start() {
+                robot.actuators.setIntakeServo(position);
+            }
+            @Override
+            public void whileRunning() {}
+            @Override
+            public void end() {}
+            @Override
+            public boolean isFinished() {
+                return false;
             }
         });
     }

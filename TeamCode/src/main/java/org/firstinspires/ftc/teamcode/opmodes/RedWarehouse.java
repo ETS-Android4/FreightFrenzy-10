@@ -1,5 +1,14 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_HOPPER_POSITION;
+import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_PIVOT_POSITION;
+import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_RESET_TIME;
+import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SERVO_DOWN;
+import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_STOP_TIME;
+import static org.firstinspires.ftc.teamcode.opmodes.AbstractTeleOp.INTAKE_SPEED;
+import static org.firstinspires.ftc.teamcode.opmodes.TestIntake.RESET_TIME;
+import static org.firstinspires.ftc.teamcode.opmodes.TestIntake.STOP_TIME;
+import static org.firstinspires.ftc.teamcode.util.Alliance.BLUE;
 import static org.firstinspires.ftc.teamcode.util.Alliance.RED;
 import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.RIGHT;
 
@@ -8,21 +17,27 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.util.BarcodeLocation;
+import org.firstinspires.ftc.teamcode.util.CameraPosition;
 
 @Autonomous(name = "Red Warehouse", group = "Competition", preselectTeleOp = "Red TeleOp")
 public class RedWarehouse extends AbstractAuto {
-    public static Pose2d START_POSE = new Pose2d(12, -63, Math.toRadians(0));
-    public static Pose2d INTAKE1 = new Pose2d(40, -65, Math.toRadians(0));
-    public static Pose2d SCORE1 = new Pose2d(12, -67, Math.toRadians(0));
-    public static Pose2d INTAKE2 = new Pose2d(40, -69, Math.toRadians(0));
-    public static Pose2d SCORE2 = new Pose2d(12, -71, Math.toRadians(0));
-//    public static Pose2d INTAKE3 = new Pose2d(40, -69, Math.toRadians(0));
-//    public static Pose2d SCORE3 = new Pose2d(40, -69, Math.toRadians(0));
-    public static Pose2d PARK = new Pose2d(40, -73, Math.toRadians(0));
+    public static Pose2d START_POSE = new Pose2d(12, 63, Math.toRadians(0));
+    public static Pose2d INTAKE1 = new Pose2d(40, 61, Math.toRadians(0));
+    public static Pose2d SCORE1 = new Pose2d(12, 59, Math.toRadians(0));
+    public static Pose2d INTAKE2 = new Pose2d(44, 57, Math.toRadians(0));
+    public static Pose2d SCORE2 = new Pose2d(12, 55, Math.toRadians(0));
+    public static Pose2d INTAKE3 = new Pose2d(48, 53, Math.toRadians(0));
+    public static Pose2d SCORE3 = new Pose2d(12, 51, Math.toRadians(0));
+    public static Pose2d PARK = new Pose2d(50, 49, Math.toRadians(0));
 
     @Override
     public void setAlliance() {
         this.alliance = RED;
+    }
+
+    @Override
+    public void setCameraPosition() {
+        this.cameraPosition = CameraPosition.RIGHT;
     }
 
     @Override
@@ -43,34 +58,56 @@ public class RedWarehouse extends AbstractAuto {
                 .lineToLinearHeading(SCORE2)
                 .build();
 
-//        Trajectory intake3 = robot.drive.trajectoryBuilder(score2.end())
-//                .lineToLinearHeading(INTAKE3)
-//                .build();
-//        Trajectory score3 = robot.drive.trajectoryBuilder(intake3.end())
-//                .lineToLinearHeading(SCORE3)
-//                .build();
+        Trajectory intake3 = robot.drive.trajectoryBuilder(score2.end())
+                .lineToLinearHeading(INTAKE3)
+                .build();
+        Trajectory score3 = robot.drive.trajectoryBuilder(intake3.end())
+                .lineToLinearHeading(SCORE3)
+                .build();
 
-        Trajectory park = robot.drive.trajectoryBuilder(score2.end())
+        Trajectory park = robot.drive.trajectoryBuilder(score3.end())
                 .lineToLinearHeading(PARK)
                 .build();
 
         // score preloaded
+//        addAlliance(10000, alliance, RIGHT);
+//        addDeposit(10000, alliance, RIGHT);
+
+        addArmPivot(0.1, ARM_PIVOT_POSITION.getDown());
+        addArmHopper(0.1, ARM_HOPPER_POSITION.getDown());
+
+        addIntakeServo(1, INTAKE_SERVO_DOWN);
+
+//        addIntake(INTAKE_STOP_TIME, 0);
+        resetIntake(INTAKE_RESET_TIME);
+
         addAlliance(10000, alliance, RIGHT);
         addDeposit(10000, alliance, RIGHT);
 
         // 1 block
-        addIntake(0, -1);
+        addIntake(0, -INTAKE_SPEED);
         followTrajectory(intake1);
         followTrajectory(score1);
-        resetIntake(2);
+        addIntake(STOP_TIME, 0);
+        resetIntake(RESET_TIME);
         addAlliance(10000, alliance, RIGHT);
         addDeposit(10000, alliance, RIGHT);
 
         // 2 block
-        addIntake(0, -1);
+        addIntake(0, -INTAKE_SPEED);
         followTrajectory(intake2);
         followTrajectory(score2);
-        resetIntake(2);
+        addIntake(STOP_TIME, 0);
+        resetIntake(RESET_TIME);
+        addAlliance(10000, alliance, RIGHT);
+        addDeposit(10000, alliance, RIGHT);
+
+        // 3 block
+        addIntake(0, -INTAKE_SPEED);
+        followTrajectory(intake3);
+        followTrajectory(score3);
+        addIntake(STOP_TIME, 0);
+        resetIntake(RESET_TIME);
         addAlliance(10000, alliance, RIGHT);
         addDeposit(10000, alliance, RIGHT);
 
