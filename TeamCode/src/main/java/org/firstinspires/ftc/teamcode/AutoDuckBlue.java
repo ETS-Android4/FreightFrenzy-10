@@ -167,7 +167,7 @@ public class AutoDuckBlue extends LinearOpMode {
         sleep(sleeptime);
 
         //Drive slightly forward before score
-        driveInchesEnc(8.5*driveModifier, driveSpeed);
+        driveInchesEnc(8.2*driveModifier, driveSpeed);
         sleep(sleeptime);
 
         //Score
@@ -186,7 +186,7 @@ public class AutoDuckBlue extends LinearOpMode {
 
         //Turn on Duck Wheel and move to it
         duckWheel.setPower(-1.5);
-        driveInchesEnc(-38*driveModifier, -driveSpeed/3);
+        driveInchesEnc(-37.7*driveModifier, -driveSpeed/3);
         sleep(sleeptime);
         driveInchesEnc(-.75, -driveSpeed/12);
         sleep(1500);
@@ -197,8 +197,8 @@ public class AutoDuckBlue extends LinearOpMode {
         sleep(sleeptime/2);
         turnDumbEnc(6*turnModifier*rightTurnModifier, driveSpeed);
         sleep(sleeptime/2);
-        driveInchesEnc(-4*driveModifier, -driveSpeed);
-        sleep(sleeptime);
+//        driveInchesEnc(-4*driveModifier, -driveSpeed);
+//        sleep(sleeptime);
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());

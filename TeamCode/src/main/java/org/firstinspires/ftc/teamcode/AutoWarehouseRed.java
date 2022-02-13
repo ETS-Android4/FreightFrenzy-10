@@ -140,7 +140,7 @@ public class AutoWarehouseRed extends LinearOpMode {
             LinearSPos = 110;
             noLinear = 1;
         } else if(teamElementLocation == Cvhelper.BarcodeLocation.MIDDLE){
-            LinearSPos = 75;
+            LinearSPos = 78;
         } else if(teamElementLocation == Cvhelper.BarcodeLocation.RIGHT){
             LinearSPos = 40;
         }
@@ -173,7 +173,7 @@ public class AutoWarehouseRed extends LinearOpMode {
         //Turn left to score
         turnDumbEnc(10.5*turnModifier*leftTurnModifier, driveSpeed);
         sleep(sleeptime);
-        driveInchesEnc(4.8*driveModifier, driveSpeed);
+        driveInchesEnc(4.6*driveModifier, driveSpeed);
         sleep(sleeptime);
 
         //Score
@@ -187,13 +187,15 @@ public class AutoWarehouseRed extends LinearOpMode {
         linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //Line up with warehouse
-        driveInchesEnc(-6*driveModifier, -driveSpeed);
+        driveInchesEnc(-6.3*driveModifier, -driveSpeed);
         sleep(sleeptime);
-        turnDumbEnc(8*turnModifier*leftTurnModifier, driveSpeed);
+        turnDumbEnc(9.5*turnModifier*leftTurnModifier, driveSpeed);
         sleep(sleeptime);
 
         //Back in to warehouse
-        driveInchesEnc(-35*driveModifier, -2.5*driveSpeed);
+        driveInchesEnc(-30*driveModifier, -2.5*driveSpeed);
+        sleep(sleeptime);
+        driveInchesEnc(1, driveSpeed);
 
         //Get a block
         intakeMotor.setPower(1.0);
