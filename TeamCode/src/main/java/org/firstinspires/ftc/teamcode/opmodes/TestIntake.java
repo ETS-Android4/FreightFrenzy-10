@@ -39,32 +39,35 @@ public class TestIntake extends AbstractAuto {
 
     @Override
     public void initializeSteps(BarcodeLocation location) {
+        for(int i = 0 ; i<100; i++){
+            addArm(10);
+        }
 
-        addArmPivot(0.1, ARM_PIVOT_POSITION.getDown());
-        addArmHopper(0.1, ARM_HOPPER_POSITION.getDown());
-
-        addIntakeServo(1, INTAKE_SERVO_DOWN);
-
-        resetIntake(RESET_TIME);
-
-        addAlliance(10000, alliance, RIGHT);
-        addDeposit(10000, alliance, RIGHT);
-
-        addIntake(STOP_TIME, 0);
-        resetIntake(RESET_TIME);
-
-        addDelay(5);
-
-        addAlliance(10000, alliance, MIDDLE);
-        addDeposit(10000, alliance, MIDDLE);
-
-        addIntake(STOP_TIME, 0);
-        resetIntake(RESET_TIME);
-
-        addDelay(5);
-
-        addAlliance(10000, alliance, LEFT);
-        addDeposit(10000, alliance, LEFT);
+//        addArmPivot(0.1, ARM_PIVOT_POSITION.getDown());
+//        addArmHopper(0.1, ARM_HOPPER_POSITION.getDown());
+//
+//        addIntakeServo(1, INTAKE_SERVO_DOWN);
+//
+//        resetIntake(RESET_TIME);
+//
+//        addAlliance(10000, alliance, RIGHT);
+//        addDeposit(10000, alliance, RIGHT);
+//
+//        addIntake(STOP_TIME, 0);
+//        resetIntake(RESET_TIME);
+//
+//        addDelay(5);
+//
+//        addAlliance(10000, alliance, MIDDLE);
+//        addDeposit(10000, alliance, MIDDLE);
+//
+//        addIntake(STOP_TIME, 0);
+//        resetIntake(RESET_TIME);
+//
+//        addDelay(5);
+//
+//        addAlliance(10000, alliance, LEFT);
+//        addDeposit(10000, alliance, LEFT);
 
 
 //        addIntake(0, -INTAKE_SPEED);

@@ -16,8 +16,11 @@ import static org.firstinspires.ftc.teamcode.util.Constants.TURRET;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
+import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -107,6 +110,7 @@ public class Actuators {
     public boolean pickingUpFreight;
     public boolean runningAlliance;
     public boolean runningShared;
+    public boolean runningArm;
     public boolean runningDeposit;
     public boolean allianceQueue;
     public boolean sharedQueue;
@@ -578,6 +582,42 @@ public class Actuators {
                     justFinishedAMacro = true;
                     justFinishedAllianceMacro = false;
                     justFinishedSharedMacro = false;
+                    state = 0;
+            }
+        }
+    }
+
+
+    public void runningArm(double currentTime) {
+        if (runningArm) {
+            switch (state) {
+                case 0:
+                    time = currentTime;
+                    setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
+                    setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
+                    state++;
+                    break;
+                case 1:
+                    if (currentTime > time + 1) {
+                        state++;
+                    }
+                    break;
+                case 2:
+                    time = currentTime;
+                    setArmPivot(ARM_PIVOT_POSITION.getAlmostHigh());
+                    state++;
+                    break;
+                case 3:
+                    if (currentTime > time + 1.1) {
+                        state++;
+                    }
+                    if (currentTime > time + 0.4) {
+                        setArmHopper(ARM_HOPPER_POSITION.getAlmostHigh());
+                    }
+                    break;
+                case 4:
+                    runningArm = false;
+                    justFinishedAMacro = true;
                     state = 0;
             }
         }
