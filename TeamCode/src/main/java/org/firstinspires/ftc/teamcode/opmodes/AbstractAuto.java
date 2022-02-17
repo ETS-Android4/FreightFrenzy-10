@@ -56,13 +56,13 @@ public abstract class AbstractAuto extends LinearOpMode {
 //        robot.actuators.setArmPivot(ARM_PIVOT_POSITION.getUp());
 //        robot.actuators.setArmHopper(ARM_HOPPER_POSITION.getUp());
 //        sleep(1000 * (long) DEPOSIT2_ARM);
-        robot.actuators.setIntakeServo(INTAKE_SERVO_UP);
-//        sleep(1000);
 
-        double time = getRuntime();
-        while (getRuntime() < time + 2) {
-            robot.actuators.resetIntake();
-        }
+//        robot.actuators.setIntakeServo(INTAKE_SERVO_UP);
+//
+//        double time = getRuntime();
+//        while (getRuntime() < time + 2) {
+//            robot.actuators.resetIntake();
+//        }
 
         robot.actuators.setIntakeVerticalPositionInAuto((int) robot.actuators.getIntakePosition()+72);
 
@@ -385,6 +385,24 @@ public abstract class AbstractAuto extends LinearOpMode {
             @Override
             public boolean isFinished() {
                 return !robot.actuators.runningDeposit;
+            }
+        });
+    }
+    public void addArm(double timeout) {
+        steps.add(new Step("Depositing", timeout) {
+            @Override
+            public void start() {
+                robot.actuators.runningArm = true;
+            }
+            @Override
+            public void whileRunning() {
+                robot.actuators.runningArm(getRuntime());
+            }
+            @Override
+            public void end() {}
+            @Override
+            public boolean isFinished() {
+                return !robot.actuators.runningArm;
             }
         });
     }
