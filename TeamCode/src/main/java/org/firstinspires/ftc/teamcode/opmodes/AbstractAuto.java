@@ -7,6 +7,7 @@ import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SERVO_UP;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.hardware.Actuators;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.BarcodeLocation;
@@ -62,6 +63,8 @@ public abstract class AbstractAuto extends LinearOpMode {
 //        while (getRuntime() < time + 2) {
 //            robot.actuators.resetIntake();
 //        }
+
+        robot.actuators.setIntakeVerticalPositionInAuto((int) robot.actuators.getIntakePosition()+72);
 
         // wait for start
         while (!(isStarted() || isStopRequested())) {

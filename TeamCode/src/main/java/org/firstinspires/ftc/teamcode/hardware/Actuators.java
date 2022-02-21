@@ -183,16 +183,21 @@ public class Actuators {
         return this.intake.getCurrentPosition();
     }
 
+    //left here just in case renaming it to getIntakePosition breaks something in the future
+    public int getIntake() {
+        return this.intake.getCurrentPosition();
+    }
+
     public void resetIntake() {
         intakeController.setPID(INTAKE_COEFFICIENTS.kP, INTAKE_COEFFICIENTS.kI, INTAKE_COEFFICIENTS.kD);
         intakeController.setTolerance(INTAKE_TOLERANCE);
         intake.setPower(intakeController.calculate(intake.getCurrentPosition()));
     }
 
-    //left here just in case renaming it to getIntakePosition breaks something in the future
-    public int getIntake() {
-        return this.intake.getCurrentPosition();
+    public void setIntakeVerticalPositionInAuto(int pos){
+        auto_intake_orient_pos = pos;
     }
+
 
     public void setTurret(int position) {
         turretController.setSetPoint(position);
@@ -200,15 +205,11 @@ public class Actuators {
 //        this.turret.setPower(TURRET_POWER);
     }
 
-    public void setIntakeVerticalPositionInAuto(int pos) {
-        auto_intake_orient_pos = pos;
-    }
 
-    public void orientIntakeInAuto() {
+    public void orientIntakeInAuto(){
         int newPos = (int) (getIntakePosition() + auto_intake_orient_pos - (getIntakePosition() % (145.1)));
         setIntakePosition(newPos);
         resetIntake();
-
     }
 
     public int getTurret() {
@@ -463,7 +464,7 @@ public class Actuators {
         if (runningDeposit) {
             switch (state) {
                 case 0:
-                    //reset intake at the begining of retract macro
+                    //reset intake at the beginning of retract macro
                     //resetIntake();
                     //"memory" stuff
                     if (justFinishedAllianceMacro) {
@@ -611,4 +612,6 @@ public class Actuators {
                 slides.getCurrentPosition(), slides.getPower(), hopperServo.getPosition(), pivotServo.getPosition(),
                 leftDucky.getPower(), rightDucky.getPower(), intakeServo.getPosition());
     }
+
+
 }
