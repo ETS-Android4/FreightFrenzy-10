@@ -69,18 +69,15 @@ public class RedWarehouse extends AbstractAuto {
                 .lineToLinearHeading(PARK)
                 .build();
 
-        // score preloaded
-//        addAlliance(10000, alliance, RIGHT);
-//        addDeposit(10000, alliance, RIGHT);
-
+        // set arm
         addArmPivot(0.1, ARM_PIVOT_POSITION.getDown());
         addArmHopper(0.1, ARM_HOPPER_POSITION.getDown());
 
         addIntakeServo(1, INTAKE_SERVO_DOWN);
 
-//        addIntake(INTAKE_STOP_TIME, 0);
         resetIntake(INTAKE_RESET_TIME);
 
+        // score preloaded
         addAlliance(10000, alliance, RIGHT);
         addDeposit(10000, alliance, RIGHT);
 

@@ -203,6 +203,8 @@ public abstract class AbstractAuto extends LinearOpMode {
             @Override
             public void end() {
                 robot.actuators.setIntake(0);
+                robot.actuators.setIntakePosition(robot.actuators.getIntakePosition());
+                robot.actuators.setIntake(0);
             }
             @Override
             public boolean isFinished() {

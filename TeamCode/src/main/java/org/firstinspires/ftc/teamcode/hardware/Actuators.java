@@ -74,7 +74,7 @@ public class Actuators {
     public static int TURRET_ALLIANCE = 650;
     public static int TURRET_SHARED = -800;
 
-    public static int SLIDES_ALLIANCE_HIGH = 2100;
+    public static int SLIDES_ALLIANCE_HIGH = 2200;
     public static int SLIDES_ALLIANCE_MID = 1649;
     public static int SLIDES_ALLIANCE_LOW = 1422;
     public static int SLIDES_SHARED = 0;
@@ -84,7 +84,7 @@ public class Actuators {
 
     public static double DEPOSIT1_ALMOST = 0.6;
     public static double DEPOSIT2_ARM = 1.0;
-    public static double DEPOSIT3_EXTEND = 1;
+    public static double DEPOSIT3_EXTEND = 1.5;
     public static double DEPOSIT4 = 10;
 
     public static double RETRACT1_SCORE = 0.4;
@@ -468,49 +468,23 @@ public class Actuators {
                     //"memory" stuff
                     if (justFinishedAllianceMacro) {
                         TURRET_ALLIANCE = alliance == RED ? getTurret() : -getTurret();
-//                        if(alliance==BLUE) {TURRET_ALLIANCE_BLUE = getTurret();}
-//                        else if(alliance==RED) {TURRET_ALLIANCE_RED = getTurret();}
                         SLIDES_ALLIANCE_HIGH = getSlides();
-//                        if (barcodeLocation == LEFT) {
-//                            ARM_PIVOT_POSITION.setAlmostLow(pivotServo.getPosition());
-//                            ARM_HOPPER_POSITION.setAlmostLow(hopperServo.getPosition());
-//                        } else if (barcodeLocation == MIDDLE) {
-//                            ARM_PIVOT_POSITION.setAlmostMid(pivotServo.getPosition());
-//                            ARM_HOPPER_POSITION.setAlmostMid(hopperServo.getPosition());
-//                        } else if (barcodeLocation == RIGHT) {
-//                            ARM_PIVOT_POSITION.setAlmostHigh(pivotServo.getPosition());
-//                            ARM_HOPPER_POSITION.setAlmostHigh(hopperServo.getPosition());
-//                        }
                     } else if (justFinishedSharedMacro) {
                         TURRET_SHARED = alliance == RED ? getTurret() : -getTurret();
                         SLIDES_SHARED = getSlides();
-
-//                        if(alliance==BLUE) {TURRET_SHARED_BLUE = getTurret();}
-//                        else if(alliance==RED) {TURRET_SHARED_RED = getTurret();}
-//                        SLIDES_SHARED = getSlides();
-//                        if (barcodeLocation == LEFT) {
-//                            ARM_PIVOT_POSITION.setAlmostLow(pivotServo.getPosition());
-//                            ARM_HOPPER_POSITION.setAlmostLow(hopperServo.getPosition());
-//                        } else if (barcodeLocation == MIDDLE) {
-//                            ARM_PIVOT_POSITION.setAlmostMid(pivotServo.getPosition());
-//                            ARM_HOPPER_POSITION.setAlmostMid(hopperServo.getPosition());
-//                        } else if (barcodeLocation == RIGHT) {
-//                            ARM_PIVOT_POSITION.setAlmostHigh(pivotServo.getPosition());
-//                            ARM_HOPPER_POSITION.setAlmostHigh(hopperServo.getPosition());
-//                        }
                     }
 
                     time = currentTime;
-                        if (barcodeLocation == LEFT) {
-                            setArmHopper(ARM_HOPPER_POSITION.getLow());
-                            setArmPivot(ARM_PIVOT_POSITION.getLow());
-                        } else if (barcodeLocation == MIDDLE) {
-                            setArmHopper(ARM_HOPPER_POSITION.getMid());
-                            setArmPivot(ARM_PIVOT_POSITION.getMid());
-                        } else if (barcodeLocation == RIGHT) {
-                            setArmHopper(ARM_HOPPER_POSITION.getHigh());
-                            setArmPivot(ARM_PIVOT_POSITION.getHigh());
-                        }
+                    if (barcodeLocation == LEFT) {
+                        setArmHopper(ARM_HOPPER_POSITION.getLow());
+                        setArmPivot(ARM_PIVOT_POSITION.getLow());
+                    } else if (barcodeLocation == MIDDLE) {
+                        setArmHopper(ARM_HOPPER_POSITION.getMid());
+                        setArmPivot(ARM_PIVOT_POSITION.getMid());
+                    } else if (barcodeLocation == RIGHT) {
+                        setArmHopper(ARM_HOPPER_POSITION.getHigh());
+                        setArmPivot(ARM_PIVOT_POSITION.getHigh());
+                    }
 
                     state++;
                     break;

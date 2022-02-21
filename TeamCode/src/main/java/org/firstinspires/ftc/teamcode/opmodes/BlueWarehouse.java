@@ -26,7 +26,7 @@ public class BlueWarehouse extends AbstractAuto {
     public static Pose2d SCORE1 = new Pose2d(12, 67, Math.toRadians(0));
     public static Pose2d INTAKE2 = new Pose2d(44, 69, Math.toRadians(0));
     public static Pose2d SCORE2 = new Pose2d(12, 71, Math.toRadians(0));
-        public static Pose2d INTAKE3 = new Pose2d(48, 73, Math.toRadians(0));
+    public static Pose2d INTAKE3 = new Pose2d(48, 73, Math.toRadians(0));
     public static Pose2d SCORE3 = new Pose2d(12, 75, Math.toRadians(0));
     public static Pose2d PARK = new Pose2d(50, 77, Math.toRadians(0));
 
@@ -69,33 +69,32 @@ public class BlueWarehouse extends AbstractAuto {
                 .lineToLinearHeading(PARK)
                 .build();
 
-        // score preloaded
-//        addAlliance(10000, alliance, RIGHT);
-//        addDeposit(10000, alliance, RIGHT);
-
+        // set arm
         addArmPivot(0.1, ARM_PIVOT_POSITION.getDown());
         addArmHopper(0.1, ARM_HOPPER_POSITION.getDown());
 
         addIntakeServo(1, INTAKE_SERVO_DOWN);
 
-//        addIntake(INTAKE_STOP_TIME, 0);
         resetIntake(INTAKE_RESET_TIME);
 
+        // score preloaded
         addAlliance(10000, alliance, RIGHT);
         addDeposit(10000, alliance, RIGHT);
 
-        // 1 block
+//        // 1 block
 //        addIntake(0, -INTAKE_SPEED);
 //        followTrajectory(intake1);
+//        addIntake(0, INTAKE_SPEED);
 //        followTrajectory(score1);
 //        addIntake(STOP_TIME, 0);
 //        resetIntake(RESET_TIME);
 //        addAlliance(10000, alliance, RIGHT);
 //        addDeposit(10000, alliance, RIGHT);
-
-        // 2 block
+//
+//        // 2 block
 //        addIntake(0, -INTAKE_SPEED);
 //        followTrajectory(intake2);
+//        addIntake(0, INTAKE_SPEED);
 //        followTrajectory(score2);
 //        addIntake(STOP_TIME, 0);
 //        resetIntake(RESET_TIME);
@@ -105,11 +104,22 @@ public class BlueWarehouse extends AbstractAuto {
 //        // 3 block
 //        addIntake(0, -INTAKE_SPEED);
 //        followTrajectory(intake3);
+//        addIntake(0, INTAKE_SPEED);
 //        followTrajectory(score3);
 //        addIntake(STOP_TIME, 0);
 //        resetIntake(RESET_TIME);
 //        addAlliance(10000, alliance, RIGHT);
 //        addDeposit(10000, alliance, RIGHT);
+        for (int i = 0; i < 10; i++) {
+            addIntake(0, -INTAKE_SPEED);
+            followTrajectory(intake1);
+            addIntake(0, INTAKE_SPEED);
+            followTrajectory(score1);
+            addIntake(STOP_TIME, 0);
+            resetIntake(RESET_TIME);
+            addAlliance(10000, alliance, RIGHT);
+            addDeposit(10000, alliance, RIGHT);
+        }
 
         // park
         followTrajectory(park);

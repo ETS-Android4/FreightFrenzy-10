@@ -30,7 +30,7 @@ public class AbstractTeleOp extends OpMode {
     //this is for reseting the intake to the upright position
     public double intakeVerticalPos = 0;
 
-    public static double INTAKE_SPEED = .7;
+    public static double INTAKE_SPEED = 0.5;
     public static double INTAKE_SLOW_SPEED = 0.15;
     public static double INTAKE_MID_SPEED = 0.4;
 
@@ -221,7 +221,7 @@ public class AbstractTeleOp extends OpMode {
             robot.actuators.setDuckies(0, alliance);
         }
 
-        if (driver2.getBack().isJustPressed()) {
+        if (driver1.getBack().isJustPressed()) {
             if (alliance == RED) {
                 alliance = BLUE;
             } else if (alliance == BLUE) {
