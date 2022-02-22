@@ -6,6 +6,10 @@ import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_HOPPER_SPEED
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_PIVOT_POSITION;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_PIVOT_SPEED;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.DUCKY_SPEED;
+import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SERVO_DOWN;
+import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SERVO_UP;
+import static org.firstinspires.ftc.teamcode.hardware.Actuators.ODO_SERVO_DOWN;
+import static org.firstinspires.ftc.teamcode.hardware.Actuators.ODO_SERVO_UP;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.SLIDES_SPEED;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.TURRET_SPEED;
 import static org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive.DRIVE_SPEED;
@@ -30,7 +34,7 @@ public class AbstractTeleOp extends OpMode {
     //this is for reseting the intake to the upright position
     public double intakeVerticalPos = 0;
 
-    public static double INTAKE_SPEED = 0.5;
+    public static double INTAKE_SPEED = 0.25;
     public static double INTAKE_SLOW_SPEED = 0.15;
     public static double INTAKE_MID_SPEED = 0.4;
 
@@ -47,7 +51,9 @@ public class AbstractTeleOp extends OpMode {
 //    private double armPivotPosition = ARM_PIVOT_POSITION.getDown();
     private double armHopperPosition = ARM_HOPPER_POSITION.getInit();
     private double armPivotPosition = ARM_PIVOT_POSITION.getInit();
-    private double intakeServoPosition = 0.5;
+
+    public boolean odoRetracted;
+    public boolean intakeRetracted;
 
     public void setAlliance() {
         alliance = RED;
@@ -171,7 +177,7 @@ public class AbstractTeleOp extends OpMode {
 //            armPivotPosition = clamp(armPivotPosition, ARM_PIVOT_RANGE.getDoubleMin(), ARM_PIVOT_RANGE.getDoubleMax());
 
             turretPosition = clamp(turretPosition, -1000, 1000);
-            slidesPosition = clamp(slidesPosition, 0, 2200); //max was 2500
+            slidesPosition = clamp(slidesPosition, 0, 2300); //max was 2500
             armHopperPosition = clamp(armHopperPosition, 0.01, 0.99);
             armPivotPosition = clamp(armPivotPosition, 0.01, 0.99);
             robot.actuators.setTurret(turretPosition);
@@ -220,6 +226,16 @@ public class AbstractTeleOp extends OpMode {
         } else {
             robot.actuators.setDuckies(0, alliance);
         }
+
+        // retractables
+        if (driver1.getX().isJustPressed()) {
+            intakeRetracted = !intakeRetracted;
+        }
+        if (driver1.getA().isJustPressed()) {
+            odoRetracted = !odoRetracted;
+        }
+        robot.actuators.setIntakeServo(intakeRetracted ? INTAKE_SERVO_UP : INTAKE_SERVO_DOWN);
+        robot.actuators.setOdoServo(odoRetracted ? ODO_SERVO_UP : ODO_SERVO_DOWN);
 
         if (driver1.getBack().isJustPressed()) {
             if (alliance == RED) {

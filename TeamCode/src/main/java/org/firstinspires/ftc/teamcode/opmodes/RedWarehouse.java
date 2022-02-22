@@ -108,6 +108,18 @@ public class RedWarehouse extends AbstractAuto {
         addAlliance(10000, alliance, RIGHT);
         addDeposit(10000, alliance, RIGHT);
 
+//        for (int i = 0; i < 10; i++) {
+//            addIntake(0, -INTAKE_SPEED);
+//            followTrajectory(intake1);
+//            addIntake(0, INTAKE_SPEED);
+//            followTrajectory(score1);
+//            addIntake(STOP_TIME, 0);
+//            resetIntake(RESET_TIME);
+//            addAlliance(10000, alliance, RIGHT);
+//            addDeposit(10000, alliance, RIGHT);
+//        }
+
+
         // park
         followTrajectory(park);
     }

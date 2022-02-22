@@ -8,6 +8,7 @@ import static org.firstinspires.ftc.teamcode.util.Constants.HOPPER_SERVO;
 import static org.firstinspires.ftc.teamcode.util.Constants.INTAKE;
 import static org.firstinspires.ftc.teamcode.util.Constants.INTAKE_SERVO;
 import static org.firstinspires.ftc.teamcode.util.Constants.LEFT_DUCKY;
+import static org.firstinspires.ftc.teamcode.util.Constants.ODO_SERVO;
 import static org.firstinspires.ftc.teamcode.util.Constants.RIGHT_DUCKY;
 import static org.firstinspires.ftc.teamcode.util.Constants.SLIDES;
 import static org.firstinspires.ftc.teamcode.util.Constants.SLIDES_SERVO;
@@ -47,7 +48,7 @@ public class Actuators {
     public static Range ARM_HOPPER_RANGE = new Range(0.01, 0.99);
     public static Range ARM_PIVOT_RANGE = new Range(0.01, 0.99);
 
-    public static double TURRET_TOLERANCE = 2;
+    public static double TURRET_TOLERANCE = 0;
     public static double SLIDES_TOLERANCE = 3;
     public static double INTAKE_TOLERANCE = 50;
 
@@ -70,6 +71,8 @@ public class Actuators {
     // intake servo positions: down 0.01 up 0.99
     public static double INTAKE_SERVO_DOWN = 0.01;
     public static double INTAKE_SERVO_UP = 0.99;
+    public static double ODO_SERVO_DOWN = 0.01;
+    public static double ODO_SERVO_UP = 0.99;
 
     public static int TURRET_ALLIANCE = 650;
     public static int TURRET_SHARED = -800;
@@ -105,6 +108,7 @@ public class Actuators {
     private CRServo leftDucky;
     private CRServo rightDucky;
     private Servo intakeServo;
+    private Servo odoServo;
 
     // state machine variables
     public boolean pickingUpFreight;
@@ -136,11 +140,11 @@ public class Actuators {
         this.leftDucky = hardwareMap.get(CRServo.class, LEFT_DUCKY);
         this.rightDucky = hardwareMap.get(CRServo.class, RIGHT_DUCKY);
         this.intakeServo = hardwareMap.get(Servo.class, INTAKE_SERVO);
+        this.odoServo = hardwareMap.get(Servo.class, ODO_SERVO);
 
         this.intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         this.intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         this.intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
 
         this.turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         this.slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -152,6 +156,14 @@ public class Actuators {
         turretController = new PIDController(TURRET_COEFFICIENTS.kP, TURRET_COEFFICIENTS.kI, TURRET_COEFFICIENTS.kD);
         slidesController = new PIDController(SLIDES_COEFFICIENTS.kP, SLIDES_COEFFICIENTS.kI, SLIDES_COEFFICIENTS.kD);
         intakeController = new PIDController(INTAKE_COEFFICIENTS.kP, INTAKE_COEFFICIENTS.kI, INTAKE_COEFFICIENTS.kD);
+    }
+
+    public void setOdoServo(double position) {
+        odoServo.setPosition(position);
+    }
+
+    public double getOdoServo() {
+        return odoServo.getPosition();
     }
 
     public void setIntakeServo(double position) {
@@ -468,11 +480,11 @@ public class Actuators {
                     //resetIntake();
                     //"memory" stuff
                     if (justFinishedAllianceMacro) {
-                        TURRET_ALLIANCE = alliance == RED ? getTurret() : -getTurret();
-                        SLIDES_ALLIANCE_HIGH = getSlides();
+                        TURRET_ALLIANCE = alliance == RED ? (int)turretController.getSetPoint() : -(int)turretController.getSetPoint();
+                        SLIDES_ALLIANCE_HIGH = (int)slidesController.getSetPoint();
                     } else if (justFinishedSharedMacro) {
-                        TURRET_SHARED = alliance == RED ? getTurret() : -getTurret();
-                        SLIDES_SHARED = getSlides();
+                        TURRET_SHARED = alliance == RED ? (int)turretController.getSetPoint() : -(int)turretController.getSetPoint();
+                        SLIDES_SHARED = (int)slidesController.getSetPoint();
                     }
 
                     time = currentTime;
@@ -607,11 +619,10 @@ public class Actuators {
                         "HopperServo: pos %.2f\n" +
                         "SlidesServo: pos %.2f\n" +
                         "Duckies: left %.2f right %.2f\n" +
-                        "IntakeServo: pos %.2f",
+                        "IntakeServo: pos %.2f\n" +
+                        "OdoServo: pos %.2f",
                 intake.getCurrentPosition(), intake.getPower(), turret.getCurrentPosition(), turret.getPower(), turretController.getPositionError(),
                 slides.getCurrentPosition(), slides.getPower(), hopperServo.getPosition(), pivotServo.getPosition(),
-                leftDucky.getPower(), rightDucky.getPower(), intakeServo.getPosition());
+                leftDucky.getPower(), rightDucky.getPower(), intakeServo.getPosition(), odoServo.getPosition());
     }
-
-
 }
