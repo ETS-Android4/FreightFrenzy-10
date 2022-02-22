@@ -21,14 +21,14 @@ import org.firstinspires.ftc.teamcode.util.CameraPosition;
 
 @Autonomous(name = "Red Warehouse", group = "Competition", preselectTeleOp = "Red TeleOp")
 public class RedWarehouse extends AbstractAuto {
-    public static Pose2d START_POSE = new Pose2d(12, 63, Math.toRadians(0));
-    public static Pose2d INTAKE1 = new Pose2d(40, 61, Math.toRadians(0));
-    public static Pose2d SCORE1 = new Pose2d(12, 59, Math.toRadians(0));
-    public static Pose2d INTAKE2 = new Pose2d(44, 57, Math.toRadians(0));
-    public static Pose2d SCORE2 = new Pose2d(12, 55, Math.toRadians(0));
-    public static Pose2d INTAKE3 = new Pose2d(48, 53, Math.toRadians(0));
-    public static Pose2d SCORE3 = new Pose2d(12, 51, Math.toRadians(0));
-    public static Pose2d PARK = new Pose2d(50, 49, Math.toRadians(0));
+    public static Pose2d START_POSE = new Pose2d(12, -63, Math.toRadians(0));
+    public static Pose2d INTAKE1 = new Pose2d(40, -65, Math.toRadians(0));
+    public static Pose2d SCORE1 = new Pose2d(12, -67, Math.toRadians(0));
+    public static Pose2d INTAKE2 = new Pose2d(44, -69, Math.toRadians(0));
+    public static Pose2d SCORE2 = new Pose2d(12, -71, Math.toRadians(0));
+    public static Pose2d INTAKE3 = new Pose2d(48, -73, Math.toRadians(0));
+    public static Pose2d SCORE3 = new Pose2d(12, -75, Math.toRadians(0));
+    public static Pose2d PARK = new Pose2d(50, -77, Math.toRadians(0));
 
     @Override
     public void setAlliance() {
@@ -37,7 +37,7 @@ public class RedWarehouse extends AbstractAuto {
 
     @Override
     public void setCameraPosition() {
-        this.cameraPosition = CameraPosition.RIGHT;
+        this.cameraPosition = CameraPosition.LEFT;
     }
 
     @Override
@@ -84,6 +84,7 @@ public class RedWarehouse extends AbstractAuto {
         // 1 block
         addIntake(0, -INTAKE_SPEED);
         followTrajectory(intake1);
+        addIntake(0, INTAKE_SPEED);
         followTrajectory(score1);
         addIntake(STOP_TIME, 0);
         resetIntake(RESET_TIME);
@@ -93,6 +94,7 @@ public class RedWarehouse extends AbstractAuto {
         // 2 block
         addIntake(0, -INTAKE_SPEED);
         followTrajectory(intake2);
+        addIntake(0, INTAKE_SPEED);
         followTrajectory(score2);
         addIntake(STOP_TIME, 0);
         resetIntake(RESET_TIME);
@@ -102,11 +104,13 @@ public class RedWarehouse extends AbstractAuto {
         // 3 block
         addIntake(0, -INTAKE_SPEED);
         followTrajectory(intake3);
+        addIntake(0, INTAKE_SPEED);
         followTrajectory(score3);
         addIntake(STOP_TIME, 0);
         resetIntake(RESET_TIME);
         addAlliance(10000, alliance, RIGHT);
         addDeposit(10000, alliance, RIGHT);
+
 
 //        for (int i = 0; i < 10; i++) {
 //            addIntake(0, -INTAKE_SPEED);

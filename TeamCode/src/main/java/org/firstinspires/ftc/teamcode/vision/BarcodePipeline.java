@@ -92,8 +92,8 @@ public class BarcodePipeline extends OpenCvPipeline  {
 
         // draw the Team Element detection
         teamElement.draw(input, WHITE);
-        Imgproc.line(input, new Point(320-(230*.33), 0), new Point(320-(230*.33), 240), GREEN, 2);
-        Imgproc.line(input, new Point(320*.33, 0), new Point(320*.33,240), GREEN, 2);
+        Imgproc.line(input, new Point(320*(-LEFT_BOUNDARY/100.0), 0), new Point(320*(-LEFT_BOUNDARY/100.0), 240), GREEN, 2);
+        Imgproc.line(input, new Point(320-320*(RIGHT_BOUNDARY/100.0), 0), new Point(320-320*(RIGHT_BOUNDARY/100.0),240), GREEN, 2);
         //320x240
     }
 
