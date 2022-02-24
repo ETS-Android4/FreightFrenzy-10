@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_HOPPER_POSITION;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_PIVOT_POSITION;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SERVO_UP;
+import static org.firstinspires.ftc.teamcode.hardware.Actuators.TURRET_ALLIANCE;
 import static org.firstinspires.ftc.teamcode.opmodes.AbstractTeleOp.INTAKE_SPEED;
 
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
@@ -340,7 +341,7 @@ public abstract class AbstractAuto extends LinearOpMode {
 //            }
 //        });
 //    }
-public void autoScoreBlock(double timeout, Trajectory trajectoryIn, Trajectory trajectoryOut, Alliance alliance, BarcodeLocation barcodeLocation) {
+public void cycleBlockInAuto(double timeout, Trajectory trajectoryIn, Trajectory trajectoryOut, Alliance alliance, BarcodeLocation barcodeLocation) {
     steps.add(new Step("Scoring Alliance Hub ", timeout) {
         @Override
         public void start() {
@@ -364,34 +365,47 @@ public void autoScoreBlock(double timeout, Trajectory trajectoryIn, Trajectory t
                     stepCaseStep++;
                     break;
                 case 3:
-                    if(stepTime>0.5){
-                        robot.actuators.setIntake(0);
-                        robot.actuators.resetIntake();
-                    }
+                    tempTime = stepTime;
                     stepCaseStep++;
                     break;
                 case 4:
-                    if(robot.actuators.intakeIsReset()){
+                    if(tempTime-stepTime>0.5){ //later replace with color sensor check for block
+                        robot.actuators.setIntake(0);
+                        robot.actuators.resetIntake();
                         stepCaseStep++;
                     }
+                    break;
+                case 5:
+                    if(robot.actuators.intakeIsReset()) {
+                        //START THE ALLIANCE SCORE MACRO.
+                        robot.actuators.runningAlliance = true;
+                        stepCaseStep++;
+                    }
+                    break;
+                case 6:
+                    if(!robot.drive.isBusy() && !robot.actuators.runningAlliance)
+                        {
+                            robot.actuators.runningDeposit = true;
+                            stepCaseStep++;
+                        }
+                    break;
+                case 7:
+                    if(!robot.actuators.runningDeposit){
+                        stepCaseStep++;
+                    }
+                    break;
+            }//end of switch
 
-
-            }
-            if( && ){
-
-            }
-            if (currentRuntime - stepStartTime > 010) {
-                robot.actuators.runningAlliance = true;
-            }
-
+            //update the drive base pid
             robot.drive.update();
+            //run the alliance macro if it is set to true
             robot.actuators.runningAlliance(getRuntime(), alliance, barcodeLocation);
         }
         @Override
         public void end() {}
         @Override
         public boolean isFinished() {
-            if(!robot.drive.isBusy() && ) {
+            if(!robot.drive.isBusy() && !robot.actuators.runningAlliance && !robot.actuators.runningDeposit && stepCaseStep==8) {
                 return true;
             } else {
                 return false;

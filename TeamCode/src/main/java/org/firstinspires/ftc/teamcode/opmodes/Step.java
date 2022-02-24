@@ -24,6 +24,7 @@ public abstract class Step {
     public double stepStartTime;
     public double stepTime;
     public int stepCaseStep;
+    double tempTime = stepTime;
     public boolean centeredLeftRight;
 
     // variables when shooting

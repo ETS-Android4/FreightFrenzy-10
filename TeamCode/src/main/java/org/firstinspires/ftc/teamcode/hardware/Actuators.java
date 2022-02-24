@@ -47,7 +47,7 @@ public class Actuators {
     public static double INTAKE_SERVO_SPEED = 0.02;
 
     public static Range TURRET_RANGE = new Range(-1000,1000);
-    public static Range SLIDES_RANGE = new Range(0, 2500);
+    public static Range SLIDES_RANGE = new Range(0, 2300);
     public static Range ARM_HOPPER_RANGE = new Range(0.01, 0.99);
     public static Range ARM_PIVOT_RANGE = new Range(0.01, 0.99);
 
@@ -252,6 +252,7 @@ public class Actuators {
 //    }
 
     public void setSlides(int position) {
+        Math.min(Math.max(position,SLIDES_RANGE.lower), SLIDES_RANGE.upper);
         slidesController.setSetPoint(position);
 //        this.slides.setTargetPosition(position);
 //        this.slides.setPower(SLIDES_POWER);

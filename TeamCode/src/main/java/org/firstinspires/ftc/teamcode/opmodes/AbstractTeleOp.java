@@ -11,6 +11,7 @@ import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SERVO_UP;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.ODO_SERVO_DOWN;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.ODO_SERVO_UP;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.SLIDES_SPEED;
+import static org.firstinspires.ftc.teamcode.hardware.Actuators.SLIDES_RANGE;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.TURRET_SPEED;
 import static org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive.DRIVE_SPEED;
 import static org.firstinspires.ftc.teamcode.util.Alliance.BLUE;
@@ -179,7 +180,7 @@ public class AbstractTeleOp extends OpMode {
 //            armPivotPosition = clamp(armPivotPosition, ARM_PIVOT_RANGE.getDoubleMin(), ARM_PIVOT_RANGE.getDoubleMax());
 
             turretPosition = clamp(turretPosition, -1000, 1000);
-            slidesPosition = clamp(slidesPosition, 0, 2300); //max was 2500
+            slidesPosition = clamp(slidesPosition, SLIDES_RANGE.lower, SLIDES_RANGE.upper); //max was 2500
             armHopperPosition = clamp(armHopperPosition, 0.01, 0.99);
             armPivotPosition = clamp(armPivotPosition, 0.01, 0.99);
             robot.actuators.setTurret(turretPosition);
