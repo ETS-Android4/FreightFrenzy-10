@@ -6,6 +6,8 @@ import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SERVO_DOW
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.SLIDES_ALLIANCE_LOW;
 import static org.firstinspires.ftc.teamcode.opmodes.AbstractTeleOp.INTAKE_SLOW_SPEED;
 import static org.firstinspires.ftc.teamcode.opmodes.AbstractTeleOp.INTAKE_SPEED;
+import static org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive.getAccelerationConstraint;
+import static org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive.getVelocityConstraint;
 import static org.firstinspires.ftc.teamcode.util.Alliance.BLUE;
 import static org.firstinspires.ftc.teamcode.util.Alliance.RED;
 import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.LEFT;
@@ -17,6 +19,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.util.BarcodeLocation;
 import org.firstinspires.ftc.teamcode.util.CameraPosition;
 
@@ -39,9 +42,20 @@ public class TestIntake extends AbstractAuto {
 
     @Override
     public void initializeSteps(BarcodeLocation location) {
-        for(int i = 0 ; i<100; i++){
-            addArm(10);
-        }
+//        for(int i = 0 ; i<100; i++){
+//            addArm(10);
+//        }
+
+        Pose2d START = new Pose2d(-36,36,Math.toRadians(90));
+        robot.drive.setPoseEstimate(START);
+        Trajectory forward = robot.drive.trajectoryBuilder(START)
+                .back(96,
+                        getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                )
+                .build();
+
+        followTrajectory(forward);
 
 //        addArmPivot(0.1, ARM_PIVOT_POSITION.getDown());
 //        addArmHopper(0.1, ARM_HOPPER_POSITION.getDown());
@@ -94,5 +108,6 @@ public class TestIntake extends AbstractAuto {
 //        addDelay(1);
 //        addIntake(STOP_TIME, 0);
 //        resetIntake(RESET_TIME);
+        stopTargetingCamera();
     }
 }

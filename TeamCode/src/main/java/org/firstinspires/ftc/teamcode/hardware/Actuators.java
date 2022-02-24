@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.util.Alliance.RED;
 import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.LEFT;
 import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.MIDDLE;
 import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.RIGHT;
+import static org.firstinspires.ftc.teamcode.util.Constants.COLOR;
 import static org.firstinspires.ftc.teamcode.util.Constants.HOPPER_SERVO;
 import static org.firstinspires.ftc.teamcode.util.Constants.INTAKE;
 import static org.firstinspires.ftc.teamcode.util.Constants.INTAKE_SERVO;
@@ -19,12 +20,14 @@ import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.ArmPosition;
 import org.firstinspires.ftc.teamcode.util.BarcodeLocation;
@@ -35,7 +38,7 @@ import java.util.Locale;
 @Config
 public class Actuators {
     public static double INTAKE_STOP_TIME = 0.2;
-    public static double INTAKE_RESET_TIME = 3;
+    public static double INTAKE_RESET_TIME = 1.5;
 
     public static int TURRET_SPEED = 15;
     public static int SLIDES_SPEED = 50;
@@ -109,6 +112,7 @@ public class Actuators {
     private CRServo rightDucky;
     private Servo intakeServo;
     private Servo odoServo;
+    private RevColorSensorV3 colorSensor;
 
     // state machine variables
     public boolean pickingUpFreight;
@@ -131,6 +135,8 @@ public class Actuators {
     private int state;
     private double time;
 
+    public static double HOPPER_DISTANCE_CUTTOFF = 30;
+
     public Actuators(HardwareMap hardwareMap) {
         this.intake = hardwareMap.get(DcMotor.class, INTAKE);
         this.turret = hardwareMap.get(DcMotor.class, TURRET);
@@ -141,6 +147,7 @@ public class Actuators {
         this.rightDucky = hardwareMap.get(CRServo.class, RIGHT_DUCKY);
         this.intakeServo = hardwareMap.get(Servo.class, INTAKE_SERVO);
         this.odoServo = hardwareMap.get(Servo.class, ODO_SERVO);
+        this.colorSensor = hardwareMap.get(RevColorSensorV3.class, COLOR);
 
         this.intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         this.intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -156,6 +163,14 @@ public class Actuators {
         turretController = new PIDController(TURRET_COEFFICIENTS.kP, TURRET_COEFFICIENTS.kI, TURRET_COEFFICIENTS.kD);
         slidesController = new PIDController(SLIDES_COEFFICIENTS.kP, SLIDES_COEFFICIENTS.kI, SLIDES_COEFFICIENTS.kD);
         intakeController = new PIDController(INTAKE_COEFFICIENTS.kP, INTAKE_COEFFICIENTS.kI, INTAKE_COEFFICIENTS.kD);
+    }
+
+    public double getHopperDistance() {
+        return colorSensor.getDistance(DistanceUnit.MM);
+    }
+
+    public boolean hopperIsFull() {
+        return getHopperDistance() < HOPPER_DISTANCE_CUTTOFF;
     }
 
     public void setOdoServo(double position) {
@@ -193,6 +208,10 @@ public class Actuators {
 
     public int getIntakePosition() {
         return this.intake.getCurrentPosition();
+    }
+
+    public boolean intakeIsReset() {
+        return intakeController.atSetPoint();
     }
 
     //left here just in case renaming it to getIntakePosition breaks something in the future
@@ -252,7 +271,6 @@ public class Actuators {
 
         intakeController.setPID(INTAKE_COEFFICIENTS.kP, INTAKE_COEFFICIENTS.kI, INTAKE_COEFFICIENTS.kD);
         intakeController.setTolerance(INTAKE_TOLERANCE);
-
     }
 
     public void setArmHopper(double position) {
@@ -620,9 +638,10 @@ public class Actuators {
                         "SlidesServo: pos %.2f\n" +
                         "Duckies: left %.2f right %.2f\n" +
                         "IntakeServo: pos %.2f\n" +
-                        "OdoServo: pos %.2f",
+                        "OdoServo: pos %.2f\n" +
+                        "Hopper: dist %.2f",
                 intake.getCurrentPosition(), intake.getPower(), turret.getCurrentPosition(), turret.getPower(), turretController.getPositionError(),
                 slides.getCurrentPosition(), slides.getPower(), hopperServo.getPosition(), pivotServo.getPosition(),
-                leftDucky.getPower(), rightDucky.getPower(), intakeServo.getPosition(), odoServo.getPosition());
+                leftDucky.getPower(), rightDucky.getPower(), intakeServo.getPosition(), odoServo.getPosition(), getHopperDistance());
     }
 }

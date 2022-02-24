@@ -124,5 +124,6 @@ public class BlueDuck extends AbstractAuto {
 
         // park
 //        followTrajectory(park);
+        stopTargetingCamera();
     }
 }

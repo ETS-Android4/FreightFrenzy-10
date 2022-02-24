@@ -114,5 +114,6 @@ public class RedDuck extends AbstractAuto {
 
         // park
 //        followTrajectory(park);
+        stopTargetingCamera();
     }
 }

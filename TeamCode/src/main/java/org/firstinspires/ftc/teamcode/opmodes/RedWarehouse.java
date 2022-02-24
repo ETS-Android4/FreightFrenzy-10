@@ -22,11 +22,11 @@ import org.firstinspires.ftc.teamcode.util.CameraPosition;
 @Autonomous(name = "Red Warehouse", group = "Competition", preselectTeleOp = "Red TeleOp")
 public class RedWarehouse extends AbstractAuto {
     public static Pose2d START_POSE = new Pose2d(12, -63, Math.toRadians(0));
-    public static Pose2d INTAKE1 = new Pose2d(40, -65, Math.toRadians(0));
+    public static Pose2d INTAKE1 = new Pose2d(42, -65, Math.toRadians(0));
     public static Pose2d SCORE1 = new Pose2d(12, -67, Math.toRadians(0));
-    public static Pose2d INTAKE2 = new Pose2d(44, -69, Math.toRadians(0));
+    public static Pose2d INTAKE2 = new Pose2d(46, -69, Math.toRadians(0));
     public static Pose2d SCORE2 = new Pose2d(12, -71, Math.toRadians(0));
-    public static Pose2d INTAKE3 = new Pose2d(48, -73, Math.toRadians(0));
+    public static Pose2d INTAKE3 = new Pose2d(50, -73, Math.toRadians(0));
     public static Pose2d SCORE3 = new Pose2d(12, -75, Math.toRadians(0));
     public static Pose2d PARK = new Pose2d(50, -77, Math.toRadians(0));
 
@@ -84,7 +84,8 @@ public class RedWarehouse extends AbstractAuto {
         // 1 block
         addIntake(0, -INTAKE_SPEED);
         followTrajectory(intake1);
-        addIntake(0, INTAKE_SPEED);
+        addIntake(1, INTAKE_SPEED);
+
         followTrajectory(score1);
         addIntake(STOP_TIME, 0);
         resetIntake(RESET_TIME);
@@ -126,5 +127,6 @@ public class RedWarehouse extends AbstractAuto {
 
         // park
         followTrajectory(park);
+        stopTargetingCamera();
     }
 }

@@ -69,7 +69,7 @@ public class AbstractTeleOp extends OpMode {
         driver1 = new Controller(gamepad1);
         driver2 = new Controller(gamepad2);
 
-        robot = new Robot(hardwareMap, CameraPosition.RIGHT);
+        robot = new Robot(hardwareMap, alliance);
 
         intakeVerticalPos = robot.actuators.getIntakePosition();
 //        armHopperPosition = robot.actuators.getArmHopper();
@@ -79,17 +79,19 @@ public class AbstractTeleOp extends OpMode {
 
     @Override
     public void init_loop() {
-        if (robot.camera.getFrameCount() > 0) {
-            telemetry.addLine("Alliance: "+alliance);
-            telemetry.addLine(robot.getTelemetry());
-            telemetry.update();
-        }
+//        if (robot.camera.getFrameCount() > 0) {
+//            telemetry.addLine("Alliance: "+alliance);
+//            telemetry.addLine(robot.getTelemetry());
+//            telemetry.update();
+//        }
+        robot.lights.setPattern();
         telemetry.addLine(("Initialized: "+alliance+" alliance selected."));
         telemetry.update();
     }
 
     @Override
     public void loop() {
+        robot.updateLights();
         driver1.update();
         driver2.update();
 

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_HOPPER_POSITION;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_PIVOT_POSITION;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SERVO_UP;
+import static org.firstinspires.ftc.teamcode.opmodes.AbstractTeleOp.INTAKE_SPEED;
 
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -39,7 +40,7 @@ public abstract class AbstractAuto extends LinearOpMode {
         setAlliance();
         setCameraPosition();
 
-        robot = new Robot(hardwareMap, cameraPosition);
+        robot = new Robot(hardwareMap, cameraPosition, alliance);
 
         robot.actuators.setArmPivot(ARM_PIVOT_POSITION.getDown());
         robot.actuators.setArmHopper(ARM_HOPPER_POSITION.getDown());
@@ -69,6 +70,7 @@ public abstract class AbstractAuto extends LinearOpMode {
         // wait for start
         while (!(isStarted() || isStopRequested())) {
 //            teamElementLocation = robot.camera.checkTeamElementLocationUsingAprilTags();
+            robot.updateLights();
             teamElementLocation = robot.camera.checkTeamElementLocation();
             telemetry.addLine("Initialized");
             telemetry.addLine(String.format(Locale.US, "Location: %s", teamElementLocation));
@@ -108,6 +110,7 @@ public abstract class AbstractAuto extends LinearOpMode {
             // while the step is running display telemetry
             step.whileRunning();
             robot.actuators.update();
+            robot.updateLights();
             telemetry.addLine(String.format(Locale.US, "Runtime: %.0f", currentRuntime));
             telemetry.addLine("Step "+(stepNumber+1)+" of "+steps.size()+", "+step.getTelemetry()+"\n");
             telemetry.addLine(robot.getTelemetry());
@@ -172,6 +175,7 @@ public abstract class AbstractAuto extends LinearOpMode {
             }
         });
     }
+
 
     public void addIntake(double timeout, final double intakePower) {
         steps.add(new Step("Setting intake power to " + intakePower, timeout) {
@@ -336,6 +340,65 @@ public abstract class AbstractAuto extends LinearOpMode {
 //            }
 //        });
 //    }
+public void autoScoreBlock(double timeout, Trajectory trajectoryIn, Trajectory trajectoryOut, Alliance alliance, BarcodeLocation barcodeLocation) {
+    steps.add(new Step("Scoring Alliance Hub ", timeout) {
+        @Override
+        public void start() {
+            stepStartTime = currentRuntime;
+            robot.drive.followTrajectoryAsync(trajectoryIn);
+            robot.actuators.setIntake(-INTAKE_SPEED);
+            stepCaseStep = 1;
+        }
+        @Override
+        public void whileRunning() {
+            stepTime = currentRuntime - stepStartTime;
+            switch(stepCaseStep){
+                case 1:
+                    if(!robot.drive.isBusy()){
+                        stepCaseStep++;
+                    }
+                    break;
+                case 2:
+                    robot.drive.followTrajectoryAsync(trajectoryOut);
+                    robot.actuators.setIntake(INTAKE_SPEED);
+                    stepCaseStep++;
+                    break;
+                case 3:
+                    if(stepTime>0.5){
+                        robot.actuators.setIntake(0);
+                        robot.actuators.resetIntake();
+                    }
+                    stepCaseStep++;
+                    break;
+                case 4:
+                    if(robot.actuators.intakeIsReset()){
+                        stepCaseStep++;
+                    }
+
+
+            }
+            if( && ){
+
+            }
+            if (currentRuntime - stepStartTime > 010) {
+                robot.actuators.runningAlliance = true;
+            }
+
+            robot.drive.update();
+            robot.actuators.runningAlliance(getRuntime(), alliance, barcodeLocation);
+        }
+        @Override
+        public void end() {}
+        @Override
+        public boolean isFinished() {
+            if(!robot.drive.isBusy() && ) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    });
+}
     public void addAlliance(double timeout, Alliance alliance, BarcodeLocation barcodeLocation) {
         steps.add(new Step("Scoring Alliance Hub ", timeout) {
             @Override

@@ -123,5 +123,6 @@ public class BlueWarehouse extends AbstractAuto {
 
         // park
         followTrajectory(park);
+        stopTargetingCamera();
     }
 }
