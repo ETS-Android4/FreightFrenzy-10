@@ -346,8 +346,6 @@ public void cycleBlockInAuto(double timeout, Trajectory trajectoryIn, Trajectory
         @Override
         public void start() {
             stepStartTime = currentRuntime;
-            robot.drive.followTrajectoryAsync(trajectoryIn);
-            robot.actuators.setIntake(-INTAKE_SPEED);
             stepCaseStep = 1;
         }
         @Override
@@ -355,44 +353,36 @@ public void cycleBlockInAuto(double timeout, Trajectory trajectoryIn, Trajectory
             stepTime = currentRuntime - stepStartTime;
             switch(stepCaseStep){
                 case 1:
-                    if(!robot.drive.isBusy()){
-                        stepCaseStep++;
-                    }
+                    robot.drive.followTrajectoryAsync(trajectoryIn);
+                    robot.actuators.setIntake(-INTAKE_SPEED);
+                    stepCaseStep++;
                     break;
                 case 2:
-                    robot.drive.followTrajectoryAsync(trajectoryOut);
-                    robot.actuators.setIntake(INTAKE_SPEED);
-                    stepCaseStep++;
-                    break;
-                case 3:
-                    tempTime = stepTime;
-                    stepCaseStep++;
-                    break;
-                case 4:
-                    if(tempTime-stepTime>0.5){ //later replace with color sensor check for block
+                    if(robot.actuators.hopperIsFull()){
                         robot.actuators.setIntake(0);
                         robot.actuators.resetIntake();
+                        robot.drive.followTrajectoryAsync(trajectoryOut);
                         stepCaseStep++;
                     }
                     break;
-                case 5:
+                case 3:
                     if(robot.actuators.intakeIsReset()) {
                         //START THE ALLIANCE SCORE MACRO.
                         robot.actuators.runningAlliance = true;
                         stepCaseStep++;
                     }
                     break;
-                case 6:
-                    if(!robot.drive.isBusy() && !robot.actuators.runningAlliance)
-                        {
-                            robot.actuators.runningDeposit = true;
-                            stepCaseStep++;
-                        }
-                    break;
-                case 7:
-                    if(!robot.actuators.runningDeposit){
+                case 4:
+                    if(!robot.drive.isBusy() && !robot.actuators.runningAlliance){//if we are fully out, in scoring position
+                        robot.actuators.runningDeposit = true;
                         stepCaseStep++;
                     }
+                    break;
+                case 5:
+                    if(!robot.actuators.runningDeposit)
+                        {
+                        stepCaseStep++;
+                        }
                     break;
             }//end of switch
 
@@ -400,12 +390,14 @@ public void cycleBlockInAuto(double timeout, Trajectory trajectoryIn, Trajectory
             robot.drive.update();
             //run the alliance macro if it is set to true
             robot.actuators.runningAlliance(getRuntime(), alliance, barcodeLocation);
+            //run the deposit macro if set to true
+            robot.actuators.runningDeposit(getRuntime(), alliance, barcodeLocation);
         }
         @Override
         public void end() {}
         @Override
         public boolean isFinished() {
-            if(!robot.drive.isBusy() && !robot.actuators.runningAlliance && !robot.actuators.runningDeposit && stepCaseStep==8) {
+            if(!robot.drive.isBusy() && !robot.actuators.runningAlliance && !robot.actuators.runningDeposit && stepCaseStep==6) {
                 return true;
             } else {
                 return false;

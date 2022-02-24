@@ -18,12 +18,9 @@ import static org.firstinspires.ftc.teamcode.util.Constants.TURRET;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.arcrobotics.ftclib.controller.PIDController;
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -135,7 +132,7 @@ public class Actuators {
     private int state;
     private double time;
 
-    public static double HOPPER_DISTANCE_CUTTOFF = 30;
+    public static double HOPPER_DISTANCE_CUTOFF = 30;
 
     public Actuators(HardwareMap hardwareMap) {
         this.intake = hardwareMap.get(DcMotor.class, INTAKE);
@@ -170,7 +167,7 @@ public class Actuators {
     }
 
     public boolean hopperIsFull() {
-        return getHopperDistance() < HOPPER_DISTANCE_CUTTOFF;
+        return getHopperDistance() < HOPPER_DISTANCE_CUTOFF;
     }
 
     public void setOdoServo(double position) {
