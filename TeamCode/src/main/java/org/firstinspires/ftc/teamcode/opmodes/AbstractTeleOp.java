@@ -48,7 +48,7 @@ public class AbstractTeleOp extends OpMode {
 
     private int turretPosition = 0;
     private int slidesPosition = 0;
-//    private double armHopperPosition = ARM_HOPPER_POSITION.getDown();
+    //    private double armHopperPosition = ARM_HOPPER_POSITION.getDown();
 //    private double armPivotPosition = ARM_PIVOT_POSITION.getDown();
     private double armHopperPosition = ARM_HOPPER_POSITION.getInit();
     private double armPivotPosition = ARM_PIVOT_POSITION.getInit();
@@ -86,7 +86,7 @@ public class AbstractTeleOp extends OpMode {
 //            telemetry.update();
 //        }
         robot.lights.setPattern();
-        telemetry.addLine(("Initialized: "+alliance+" alliance selected."));
+        telemetry.addLine(("Initialized: " + alliance + " alliance selected."));
         telemetry.update();
     }
 
@@ -107,7 +107,7 @@ public class AbstractTeleOp extends OpMode {
             y = driver1.getLeftStick().getY() * DRIVE_SPEED;
             z = driver1.getRightStick().getX() * DRIVE_SPEED;
         }
-        robot.drive.setWeightedDrivePower(new Pose2d(y,-x,-z));
+        robot.drive.setWeightedDrivePower(new Pose2d(y, -x, -z));
         robot.drive.update();
 
         // automation
@@ -197,8 +197,8 @@ public class AbstractTeleOp extends OpMode {
                 } else {
                     robot.actuators.setIntake(0);
                 }
-            } else if(driver2.getRightBumper().isJustPressed()){
-                int newPos = (int) (robot.actuators.getIntakePosition() + intakeVerticalPos - (robot.actuators.getIntakePosition()  % (145.1)));
+            } else if (driver2.getRightBumper().isJustPressed()) {
+                int newPos = (int) (robot.actuators.getIntakePosition() + intakeVerticalPos - (robot.actuators.getIntakePosition() % (145.1)));
                 robot.actuators.setIntakePosition(newPos);
             } else if (driver2.getRightBumper().isPressed()) {
                 robot.actuators.resetIntake();
@@ -257,7 +257,7 @@ public class AbstractTeleOp extends OpMode {
 //        robot.actuators.setIntakeServo(intakeServoPosition);
 
         // telemetry
-        telemetry.addLine("Alliance: "+alliance);
+        telemetry.addLine("Alliance: " + alliance);
         telemetry.addLine(robot.getTelemetry());
         telemetry.update();
     }

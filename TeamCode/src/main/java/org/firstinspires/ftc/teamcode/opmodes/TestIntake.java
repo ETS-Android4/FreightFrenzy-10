@@ -46,7 +46,7 @@ public class TestIntake extends AbstractAuto {
 //            addArm(10);
 //        }
 
-        Pose2d START = new Pose2d(-36,36,Math.toRadians(90));
+        Pose2d START = new Pose2d(-36, 36, Math.toRadians(90));
         robot.drive.setPoseEstimate(START);
         Trajectory forward = robot.drive.trajectoryBuilder(START)
                 .back(96,

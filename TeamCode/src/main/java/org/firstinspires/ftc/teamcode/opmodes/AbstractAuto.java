@@ -66,7 +66,7 @@ public abstract class AbstractAuto extends LinearOpMode {
 //            robot.actuators.resetIntake();
 //        }
 
-        robot.actuators.setIntakeVerticalPositionInAuto((int) robot.actuators.getIntakePosition()+72);
+        robot.actuators.setIntakeVerticalPositionInAuto((int) robot.actuators.getIntakePosition() + 72);
 
         // wait for start
         while (!(isStarted() || isStopRequested())) {
@@ -91,7 +91,7 @@ public abstract class AbstractAuto extends LinearOpMode {
         step.start();
 
         // run the remaining steps
-        while(opModeIsActive()) {
+        while (opModeIsActive()) {
             currentRuntime = getRuntime();
             // once a step finishes
             if (step.isFinished() || currentRuntime >= stepTimeout) {
@@ -113,11 +113,11 @@ public abstract class AbstractAuto extends LinearOpMode {
             robot.actuators.update();
             robot.updateLights();
             telemetry.addLine(String.format(Locale.US, "Runtime: %.0f", currentRuntime));
-            telemetry.addLine("Step "+(stepNumber+1)+" of "+steps.size()+", "+step.getTelemetry()+"\n");
+            telemetry.addLine("Step " + (stepNumber + 1) + " of " + steps.size() + ", " + step.getTelemetry() + "\n");
             telemetry.addLine(robot.getTelemetry());
             telemetry.update();
         }
-}
+    }
 
     // Load up all of the steps for the autonomous
     public void initializeSteps(BarcodeLocation location) {
@@ -126,31 +126,42 @@ public abstract class AbstractAuto extends LinearOpMode {
 
     // Functions to add steps
     public void addDelay(double timeout) {
-        steps.add(new Step("Waiting for "+timeout+" seconds", timeout) {
+        steps.add(new Step("Waiting for " + timeout + " seconds", timeout) {
             @Override
-            public void start() {}
+            public void start() {
+            }
+
             @Override
-            public void whileRunning() {}
+            public void whileRunning() {
+            }
+
             @Override
-            public void end() {}
+            public void end() {
+            }
+
             @Override
             public boolean isFinished() {
                 return false;
             }
         });
     }
+
     public void turn(double degrees) {
         steps.add(new Step("Following a trajectory") {
             @Override
             public void start() {
                 robot.drive.turn(degrees);
             }
+
             @Override
             public void whileRunning() {
                 robot.drive.update();
             }
+
             @Override
-            public void end() {}
+            public void end() {
+            }
+
             @Override
             public boolean isFinished() {
                 return !robot.drive.isBusy();
@@ -164,12 +175,16 @@ public abstract class AbstractAuto extends LinearOpMode {
             public void start() {
                 robot.drive.followTrajectoryAsync(trajectory);
             }
+
             @Override
             public void whileRunning() {
                 robot.drive.update();
             }
+
             @Override
-            public void end() {}
+            public void end() {
+            }
+
             @Override
             public boolean isFinished() {
                 return !robot.drive.isBusy();
@@ -177,43 +192,51 @@ public abstract class AbstractAuto extends LinearOpMode {
         });
     }
 
-
     public void addIntake(double timeout, final double intakePower) {
         steps.add(new Step("Setting intake power to " + intakePower, timeout) {
             @Override
             public void start() {
                 robot.actuators.setIntake(intakePower);
             }
+
             @Override
-            public void whileRunning() {}
+            public void whileRunning() {
+            }
+
             @Override
-            public void end() {}
+            public void end() {
+            }
+
             @Override
             public boolean isFinished() {
                 return false;
             }
         });
     }
+
     public void resetIntake(double timeout) {
         steps.add(new Step("Resetting Intake", timeout) {
             @Override
             public void start() {
 //                robot.actuators.setIntake(0);
-                int newPos = (int) (robot.actuators.getIntakePosition() + (145.1/8.0) - (robot.actuators.getIntakePosition() % (145.1)));
+                int newPos = (int) (robot.actuators.getIntakePosition() + (145.1 / 8.0) - (robot.actuators.getIntakePosition() % (145.1)));
 //                int newPos = (int) (robot.actuators.getIntakePosition() + 145.1*5 + (robot.actuators.getIntakePosition()  % (145.1)));
 //                int newPos = (int) (robot.actuators.getIntakePosition() - (robot.actuators.getIntakePosition()  % (145.1)));
                 robot.actuators.setIntakePosition(newPos);
             }
+
             @Override
             public void whileRunning() {
                 robot.actuators.resetIntake();
             }
+
             @Override
             public void end() {
                 robot.actuators.setIntake(0);
                 robot.actuators.setIntakePosition(robot.actuators.getIntakePosition());
                 robot.actuators.setIntake(0);
             }
+
             @Override
             public boolean isFinished() {
                 return false;
@@ -227,42 +250,59 @@ public abstract class AbstractAuto extends LinearOpMode {
             public void start() {
                 robot.actuators.setArmHopper(armHopperPosition);
             }
+
             @Override
-            public void whileRunning() {}
+            public void whileRunning() {
+            }
+
             @Override
-            public void end() {}
+            public void end() {
+            }
+
             @Override
             public boolean isFinished() {
                 return false;
             }
         });
     }
+
     public void addArmPivot(double timeout, final double armPivotPosition) {
         steps.add(new Step("Setting hopper to " + armPivotPosition, timeout) {
             @Override
             public void start() {
                 robot.actuators.setArmPivot(armPivotPosition);
             }
+
             @Override
-            public void whileRunning() {}
+            public void whileRunning() {
+            }
+
             @Override
-            public void end() {}
+            public void end() {
+            }
+
             @Override
             public boolean isFinished() {
                 return false;
             }
         });
     }
+
     public void addTurret(double timeout, final int turretPos) {
         steps.add(new Step("Setting turret to " + turretPos, timeout) {
             @Override
             public void start() {
                 robot.actuators.setTurret(turretPos);
             }
+
             @Override
-            public void whileRunning() {}
+            public void whileRunning() {
+            }
+
             @Override
-            public void end() {}
+            public void end() {
+            }
+
             @Override
             public boolean isFinished() {
                 return false;
@@ -276,32 +316,44 @@ public abstract class AbstractAuto extends LinearOpMode {
             public void start() {
                 robot.actuators.setSlides(slidePos);
             }
+
             @Override
-            public void whileRunning() {}
+            public void whileRunning() {
+            }
+
             @Override
-            public void end() {}
+            public void end() {
+            }
+
             @Override
             public boolean isFinished() {
                 return false;
             }
         });
     }
+
     public void addDuckSpinner(double timeout, final double duckPower) {
         steps.add(new Step("Setting duck power to " + duckPower, timeout) {
             @Override
             public void start() {
                 robot.actuators.setDuckies(duckPower, alliance);
             }
+
             @Override
-            public void whileRunning() {}
+            public void whileRunning() {
+            }
+
             @Override
-            public void end() {}
+            public void end() {
+            }
+
             @Override
             public boolean isFinished() {
                 return false;
             }
         });
     }
+
     public void stopTargetingCamera() {
         steps.add(new Step("Stopping Targeting Camera") {
             @Override
@@ -323,170 +375,182 @@ public abstract class AbstractAuto extends LinearOpMode {
             }
         });
     }
-//    public void addIntakeReset(double timeout) {
-//        steps.add(new Step("Resetting Intake", timeout) {
-//            @Override
-//            public void start() {
-//                robot.actuators.pickingUpFreight = true;
-//            }
-//            @Override
-//            public void whileRunning() {
-//                robot.actuators.pickingUpFreight(getRuntime());
-//            }
-//            @Override
-//            public void end() {}
-//            @Override
-//            public boolean isFinished() {
-//                return !robot.actuators.pickingUpFreight;
-//            }
-//        });
-//    }
-public void cycleBlockInAuto(double timeout, Trajectory trajectoryIn, Trajectory trajectoryOut, Alliance alliance, BarcodeLocation barcodeLocation) {
-    steps.add(new Step("Scoring Alliance Hub ", timeout) {
-        @Override
-        public void start() {
-            stepStartTime = currentRuntime;
-            stepCaseStep = 1;
-        }
-        @Override
-        public void whileRunning() {
-            stepTime = currentRuntime - stepStartTime;
-            switch(stepCaseStep){
-                case 1:
-                    robot.drive.followTrajectoryAsync(trajectoryIn);
-                    robot.actuators.setIntake(-INTAKE_SPEED);
-                    stepCaseStep++;
-                    break;
-                case 2:
-                    if(robot.actuators.hopperIsFull()){
-                        robot.actuators.setIntake(0);
-                        robot.actuators.resetIntake();
-                        robot.drive.followTrajectoryAsync(trajectoryOut);
-                        stepCaseStep++;
-                    }
-                    break;
-                case 3:
-                    if(robot.actuators.intakeIsReset()) {
-                        //START THE ALLIANCE SCORE MACRO.
-                        robot.actuators.runningAlliance = true;
-                        stepCaseStep++;
-                    }
-                    break;
-                case 4:
-                    if(!robot.drive.isBusy() && !robot.actuators.runningAlliance){//if we are fully out, in scoring position
-                        robot.actuators.runningDeposit = true;
-                        stepCaseStep++;
-                    }
-                    break;
-                case 5:
-                    if(!robot.actuators.runningDeposit)
-                        {
-                        stepCaseStep++;
-                        }
-                    break;
-            }//end of switch
 
-            //update the drive base pid
-            robot.drive.update();
-            //run the alliance macro if it is set to true
-            robot.actuators.runningAlliance(getRuntime(), alliance, barcodeLocation);
-            //run the deposit macro if set to true
-            robot.actuators.runningDeposit(getRuntime(), alliance, barcodeLocation);
-        }
-        @Override
-        public void end() {}
-        @Override
-        public boolean isFinished() {
-            if(!robot.drive.isBusy() && !robot.actuators.runningAlliance && !robot.actuators.runningDeposit && stepCaseStep==6) {
-                return true;
-            } else {
-                return false;
+    public void cycleBlockInAuto(double timeout, Trajectory trajectoryIn, Trajectory trajectoryOut, Alliance alliance, BarcodeLocation barcodeLocation) {
+        steps.add(new Step("Scoring Alliance Hub ", timeout) {
+            @Override
+            public void start() {
+                stepStartTime = currentRuntime;
+                stepCaseStep = 1;
             }
-        }
-    });
-}
+
+            @Override
+            public void whileRunning() {
+                stepTime = currentRuntime - stepStartTime;
+                switch (stepCaseStep) {
+                    case 1:
+                        robot.drive.followTrajectoryAsync(trajectoryIn);
+                        robot.actuators.setIntake(-INTAKE_SPEED);
+                        stepCaseStep++;
+                        break;
+                    case 2:
+                        if (robot.actuators.hopperIsFull()) {
+                            robot.actuators.setIntake(0);
+                            robot.actuators.resetIntake();
+                            robot.drive.followTrajectoryAsync(trajectoryOut);
+                            stepCaseStep++;
+                        }
+                        break;
+                    case 3:
+                        if (robot.actuators.intakeIsReset()) {
+                            //START THE ALLIANCE SCORE MACRO.
+                            robot.actuators.runningAlliance = true;
+                            stepCaseStep++;
+                        }
+                        break;
+                    case 4:
+                        if (!robot.drive.isBusy() && !robot.actuators.runningAlliance) {//if we are fully out, in scoring position
+                            robot.actuators.runningDeposit = true;
+                            stepCaseStep++;
+                        }
+                        break;
+                    case 5:
+                        if (!robot.actuators.runningDeposit) {
+                            stepCaseStep++;
+                        }
+                        break;
+                }//end of switch
+
+                //update the drive base pid
+                robot.drive.update();
+                //run the alliance macro if it is set to true
+                robot.actuators.runningAlliance(getRuntime(), alliance, barcodeLocation);
+                //run the deposit macro if set to true
+                robot.actuators.runningDeposit(getRuntime(), alliance, barcodeLocation);
+            }
+
+            @Override
+            public void end() {
+            }
+
+            @Override
+            public boolean isFinished() {
+                if (!robot.drive.isBusy() && !robot.actuators.runningAlliance && !robot.actuators.runningDeposit && stepCaseStep == 6) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+    }
+
     public void addAlliance(double timeout, Alliance alliance, BarcodeLocation barcodeLocation) {
         steps.add(new Step("Scoring Alliance Hub ", timeout) {
             @Override
             public void start() {
                 robot.actuators.runningAlliance = true;
             }
+
             @Override
             public void whileRunning() {
                 robot.actuators.runningAlliance(getRuntime(), alliance, barcodeLocation);
             }
+
             @Override
-            public void end() {}
+            public void end() {
+            }
+
             @Override
             public boolean isFinished() {
                 return !robot.actuators.runningAlliance;
             }
         });
     }
+
     public void addShared(double timeout, Alliance alliance, BarcodeLocation barcodeLocation) {
         steps.add(new Step("Scoring Shared Hub ", timeout) {
             @Override
             public void start() {
                 robot.actuators.runningShared = true;
             }
+
             @Override
             public void whileRunning() {
                 robot.actuators.runningShared(getRuntime(), alliance, barcodeLocation);
             }
+
             @Override
-            public void end() {}
+            public void end() {
+            }
+
             @Override
             public boolean isFinished() {
                 return !robot.actuators.runningShared;
             }
         });
     }
+
     public void addDeposit(double timeout, Alliance alliance, BarcodeLocation barcodeLocation) {
         steps.add(new Step("Depositing", timeout) {
             @Override
             public void start() {
                 robot.actuators.runningDeposit = true;
             }
+
             @Override
             public void whileRunning() {
                 robot.actuators.runningDeposit(getRuntime(), alliance, barcodeLocation);
             }
+
             @Override
-            public void end() {}
+            public void end() {
+            }
+
             @Override
             public boolean isFinished() {
                 return !robot.actuators.runningDeposit;
             }
         });
     }
+
     public void addArm(double timeout) {
         steps.add(new Step("Depositing", timeout) {
             @Override
             public void start() {
                 robot.actuators.runningArm = true;
             }
+
             @Override
             public void whileRunning() {
                 robot.actuators.runningArm(getRuntime());
             }
+
             @Override
-            public void end() {}
+            public void end() {
+            }
+
             @Override
             public boolean isFinished() {
                 return !robot.actuators.runningArm;
             }
         });
     }
+
     public void addIntakeServo(double timeout, double position) {
         steps.add(new Step("Depositing", timeout) {
             @Override
             public void start() {
                 robot.actuators.setIntakeServo(position);
             }
+
             @Override
-            public void whileRunning() {}
+            public void whileRunning() {
+            }
+
             @Override
-            public void end() {}
+            public void end() {
+            }
+
             @Override
             public boolean isFinished() {
                 return false;

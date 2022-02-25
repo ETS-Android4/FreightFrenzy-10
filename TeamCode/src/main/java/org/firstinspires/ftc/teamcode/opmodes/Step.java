@@ -35,6 +35,7 @@ public abstract class Step {
         this.telemetry = telemetry;
         this.timeout = -1;
     }
+
     public Step(String telemetry, double timeout) {
         this.telemetry = telemetry;
         this.timeout = timeout;
@@ -42,8 +43,11 @@ public abstract class Step {
 
     // Abstract methods to be overrode
     public abstract void start();
+
     public abstract void whileRunning();
+
     public abstract void end();
+
     public abstract boolean isFinished();
 
     // Return the timeout for the step
@@ -54,6 +58,7 @@ public abstract class Step {
     public void setTelemetry(String telemetry) {
         this.telemetry = telemetry;
     }
+
     // Return the Telemetry for the step
     public String getTelemetry() {
         return telemetry;
