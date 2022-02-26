@@ -437,6 +437,12 @@ public class Actuators {
                     if (currentTime > time + RETRACT1_SCORE) {
                         state++;
                     }
+//                    if (justFinishedSharedMacro && currentTime > time + SLOW_DEPOSIT_TIME) {
+//                        if(getArmHopper()>ARM_HOPPER_POSITION.getLow())
+//                        {
+//                            setArmHopper(getArmHopper()+SLOW_DEPOSIT_INCREMENT);
+//                        }
+//                    }
                     break;
                 case 2:
                     time = currentTime;
