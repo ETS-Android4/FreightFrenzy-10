@@ -8,6 +8,9 @@ public class Controller {
     private final org.firstinspires.ftc.teamcode.util.controller.Joystick leftStick;
     private final org.firstinspires.ftc.teamcode.util.controller.Joystick rightStick;
 
+    private final org.firstinspires.ftc.teamcode.util.controller.Button leftStickButton;
+    private final org.firstinspires.ftc.teamcode.util.controller.Button rightStickButton;
+
     private final org.firstinspires.ftc.teamcode.util.controller.Button dLeft;
     private final org.firstinspires.ftc.teamcode.util.controller.Button dRight;
     private final org.firstinspires.ftc.teamcode.util.controller.Button dUp;
@@ -33,6 +36,9 @@ public class Controller {
         leftStick = new org.firstinspires.ftc.teamcode.util.controller.Joystick();
         rightStick = new org.firstinspires.ftc.teamcode.util.controller.Joystick();
 
+        leftStickButton = new org.firstinspires.ftc.teamcode.util.controller.Button();
+        rightStickButton = new org.firstinspires.ftc.teamcode.util.controller.Button();
+
         dLeft = new org.firstinspires.ftc.teamcode.util.controller.Button();
         dRight = new org.firstinspires.ftc.teamcode.util.controller.Button();
         dUp = new org.firstinspires.ftc.teamcode.util.controller.Button();
@@ -56,6 +62,9 @@ public class Controller {
     public void update() {
         leftStick.update(gamepad.left_stick_x, -gamepad.left_stick_y);
         rightStick.update(gamepad.right_stick_x, -gamepad.right_stick_y);
+
+        leftStickButton.update(gamepad.left_stick_button);
+        rightStickButton.update(gamepad.right_stick_button);
 
         dLeft.update(gamepad.dpad_left);
         dRight.update(gamepad.dpad_right);
@@ -82,6 +91,13 @@ public class Controller {
     }
     public org.firstinspires.ftc.teamcode.util.controller.Joystick getRightStick() {
         return rightStick;
+    }
+
+    public org.firstinspires.ftc.teamcode.util.controller.Button getLeftStickButton() {
+        return leftStickButton;
+    }
+    public org.firstinspires.ftc.teamcode.util.controller.Button getRightStickButton() {
+        return rightStickButton;
     }
 
     public org.firstinspires.ftc.teamcode.util.controller.Button getDLeft() {

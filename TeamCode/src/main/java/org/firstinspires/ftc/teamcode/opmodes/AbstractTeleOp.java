@@ -169,6 +169,16 @@ public class AbstractTeleOp extends OpMode {
             robot.actuators.setArmHopper(armHopperPosition);
             robot.actuators.setArmPivot(armPivotPosition);
 
+            //cancel macro button
+            if(driver2.getLeftStickButton().isJustPressed() || driver2.getRightStickButton().isJustPressed()){
+                robot.actuators.runningDeposit = false;
+                robot.actuators.runningAlliance = false;
+                robot.actuators.runningShared = false;
+                robot.actuators.setState(0);
+                //robot.actuators.runningGenericExtend = false
+
+            }
+
             // intake
             if (driver2.getLeftBumper().isPressed()) {
                 if (driver2.getRightTrigger().getValue() > 0.1) {

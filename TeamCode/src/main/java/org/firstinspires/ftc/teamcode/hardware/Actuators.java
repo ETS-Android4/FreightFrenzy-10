@@ -151,6 +151,10 @@ public class Actuators {
         intakeController = new PIDController(INTAKE_COEFFICIENTS.kP, INTAKE_COEFFICIENTS.kI, INTAKE_COEFFICIENTS.kD);
     }
 
+    public void setState(int newState){
+        state = newState;
+    }
+
     public double getHopperDistance() {
         return colorSensor.getDistance(DistanceUnit.MM);
     }
