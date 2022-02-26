@@ -172,60 +172,60 @@ public class AbstractTeleOp extends OpMode {
             robot.actuators.setArmHopper(armHopperPosition);
             robot.actuators.setArmPivot(armPivotPosition);
 
-            //cancel macro button
-            if(driver2.getLeftStickButton().isJustPressed() || driver2.getRightStickButton().isJustPressed()){
-                robot.actuators.runningDeposit = false;
-                robot.actuators.runningAlliance = false;
-                robot.actuators.runningShared = false;
-                robot.actuators.allianceQueue = false;
-                robot.actuators.sharedQueue = false;
-                robot.actuators.depositQueue = false;
-                robot.actuators.justFinishedAllianceMacro = false;
-                robot.actuators.justFinishedAMacro = true;
-                robot.actuators.justFinishedSharedMacro = false;
-                robot.actuators.pickingUpFreight = false;
-                robot.actuators.runningArm = false;
-                robot.actuators.setState(0);
-                //robot.actuators.runningGenericExtend = false
-            }
-            if(driver2.getLeftStickButton().isJustPressed() || driver2.getRightStickButton().isJustPressed()) {
-                telemetry.addLine("BUTTON IS PRESSED");
-            }
-
-            // intake
-            if (driver2.getLeftBumper().isPressed()) {
-                if (driver2.getRightTrigger().getValue() > 0.1) {
-                    robot.actuators.setIntake(-driver2.getRightTrigger().getValue() * INTAKE_SLOW_SPEED);
-                } else if (driver2.getLeftTrigger().getValue() > 0.1) {
-                    robot.actuators.setIntake(driver2.getLeftTrigger().getValue() * INTAKE_SLOW_SPEED);
-                } else {
-                    robot.actuators.setIntake(0);
-                }
-            } else if (driver2.getRightBumper().isJustPressed()) {
-                int newPos = (int) (robot.actuators.getIntakePosition() + intakeVerticalPos - (robot.actuators.getIntakePosition() % (145.1)));
-                robot.actuators.setIntakePosition(newPos);
-            } else if (driver2.getRightBumper().isPressed()) {
-                robot.actuators.resetIntake();
-            } else if (driver2.getBack().isPressed()) {
-                if (driver2.getRightTrigger().getValue() > 0.1) {
-                    robot.actuators.setIntake(-driver2.getRightTrigger().getValue() * INTAKE_MID_SPEED);
-                } else if (driver2.getLeftTrigger().getValue() > 0.1) {
-                    robot.actuators.setIntake(driver2.getLeftTrigger().getValue() * INTAKE_MID_SPEED);
-                } else {
-                    robot.actuators.setIntake(0);
-                }
-
+        }
+        // intake
+        if (driver2.getLeftBumper().isPressed()) {
+            if (driver2.getRightTrigger().getValue() > 0.1) {
+                robot.actuators.setIntake(-driver2.getRightTrigger().getValue() * INTAKE_SLOW_SPEED);
+            } else if (driver2.getLeftTrigger().getValue() > 0.1) {
+                robot.actuators.setIntake(driver2.getLeftTrigger().getValue() * INTAKE_SLOW_SPEED);
             } else {
-                if (driver2.getRightTrigger().getValue() > 0.1) {
-                    robot.actuators.setIntake(-driver2.getRightTrigger().getValue() * INTAKE_SPEED);
-                } else if (driver2.getLeftTrigger().getValue() > 0.1) {
-                    robot.actuators.setIntake(driver2.getLeftTrigger().getValue() * INTAKE_SPEED);
-                } else {
-                    robot.actuators.setIntake(0);
-                }
+                robot.actuators.setIntake(0);
+            }
+        } else if (driver2.getRightBumper().isJustPressed()) {
+            int newPos = (int) (robot.actuators.getIntakePosition() + intakeVerticalPos - (robot.actuators.getIntakePosition() % (145.1)));
+            robot.actuators.setIntakePosition(newPos);
+        } else if (driver2.getRightBumper().isPressed()) {
+            robot.actuators.resetIntake();
+        } else if (driver2.getBack().isPressed()) {
+            if (driver2.getRightTrigger().getValue() > 0.1) {
+                robot.actuators.setIntake(-driver2.getRightTrigger().getValue() * INTAKE_MID_SPEED);
+            } else if (driver2.getLeftTrigger().getValue() > 0.1) {
+                robot.actuators.setIntake(driver2.getLeftTrigger().getValue() * INTAKE_MID_SPEED);
+            } else {
+                robot.actuators.setIntake(0);
+            }
+
+        } else {
+            if (driver2.getRightTrigger().getValue() > 0.1) {
+                robot.actuators.setIntake(-driver2.getRightTrigger().getValue() * INTAKE_SPEED);
+            } else if (driver2.getLeftTrigger().getValue() > 0.1) {
+                robot.actuators.setIntake(driver2.getLeftTrigger().getValue() * INTAKE_SPEED);
+            } else {
+                robot.actuators.setIntake(0);
             }
         }
-        robot.actuators.update();
+
+        //cancel macro button
+        if(driver2.getLeftStickButton().isJustPressed() || driver2.getRightStickButton().isJustPressed()){
+            robot.actuators.runningDeposit = false;
+            robot.actuators.runningAlliance = false;
+            robot.actuators.runningShared = false;
+            robot.actuators.allianceQueue = false;
+            robot.actuators.sharedQueue = false;
+            robot.actuators.depositQueue = false;
+            robot.actuators.justFinishedAllianceMacro = false;
+            robot.actuators.justFinishedAMacro = true;
+            robot.actuators.justFinishedSharedMacro = false;
+            robot.actuators.pickingUpFreight = false;
+            robot.actuators.runningArm = false;
+            robot.actuators.setState(0);
+            //robot.actuators.runningGenericExtend = false
+        }
+        if(driver2.getLeftStickButton().isPressed() || driver2.getRightStickButton().isPressed()) {
+            telemetry.addLine("BUTTON IS PRESSED");
+        }
+
 
         // duckies
         if (!driver2.getBack().isPressed()) {
@@ -259,7 +259,7 @@ public class AbstractTeleOp extends OpMode {
 //            intakeServoPosition -= INTAKE_SERVO_SPEED;
 //        }
 //        robot.actuators.setIntakeServo(intakeServoPosition);
-
+        robot.actuators.update();
         // telemetry
         telemetry.addLine("Alliance: " + alliance);
         telemetry.addLine(robot.getTelemetry());
