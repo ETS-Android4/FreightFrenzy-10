@@ -177,6 +177,14 @@ public class AbstractTeleOp extends OpMode {
                 robot.actuators.runningDeposit = false;
                 robot.actuators.runningAlliance = false;
                 robot.actuators.runningShared = false;
+                robot.actuators.allianceQueue = false;
+                robot.actuators.sharedQueue = false;
+                robot.actuators.depositQueue = false;
+                robot.actuators.justFinishedAllianceMacro = false;
+                robot.actuators.justFinishedAMacro = false;
+                robot.actuators.justFinishedSharedMacro = false;
+                robot.actuators.pickingUpFreight = false;
+                robot.actuators.runningArm = false;
                 robot.actuators.setState(0);
                 //robot.actuators.runningGenericExtend = false
 
