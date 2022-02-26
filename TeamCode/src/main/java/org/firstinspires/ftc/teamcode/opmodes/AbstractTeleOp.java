@@ -187,7 +187,9 @@ public class AbstractTeleOp extends OpMode {
                 robot.actuators.runningArm = false;
                 robot.actuators.setState(0);
                 //robot.actuators.runningGenericExtend = false
-
+            }
+            if(driver2.getLeftStickButton().isJustPressed() || driver2.getRightStickButton().isJustPressed()) {
+                telemetry.addLine("BUTTON IS PRESSED");
             }
 
             // intake
