@@ -381,7 +381,7 @@ public abstract class AbstractAuto extends LinearOpMode {
             @Override
             public void start() {
                 stepStartTime = currentRuntime;
-                stepCaseStep = 1;
+                stepCaseStep = 0;
             }
 
             @Override
@@ -396,12 +396,14 @@ public abstract class AbstractAuto extends LinearOpMode {
                     case 1:
                         if (robot.actuators.hopperIsFull()) {
                             robot.actuators.setIntake(0);
-                            robot.actuators.resetIntake();
                             robot.drive.followTrajectoryAsync(trajectoryOut);
+                            robot.actuators.setIntakePosition( (int) (robot.actuators.getIntakePosition() - (robot.actuators.getIntakePosition() % 145.1)));
                             stepCaseStep++;
                         }
                         break;
                     case 2:
+
+                        robot.actuators.resetIntake();
                         if (robot.actuators.intakeIsReset()) {
                             //START THE ALLIANCE SCORE MACRO.
                             robot.actuators.runningAlliance = true;
@@ -435,7 +437,7 @@ public abstract class AbstractAuto extends LinearOpMode {
 
             @Override
             public boolean isFinished() {
-                if (!robot.drive.isBusy() && !robot.actuators.runningAlliance && !robot.actuators.runningDeposit && stepCaseStep == 6) {
+                if (!robot.drive.isBusy() && !robot.actuators.runningAlliance && !robot.actuators.runningDeposit && stepCaseStep == 5) {
                     return true;
                 } else {
                     return false;
