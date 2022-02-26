@@ -160,8 +160,11 @@ public class AbstractTeleOp extends OpMode {
                 armHopperPosition -= ARM_HOPPER_SPEED;
             }
 
-            turretPosition = clamp(turretPosition, TURRET_RANGE.getMin(), TURRET_RANGE.getMax());
-            slidesPosition = clamp(slidesPosition, SLIDES_RANGE.getMin(), SLIDES_RANGE.getMax());
+            turretPosition = clamp(turretPosition, -1000, 1000);
+            slidesPosition = clamp(slidesPosition, 0, 2500);
+
+//            turretPosition = clamp(turretPosition, TURRET_RANGE.getMin(), TURRET_RANGE.getMax());
+//            slidesPosition = clamp(slidesPosition, SLIDES_RANGE.getMin(), SLIDES_RANGE.getMax());
             armHopperPosition = clamp(armHopperPosition, ARM_HOPPER_RANGE.getDoubleMin(), ARM_HOPPER_RANGE.getDoubleMax());
             armPivotPosition = clamp(armPivotPosition, ARM_PIVOT_RANGE.getDoubleMin(), ARM_PIVOT_RANGE.getDoubleMax());
             robot.actuators.setTurret(turretPosition);
