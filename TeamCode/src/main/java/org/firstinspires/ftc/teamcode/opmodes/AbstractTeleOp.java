@@ -2,8 +2,10 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import static androidx.core.math.MathUtils.clamp;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_HOPPER_POSITION;
+import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_HOPPER_RANGE;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_HOPPER_SPEED;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_PIVOT_POSITION;
+import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_PIVOT_RANGE;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_PIVOT_SPEED;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.DUCKY_SPEED;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SERVO_DOWN;
@@ -12,6 +14,7 @@ import static org.firstinspires.ftc.teamcode.hardware.Actuators.ODO_SERVO_DOWN;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.ODO_SERVO_UP;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.SLIDES_SPEED;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.SLIDES_RANGE;
+import static org.firstinspires.ftc.teamcode.hardware.Actuators.TURRET_RANGE;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.TURRET_SPEED;
 import static org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive.DRIVE_SPEED;
 import static org.firstinspires.ftc.teamcode.util.Alliance.BLUE;
@@ -48,8 +51,6 @@ public class AbstractTeleOp extends OpMode {
 
     private int turretPosition = 0;
     private int slidesPosition = 0;
-    //    private double armHopperPosition = ARM_HOPPER_POSITION.getDown();
-//    private double armPivotPosition = ARM_PIVOT_POSITION.getDown();
     private double armHopperPosition = ARM_HOPPER_POSITION.getInit();
     private double armPivotPosition = ARM_PIVOT_POSITION.getInit();
 
@@ -73,8 +74,6 @@ public class AbstractTeleOp extends OpMode {
         robot = new Robot(hardwareMap, alliance);
 
         intakeVerticalPos = robot.actuators.getIntakePosition();
-//        armHopperPosition = robot.actuators.getArmHopper();
-//        armPivotPosition = robot.actuators.getArmPivot();
         setAlliance();
     }
 
@@ -132,21 +131,8 @@ public class AbstractTeleOp extends OpMode {
                 robot.actuators.depositQueue = true;
             }
         }
-//        if (driver2.getBack().isPressed() && driver2.getX().isJustPressed() && !(robot.actuators.runningAlliance || robot.actuators.runningShared || robot.actuators.runningDeposit)) {
-//            robot.actuators.runningAlliance = true;
-//        } else if (driver2.getBack().isPressed() && driver2.getB().isJustPressed() && !(robot.actuators.runningAlliance || robot.actuators.runningShared || robot.actuators.runningDeposit)) {
-//            robot.actuators.runningShared = true;
-//        } else if (driver2.getBack().isPressed() && driver2.getA().isJustPressed()) {
-//            if ((robot.actuators.runningAlliance || robot.actuators.runningShared) && !robot.actuators.runningDeposit) {
-//                robot.actuators.depositQueue = true;
-//            } else if (!(robot.actuators.runningAlliance || robot.actuators.runningShared || robot.actuators.runningDeposit)) {
-//                robot.actuators.runningDeposit = true;
-//            }
-//        }
 
-        if (robot.actuators.pickingUpFreight) {
-            robot.actuators.pickingUpFreight(getRuntime());
-        } else if (robot.actuators.runningAlliance) {
+        if (robot.actuators.runningAlliance) {
             robot.actuators.runningAlliance(getRuntime(), alliance, RIGHT);
         } else if (robot.actuators.runningShared) {
             robot.actuators.runningShared(getRuntime(), alliance, LEFT);
@@ -174,15 +160,10 @@ public class AbstractTeleOp extends OpMode {
                 armHopperPosition -= ARM_HOPPER_SPEED;
             }
 
-//            turretPosition = clamp(turretPosition, TURRET_RANGE.getMin(), TURRET_RANGE.getMax());
-//            slidesPosition = clamp(slidesPosition, SLIDES_RANGE.getMin(), SLIDES_RANGE.getMax());
-//            armHopperPosition = clamp(armHopperPosition, ARM_HOPPER_RANGE.getDoubleMin(), ARM_HOPPER_RANGE.getDoubleMax());
-//            armPivotPosition = clamp(armPivotPosition, ARM_PIVOT_RANGE.getDoubleMin(), ARM_PIVOT_RANGE.getDoubleMax());
-
-            turretPosition = clamp(turretPosition, -1000, 1000);
-            slidesPosition = clamp(slidesPosition, SLIDES_RANGE.lower, SLIDES_RANGE.upper); //max was 2500
-            armHopperPosition = clamp(armHopperPosition, 0.01, 0.99);
-            armPivotPosition = clamp(armPivotPosition, 0.01, 0.99);
+            turretPosition = clamp(turretPosition, TURRET_RANGE.getMin(), TURRET_RANGE.getMax());
+            slidesPosition = clamp(slidesPosition, SLIDES_RANGE.getMin(), SLIDES_RANGE.getMax());
+            armHopperPosition = clamp(armHopperPosition, ARM_HOPPER_RANGE.getDoubleMin(), ARM_HOPPER_RANGE.getDoubleMax());
+            armPivotPosition = clamp(armPivotPosition, ARM_PIVOT_RANGE.getDoubleMin(), ARM_PIVOT_RANGE.getDoubleMax());
             robot.actuators.setTurret(turretPosition);
             robot.actuators.setSlides(slidesPosition);
             robot.actuators.setArmHopper(armHopperPosition);

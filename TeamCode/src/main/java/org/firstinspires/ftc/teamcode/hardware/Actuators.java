@@ -56,16 +56,10 @@ public class Actuators {
 
     public int auto_intake_orient_pos = 0;
 
-    //    public static PIDCoefficients TURRET_COEFFICIENTS = new PIDCoefficients(0.01, 0.00001, 0.00001);
-//    public static PIDCoefficients SLIDES_COEFFICIENTS = new PIDCoefficients(0.002, 0, 0);
     public static PIDCoefficients TURRET_COEFFICIENTS = new PIDCoefficients(0.003, 0, 0);
     public static PIDCoefficients SLIDES_COEFFICIENTS = new PIDCoefficients(0.0025, 0, 0);
     public static PIDCoefficients INTAKE_COEFFICIENTS = new PIDCoefficients(0.005, 0, 0.0001);
 
-    //    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.02, 0.1, 0.42, 0.75);
-//    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.65, 0.75, 0.74, 0.59);
-//    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.99, 0.83, 0.4, 0.01);
-//    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.67, 0.74, 0.74, 0.44);//0.97
     public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.06, 0.03, 0.12, 0.51, 0.95, 0.8, 0.8, 0.95, 0.85, 0.8);
     public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.62, 0.62, 0.68, 0.74, 0.92, 0.92, 0.92, 0.68, 0.64, 0.49);
     // intake servo positions: down 0.01 up 0.99
@@ -123,11 +117,6 @@ public class Actuators {
     public boolean justFinishedAllianceMacro;
     public boolean justFinishedSharedMacro;
     public boolean justFinishedAMacro;
-
-    public static double SLOW_DEPOSIT_TIME = 10;
-    public static double SLOW_DEPOSIT_INCREMENT = 0.01;
-
-    public boolean runningSharedDeposit = false;
 
     private int state;
     private double time;
@@ -192,15 +181,9 @@ public class Actuators {
     }
 
     public void setIntakePosition(int position) {
-//        this.intake.setTargetPosition(position);
-//        this.intake.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//        this.intake.setPower(Math.abs(position-getIntakePosition())/145.1*0.9);
-        setIntakePositionPID(position);
-    }
-
-    public void setIntakePositionPID(int position) {
         intakeController.setSetPoint(position);
         intake.setPower(intakeController.calculate(intake.getCurrentPosition()));
+
     }
 
     public int getIntakePosition() {
@@ -209,11 +192,6 @@ public class Actuators {
 
     public boolean intakeIsReset() {
         return intakeController.atSetPoint();
-    }
-
-    //left here just in case renaming it to getIntakePosition breaks something in the future
-    public int getIntake() {
-        return this.intake.getCurrentPosition();
     }
 
     public void resetIntake() {
@@ -226,13 +204,9 @@ public class Actuators {
         auto_intake_orient_pos = pos;
     }
 
-
     public void setTurret(int position) {
         turretController.setSetPoint(position);
-//        this.turret.setTargetPosition(position);
-//        this.turret.setPower(TURRET_POWER);
     }
-
 
     public void orientIntakeInAuto() {
         int newPos = (int) (getIntakePosition() + auto_intake_orient_pos - (getIntakePosition() % (145.1)));
@@ -243,10 +217,6 @@ public class Actuators {
     public int getTurret() {
         return this.turret.getCurrentPosition();
     }
-
-//    public int getTurretAngle() {
-//        int
-//    }
 
     public void setSlides(int position) {
         Math.min(Math.max(position, SLIDES_RANGE.lower), SLIDES_RANGE.upper);
@@ -298,56 +268,6 @@ public class Actuators {
 
     public void setRightDucky(double power, Alliance alliance) {
         this.rightDucky.setPower(alliance == Alliance.RED ? -power : power);
-    }
-
-    public void pickingUpFreight(double currentTime) {
-        if (pickingUpFreight) {
-            switch (state) {
-//                case 0:
-//                    time = currentTime;
-//                    setIntake(INTAKE_SPEED);
-//                    state++;
-//                    break;
-//                case 1:
-//                    if (currentTime > time + FREIGHT1) {
-//                        state++;
-//                    }
-//                    break;
-                case 0:
-                    time = currentTime;
-                    int newPos = (int) (getIntakePosition() + 145.1 * 5 + (getIntakePosition() % (145.1)));
-                    setIntakePositionPID(newPos);
-                    state++;
-                    break;
-                case 1:
-                    if (time > currentTime + FREIGHT1) {
-                        state++;
-                    }
-                    resetIntake();
-                    break;
-//                case 2:
-//                    time = currentTime;
-//                    resetIntake();
-//                    state++;
-//                    break;
-//                case 3:
-//                    if (time > currentTime + FREIGHT2) {
-//                        state++;
-//                    }
-//                    resetIntake();
-//                    break;
-                case 2:
-                    pickingUpFreight = false;
-                    if (allianceQueue) {
-                        allianceQueue = false;
-                        runningAlliance = true;
-                    } else if (sharedQueue) {
-                        sharedQueue = false;
-                        runningShared = true;
-                    }
-                    state = 0;
-            }
-        }
     }
 
     public void runningAlliance(double currentTime, Alliance alliance, BarcodeLocation barcodeLocation) {
@@ -459,13 +379,6 @@ public class Actuators {
                     break;
                 case 4:
                     time = currentTime;
-//                    if (barcodeLocation == LEFT) {
-//                        setArmHopper(ARM_HOPPER_POSITION.getAlmostLow());
-//                    } else if (barcodeLocation == MIDDLE) {
-//                        setArmHopper(ARM_HOPPER_POSITION.getAlmostMid());
-//                    } else {
-//                        setArmHopper(ARM_HOPPER_POSITION.getAlmostHigh());
-//                    }
                     setTurret(alliance == RED ? TURRET_SHARED : -TURRET_SHARED);
                     setSlides(SLIDES_SHARED);
                     state++;
@@ -493,8 +406,6 @@ public class Actuators {
         if (runningDeposit) {
             switch (state) {
                 case 0:
-                    //reset intake at the beginning of retract macro
-                    //resetIntake();
                     //"memory" stuff
                     if (justFinishedAllianceMacro) {
                         TURRET_ALLIANCE = alliance == RED ? (int) turretController.getSetPoint() : -(int) turretController.getSetPoint();
@@ -522,12 +433,6 @@ public class Actuators {
                     if (currentTime > time + RETRACT1_SCORE) {
                         state++;
                     }
-//                    if (justFinishedSharedMacro && currentTime > time + SLOW_DEPOSIT_TIME) {
-//                        if(getArmHopper()>ARM_HOPPER_POSITION.getLow())
-//                        {
-//                            setArmHopper(getArmHopper()+SLOW_DEPOSIT_INCREMENT);
-//                        }
-//                    }
                     break;
                 case 2:
                     time = currentTime;

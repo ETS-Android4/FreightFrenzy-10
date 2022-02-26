@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.roadrunner.drive;
 
 import static org.firstinspires.ftc.teamcode.util.Constants.WHEEL_BACK_LEFT;
 import static org.firstinspires.ftc.teamcode.util.Constants.WHEEL_BACK_RIGHT;
+import static org.firstinspires.ftc.teamcode.util.Constants.WHEEL_FRONT_LEFT;
 import static org.firstinspires.ftc.teamcode.util.Constants.WHEEL_FRONT_RIGHT;
 
 import androidx.annotation.NonNull;
@@ -47,12 +48,13 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
                 new Pose2d(FORWARD_OFFSET, -0.134907874, Math.toRadians(90)) // front
         ));
 
-        leftEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, WHEEL_BACK_LEFT));
-        rightEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, WHEEL_FRONT_RIGHT));
+        leftEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, WHEEL_FRONT_LEFT));
+        rightEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, WHEEL_BACK_LEFT));
         frontEncoder = new Encoder(hardwareMap.get(DcMotorEx.class, WHEEL_BACK_RIGHT));
 
         // TODO: reverse any encoders using Encoder.setDirection(Encoder.Direction.REVERSE)
         leftEncoder.setDirection(Encoder.Direction.REVERSE);
+        rightEncoder.setDirection(Encoder.Direction.REVERSE);
     }
 
     public static double encoderTicksToInches(double ticks) {
