@@ -276,9 +276,11 @@ public class Actuators {
 
     public void runningAlliance(double currentTime, Alliance alliance, BarcodeLocation barcodeLocation) {
         if (runningAlliance) {
+            resetIntake();
             switch (state) {
                 case 0:
                     time = currentTime;
+                    setIntakePosition((int) (getIntakePosition() - (getIntakePosition() % 145.1)));
                     setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
                     state++;
                     break;
@@ -342,9 +344,11 @@ public class Actuators {
 
     public void runningShared(double currentTime, Alliance alliance, BarcodeLocation barcodeLocation) {
         if (runningShared) {
+            resetIntake();
             switch (state) {
                 case 0:
                     time = currentTime;
+                    setIntakePosition((int) (getIntakePosition() - (getIntakePosition() % 145.1)));
                     setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
                     state++;
                     break;
@@ -408,6 +412,7 @@ public class Actuators {
 
     public void runningDeposit(double currentTime, Alliance alliance, BarcodeLocation barcodeLocation) {
         if (runningDeposit) {
+            resetIntake();
             switch (state) {
                 case 0:
                     //"memory" stuff
@@ -420,6 +425,7 @@ public class Actuators {
                     }
 
                     time = currentTime;
+                    setIntakePosition((int) (getIntakePosition() - (getIntakePosition() % 145.1)));
                     if (barcodeLocation == LEFT) {
                         setArmHopper(ARM_HOPPER_POSITION.getLow());
                         setArmPivot(ARM_PIVOT_POSITION.getLow());
@@ -509,9 +515,11 @@ public class Actuators {
 
     public void runningArm(double currentTime) {
         if (runningArm) {
+            resetIntake();
             switch (state) {
                 case 0:
                     time = currentTime;
+                    setIntakePosition((int) (getIntakePosition() - (getIntakePosition() % 145.1)));
                     setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
                     setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
                     state++;
