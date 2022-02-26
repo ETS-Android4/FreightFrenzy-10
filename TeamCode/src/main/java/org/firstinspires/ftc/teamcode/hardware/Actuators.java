@@ -55,6 +55,7 @@ public class Actuators {
     public static double DUCKY_SPEED = 1.0;
 
     public int auto_intake_orient_pos = 0;
+    public int intakeStartPos = (int) (145.1/8.0);
 
     public static PIDCoefficients TURRET_COEFFICIENTS = new PIDCoefficients(0.003, 0, 0);
     public static PIDCoefficients SLIDES_COEFFICIENTS = new PIDCoefficients(0.0025, 0, 0);
@@ -280,7 +281,7 @@ public class Actuators {
             switch (state) {
                 case 0:
                     time = currentTime;
-                    setIntakePosition((int) (getIntakePosition() - (getIntakePosition() % 145.1)));
+                    setIntakePosition((int) (intakeStartPos + (getIntakePosition() - (getIntakePosition() % 145.1))));
                     setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
                     state++;
                     break;
@@ -348,7 +349,7 @@ public class Actuators {
             switch (state) {
                 case 0:
                     time = currentTime;
-                    setIntakePosition((int) (getIntakePosition() - (getIntakePosition() % 145.1)));
+                    setIntakePosition((int) (intakeStartPos + (getIntakePosition() - (getIntakePosition() % 145.1))));
                     setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
                     state++;
                     break;
@@ -425,7 +426,7 @@ public class Actuators {
                     }
 
                     time = currentTime;
-                    setIntakePosition((int) (getIntakePosition() - (getIntakePosition() % 145.1)));
+                    setIntakePosition((int) (intakeStartPos + (getIntakePosition() - (getIntakePosition() % 145.1))));
                     if (barcodeLocation == LEFT) {
                         setArmHopper(ARM_HOPPER_POSITION.getLow());
                         setArmPivot(ARM_PIVOT_POSITION.getLow());
@@ -519,7 +520,7 @@ public class Actuators {
             switch (state) {
                 case 0:
                     time = currentTime;
-                    setIntakePosition((int) (getIntakePosition() - (getIntakePosition() % 145.1)));
+                    setIntakePosition((int) (intakeStartPos + (getIntakePosition() - (getIntakePosition() % 145.1))));
                     setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
                     setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
                     state++;

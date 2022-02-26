@@ -34,10 +34,6 @@ import org.firstinspires.ftc.teamcode.util.controller.Controller;
 
 @Config
 public class AbstractTeleOp extends OpMode {
-
-    //this is for reseting the intake to the upright position
-    public double intakeVerticalPos = 0;
-
     public static double INTAKE_SPEED = 0.25;
     public static double INTAKE_SLOW_SPEED = 0.15;
     public static double INTAKE_MID_SPEED = 0.4;
@@ -73,8 +69,9 @@ public class AbstractTeleOp extends OpMode {
 
         robot = new Robot(hardwareMap, alliance);
 
-        intakeVerticalPos = robot.actuators.getIntakePosition();
         setAlliance();
+
+        robot.actuators.intakeStartPos = 0;
     }
 
     @Override
@@ -183,7 +180,7 @@ public class AbstractTeleOp extends OpMode {
                 robot.actuators.setIntake(0);
             }
         } else if (driver2.getRightBumper().isJustPressed()) {
-            int newPos = (int) (robot.actuators.getIntakePosition() + intakeVerticalPos - (robot.actuators.getIntakePosition() % (145.1)));
+            int newPos = (int) (robot.actuators.getIntakePosition() - (robot.actuators.getIntakePosition() % (145.1)));
             robot.actuators.setIntakePosition(newPos);
         } else if (driver2.getRightBumper().isPressed()) {
             robot.actuators.resetIntake();
