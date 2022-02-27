@@ -34,7 +34,7 @@ import org.firstinspires.ftc.teamcode.util.controller.Controller;
 
 @Config
 public class AbstractTeleOp extends OpMode {
-    public static double INTAKE_SPEED = 0.25;
+    public static double INTAKE_SPEED = 0.3;
     public static double INTAKE_SLOW_SPEED = 0.15;
     public static double INTAKE_MID_SPEED = 0.4;
 

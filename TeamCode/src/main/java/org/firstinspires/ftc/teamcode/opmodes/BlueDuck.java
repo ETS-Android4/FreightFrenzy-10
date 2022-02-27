@@ -70,6 +70,8 @@ public class BlueDuck extends AbstractAuto {
                 .lineToLinearHeading(PARK)
                 .build();
 
+        stopTargetingCamera();
+
         // score preloaded
 
         addArmPivot(0.1, ARM_PIVOT_POSITION.getDown());

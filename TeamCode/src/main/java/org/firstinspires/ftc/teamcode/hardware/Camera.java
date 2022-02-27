@@ -64,9 +64,11 @@ public class Camera {
 
     // Close the Barcode Camera
     public void stopBarcodeWebcam() {
-        if (barcodeWebcamInitialized) {
-            barcodeWebcam.closeCameraDeviceAsync(() -> barcodeWebcamInitialized = false);
-        }
+//        if (barcodeWebcamInitialized) {
+//            barcodeWebcam.closeCameraDeviceAsync(() -> barcodeWebcamInitialized = false);
+//        }
+        barcodeWebcam.closeCameraDeviceAsync(() -> barcodeWebcamInitialized = false);
+
     }
 
     // Check what StarterStack configuration is on the field
