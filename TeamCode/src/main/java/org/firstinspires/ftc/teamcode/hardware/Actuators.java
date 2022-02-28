@@ -44,7 +44,7 @@ public class Actuators {
     public static double INTAKE_SERVO_SPEED = 0.02;
 
     public static Range TURRET_RANGE = new Range(-1000, 1000);
-    public static Range SLIDES_RANGE = new Range(0, 2300);
+    public static Range SLIDES_RANGE = new Range(0, 2300*0.377373212); // adjust for new motor
     public static Range ARM_HOPPER_RANGE = new Range(0.01, 0.99);
     public static Range ARM_PIVOT_RANGE = new Range(0.01, 0.99);
 
@@ -72,9 +72,9 @@ public class Actuators {
     public static int TURRET_ALLIANCE = 650;
     public static int TURRET_SHARED = -800;
 
-    public static int SLIDES_ALLIANCE_HIGH = 2200;
-    public static int SLIDES_ALLIANCE_MID = 1649;
-    public static int SLIDES_ALLIANCE_LOW = 1422;
+    public static int SLIDES_ALLIANCE_HIGH = (int) (2200*0.377373212);
+    public static int SLIDES_ALLIANCE_MID = (int)(1649*0.377373212);
+    public static int SLIDES_ALLIANCE_LOW = (int) (1422*0.377373212);
     public static int SLIDES_SHARED = 0;
 
     public static double FREIGHT1 = 2;
