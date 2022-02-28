@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.util.CameraPosition;
 @Autonomous(name = "Red Warehouse", group = "Competition", preselectTeleOp = "Red TeleOp")
 public class RedWarehouse extends AbstractAuto {
     public static Pose2d START_POSE = new Pose2d(12, -63, Math.toRadians(0));
-    public static Pose2d INTAKE = new Pose2d(38, -63, Math.toRadians(0));
+    public static Pose2d INTAKE = new Pose2d(34, -63, Math.toRadians(0));
     public static Pose2d CREEP = new Pose2d(50, -63, Math.toRadians(0));
     public static Pose2d SCORE = new Pose2d(12, -63, Math.toRadians(0));
 //    public static Pose2d INTAKE2 = new Pose2d(34, -63.5, Math.toRadians(0));
@@ -46,14 +46,14 @@ public class RedWarehouse extends AbstractAuto {
                 .lineToLinearHeading(INTAKE)
                 .build();
 
-        Trajectory creep = robot.drive.trajectoryBuilder(intake.end())
+        Trajectory creep = robot.drive.trajectoryBuilder(new Pose2d(38, -63, Math.toRadians(0)))
                 .lineToLinearHeading(CREEP,
                         SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
 
-        Trajectory score = robot.drive.trajectoryBuilder(creep.end())
+        Trajectory score = robot.drive.trajectoryBuilder(new Pose2d(30, -63, Math.toRadians(0)))
                 .lineToLinearHeading(SCORE)
                 .build();
 
