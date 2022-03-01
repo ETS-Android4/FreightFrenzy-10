@@ -45,7 +45,7 @@ public class Actuators {
     public static double DUCKY_SPEED = 1.0;
 
     public static Range TURRET_RANGE = new Range(-1000, 1000);
-    public static Range SLIDES_RANGE = new Range(0, 2300);
+    public static Range SLIDES_RANGE = new Range(0, 2300*0.377373212);
     public static Range ARM_HOPPER_RANGE = new Range(0.01, 0.99);
     public static Range ARM_PIVOT_RANGE = new Range(0.01, 0.99);
 
@@ -322,7 +322,7 @@ public class Actuators {
                     state++;
                     break;
                 case 7:
-                    if (turretController.atSetPoint() && slidesController.atSetPoint()) {
+                    if ((((getTurret()>turretController.getSetPoint()-10 && getTurret()<turretController.getSetPoint()+10)) && slidesController.atSetPoint()) || currentTime>time+2) {
                         state++;
                     }
                     break;
@@ -389,7 +389,7 @@ public class Actuators {
                     state++;
                     break;
                 case 1:
-                    if (currentTime > time + RETRACT_ARM_SCORE) {
+                    if (currentTime > time + RETRACT_ARM_SCORE) { //use hopper?
                         state++;
                     }
                     break;
@@ -410,7 +410,7 @@ public class Actuators {
                     state++;
                     break;
                 case 5:
-                    if (slidesController.atSetPoint()) {
+                    if (slidesController.atSetPoint() ) {
                         state++;
                     }
                     break;
@@ -420,7 +420,7 @@ public class Actuators {
                     state++;
                     break;
                 case 7:
-                    if (turretController.atSetPoint()) {
+                    if ((getTurret()>turretController.getSetPoint()-10 && getTurret()<turretController.getSetPoint()+10) || currentTime>time+2) {
                         state++;
                     }
                     break;
