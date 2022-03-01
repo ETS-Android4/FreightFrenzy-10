@@ -44,22 +44,22 @@ public class RedWarehouse extends AbstractAuto {
     public void makeTrajectories() {
         robot.drive.setPoseEstimate(START_POSE);
 
-        Trajectory intake = robot.drive.trajectoryBuilder(START_POSE)
+        intake = robot.drive.trajectoryBuilder(START_POSE)
                 .lineToLinearHeading(INTAKE)
                 .build();
 
-        Trajectory creep = robot.drive.trajectoryBuilder(intake.end())
+        creep = robot.drive.trajectoryBuilder(intake.end())
                 .lineToLinearHeading(CREEP,
                         SampleMecanumDrive.getVelocityConstraint(5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
 
-        Trajectory score = robot.drive.trajectoryBuilder(creep.end())
+        score = robot.drive.trajectoryBuilder(creep.end())
                 .lineToLinearHeading(SCORE)
                 .build();
 
-        Trajectory park = robot.drive.trajectoryBuilder(intake.end())
+        park = robot.drive.trajectoryBuilder(intake.end())
                 .lineToLinearHeading(PARK)
                 .build();
 
