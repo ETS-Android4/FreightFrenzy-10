@@ -39,7 +39,7 @@ public class Robot {
         lights = new Lights(hardwareMap);
         this.alliance = alliance;
     }
-
+    //removed references to runningShared
     public void updateLights() {
         if (alliance == Alliance.RED) {
             if (actuators.runningExtend || actuators.runningRetract) {
