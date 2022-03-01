@@ -25,6 +25,9 @@ public abstract class AbstractAuto extends LinearOpMode {
     public Robot robot;
     private BarcodeLocation teamElementLocation;
     private ArrayList<Step> steps;
+    private ArrayList<Step> stepsLow;
+    private ArrayList<Step> stepsMid;
+    private ArrayList<Step> stepsHigh;
     private double currentRuntime;
     private boolean stopWasNotRequested;
 
@@ -67,7 +70,13 @@ public abstract class AbstractAuto extends LinearOpMode {
 //            robot.actuators.resetIntake();
 //        }
 
-        makeTrajectories();
+        // create possible steps
+        stepsLow = new ArrayList<>();
+        stepsMid = new ArrayList<>();
+        stepsHigh = new ArrayList<>();
+        initializeSteps(BarcodeLocation.LEFT, stepsLow);
+        initializeSteps(BarcodeLocation.MIDDLE, stepsMid);
+        initializeSteps(BarcodeLocation.RIGHT, stepsHigh);
 
         // wait for start
         while (!(isStarted() || isStopRequested())) {
@@ -80,9 +89,19 @@ public abstract class AbstractAuto extends LinearOpMode {
         }
         resetStartTime();
 
-        // start up the first step
-        steps = new ArrayList<>();
-        initializeSteps(teamElementLocation);
+        // start up the first step based on team element position
+        switch (teamElementLocation) {
+            case LEFT:
+                steps = stepsLow;
+                break;
+            case MIDDLE:
+                steps = stepsMid;
+                break;
+            case RIGHT:
+            case UNKNOWN:
+                steps = stepsHigh;
+                break;
+        }
 
         int stepNumber = 0;
         double stepTimeout;
@@ -108,10 +127,13 @@ public abstract class AbstractAuto extends LinearOpMode {
                 step.start();
             }
 
-            // while the step is running display telemetry
+            // while the step is running, update asynchronous methods
             step.whileRunning();
             robot.actuators.update();
             robot.updateLights();
+            PoseStorage.currentPose = robot.drive.getPoseEstimate();
+
+            // while the step is running display telemetry
             telemetry.addLine(String.format(Locale.US, "Runtime: %.0f", currentRuntime));
             telemetry.addLine("Step " + (stepNumber + 1) + " of " + steps.size() + ", " + step.getTelemetry() + "\n");
             telemetry.addLine(robot.getTelemetry());
@@ -122,10 +144,9 @@ public abstract class AbstractAuto extends LinearOpMode {
     public void makeTrajectories() {
     }
 
-
     // Load up all of the steps for the autonomous
-    public void initializeSteps(BarcodeLocation location) {
-        addDelay(5);
+    public void initializeSteps(BarcodeLocation location, ArrayList<Step> stepList) {
+        addDelay(stepList, 5);
     }
 
     public BarcodeLocation getTeamElementLocation() {
@@ -133,8 +154,8 @@ public abstract class AbstractAuto extends LinearOpMode {
     }
 
     // Functions to add steps
-    public void addDelay(double timeout) {
-        steps.add(new Step("Waiting for " + timeout + " seconds", timeout) {
+    public void addDelay(ArrayList<Step> stepList, double timeout) {
+        stepList.add(new Step("Waiting for " + timeout + " seconds", timeout) {
             @Override
             public void start() {
             }
@@ -154,8 +175,8 @@ public abstract class AbstractAuto extends LinearOpMode {
         });
     }
 
-    public void turn(double degrees) {
-        steps.add(new Step("Following a trajectory") {
+    public void turn(ArrayList<Step> stepList, double degrees) {
+        stepList.add(new Step("Following a trajectory") {
             @Override
             public void start() {
                 robot.drive.turn(degrees);
@@ -177,8 +198,8 @@ public abstract class AbstractAuto extends LinearOpMode {
         });
     }
 
-    public void followTrajectory(Trajectory trajectory) {
-        steps.add(new Step("Following a trajectory") {
+    public void followTrajectory(ArrayList<Step> stepList, Trajectory trajectory) {
+        stepList.add(new Step("Following a trajectory") {
             @Override
             public void start() {
                 robot.drive.followTrajectoryAsync(trajectory);
@@ -200,8 +221,8 @@ public abstract class AbstractAuto extends LinearOpMode {
         });
     }
 
-    public void addIntake(double timeout, final double intakePower) {
-        steps.add(new Step("Setting intake power to " + intakePower, timeout) {
+    public void addIntake(ArrayList<Step> stepList, double timeout, final double intakePower) {
+        stepList.add(new Step("Setting intake power to " + intakePower, timeout) {
             @Override
             public void start() {
                 robot.actuators.setIntake(intakePower);
@@ -222,8 +243,8 @@ public abstract class AbstractAuto extends LinearOpMode {
         });
     }
 
-    public void resetIntake(double timeout) {
-        steps.add(new Step("Resetting Intake", timeout) {
+    public void resetIntake(ArrayList<Step> stepList, double timeout) {
+        stepList.add(new Step("Resetting Intake", timeout) {
             @Override
             public void start() {
                 int newPos = (int) (robot.actuators.getIntakePosition() + (145.1 / 8.0) - (robot.actuators.getIntakePosition() % (145.1)));
@@ -249,8 +270,8 @@ public abstract class AbstractAuto extends LinearOpMode {
         });
     }
 
-    public void addArmHopper(double timeout, final double armHopperPosition) {
-        steps.add(new Step("Setting hopper to " + armHopperPosition, timeout) {
+    public void addArmHopper(ArrayList<Step> stepList, double timeout, final double armHopperPosition) {
+        stepList.add(new Step("Setting hopper to " + armHopperPosition, timeout) {
             @Override
             public void start() {
                 robot.actuators.setArmHopper(armHopperPosition);
@@ -271,8 +292,8 @@ public abstract class AbstractAuto extends LinearOpMode {
         });
     }
 
-    public void addArmPivot(double timeout, final double armPivotPosition) {
-        steps.add(new Step("Setting hopper to " + armPivotPosition, timeout) {
+    public void addArmPivot(ArrayList<Step> stepList, double timeout, final double armPivotPosition) {
+        stepList.add(new Step("Setting hopper to " + armPivotPosition, timeout) {
             @Override
             public void start() {
                 robot.actuators.setArmPivot(armPivotPosition);
@@ -293,8 +314,8 @@ public abstract class AbstractAuto extends LinearOpMode {
         });
     }
 
-    public void addTurret(double timeout, final int turretPos) {
-        steps.add(new Step("Setting turret to " + turretPos, timeout) {
+    public void addTurret(ArrayList<Step> stepList, double timeout, final int turretPos) {
+        stepList.add(new Step("Setting turret to " + turretPos, timeout) {
             @Override
             public void start() {
                 robot.actuators.setTurret(turretPos);
@@ -315,8 +336,8 @@ public abstract class AbstractAuto extends LinearOpMode {
         });
     }
 
-    public void addSlides(double timeout, final int slidePos) {
-        steps.add(new Step("Setting slide to " + slidePos, timeout) {
+    public void addSlides(ArrayList<Step> stepList, double timeout, final int slidePos) {
+        stepList.add(new Step("Setting slide to " + slidePos, timeout) {
             @Override
             public void start() {
                 robot.actuators.setSlides(slidePos);
@@ -337,8 +358,8 @@ public abstract class AbstractAuto extends LinearOpMode {
         });
     }
 
-    public void addDuckSpinner(double timeout, final double duckPower) {
-        steps.add(new Step("Setting duck power to " + duckPower, timeout) {
+    public void addDuckSpinner(ArrayList<Step> stepList, double timeout, final double duckPower) {
+        stepList.add(new Step("Setting duck power to " + duckPower, timeout) {
             @Override
             public void start() {
                 robot.actuators.setDuckies(duckPower, alliance);
@@ -359,8 +380,8 @@ public abstract class AbstractAuto extends LinearOpMode {
         });
     }
 
-    public void stopTargetingCamera() {
-        steps.add(new Step("Stopping Targeting Camera") {
+    public void stopTargetingCamera(ArrayList<Step> stepList) {
+        stepList.add(new Step("Stopping Targeting Camera") {
             @Override
             public void start() {
                 robot.camera.stopBarcodeWebcam();
@@ -381,8 +402,8 @@ public abstract class AbstractAuto extends LinearOpMode {
         });
     }
 
-    public void cycleBlockInAuto(double timeout, Trajectory trajectoryIn, Trajectory trajectoryOut, Trajectory creep, Alliance alliance, DepositPosition depoPos) {
-        steps.add(new Step("Scoring Alliance Hub ", timeout) {
+    public void cycleBlockInAuto(ArrayList<Step> stepList, double timeout, Trajectory trajectoryIn, Trajectory trajectoryOut, Trajectory creep, Alliance alliance, DepositPosition depoPos) {
+        stepList.add(new Step("Scoring Alliance Hub ", timeout) {
             @Override
             public void start() {
                 stepStartTime = currentRuntime;
@@ -464,8 +485,8 @@ public abstract class AbstractAuto extends LinearOpMode {
         });
     }
 
-    public void addExtend(double timeout, Alliance alliance, DepositPosition depoPos) {
-        steps.add(new Step("Extending ", timeout) {
+    public void addExtend(ArrayList<Step> stepList, double timeout, Alliance alliance, DepositPosition depoPos) {
+        stepList.add(new Step("Extending ", timeout) {
             @Override
             public void start() {
                 robot.actuators.runningExtend = true;
@@ -487,8 +508,8 @@ public abstract class AbstractAuto extends LinearOpMode {
         });
     }
 
-    public void addRetract(double timeout, Alliance alliance, DepositPosition depoPos) {
-        steps.add(new Step("Retracting", timeout) {
+    public void addRetract(ArrayList<Step> stepList, double timeout, Alliance alliance, DepositPosition depoPos) {
+        stepList.add(new Step("Retracting", timeout) {
             @Override
             public void start() {
                 robot.actuators.runningRetract = true;
@@ -510,8 +531,8 @@ public abstract class AbstractAuto extends LinearOpMode {
         });
     }
 
-    public void addIntakeServo(double timeout, double position) {
-        steps.add(new Step("Moving Intake Servo", timeout) {
+    public void addIntakeServo(ArrayList<Step> stepList, double timeout, double position) {
+        stepList.add(new Step("Moving Intake Servo", timeout) {
             @Override
             public void start() {
                 robot.actuators.setIntakeServo(position);

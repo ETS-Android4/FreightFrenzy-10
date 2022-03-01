@@ -1,97 +1,97 @@
-package org.firstinspires.ftc.teamcode.opmodes;
-
-import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_HOPPER_POSITION;
-import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_PIVOT_POSITION;
-import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_RESET_TIME;
-import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SERVO_DOWN;
-import static org.firstinspires.ftc.teamcode.util.Alliance.BLUE;
-import static org.firstinspires.ftc.teamcode.util.DepositPosition.HIGH;
-import static org.firstinspires.ftc.teamcode.util.DepositPosition.LOW;
-import static org.firstinspires.ftc.teamcode.util.DepositPosition.MID;
-
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-
-import org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants;
-import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.util.BarcodeLocation;
-import org.firstinspires.ftc.teamcode.util.CameraPosition;
-
-@Autonomous(name = "Blue Warehouse", group = "Competition", preselectTeleOp = "Blue TeleOp")
-public class BlueWarehouse extends AbstractAuto {
-    public static Pose2d START_POSE = new Pose2d(12, 63, Math.toRadians(0));
-    public static Pose2d INTAKE = new Pose2d(36, 63, Math.toRadians(0));
-    public static Pose2d CREEP = new Pose2d(40, 63, Math.toRadians(0));
-    public static Pose2d SCORE = new Pose2d(12, 63, Math.toRadians(0));
-    public static Pose2d PARK = new Pose2d(36, 63, Math.toRadians(0));
-
-    @Override
-    public void setAlliance() {
-        this.alliance = BLUE;
-    }
-
-    @Override
-    public void setCameraPosition() {
-        this.cameraPosition = CameraPosition.RIGHT;
-    }
-
-    @Override
-    public void initializeSteps(BarcodeLocation location) {
-        robot.drive.setPoseEstimate(START_POSE);
-
-        Trajectory intake = robot.drive.trajectoryBuilder(START_POSE)
-                .lineToLinearHeading(INTAKE)
-                .build();
-
-        Trajectory creep = robot.drive.trajectoryBuilder(intake.end())
-                .lineToLinearHeading(CREEP,
-                        SampleMecanumDrive.getVelocityConstraint(5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
-                )
-                .build();
-
-        Trajectory score = robot.drive.trajectoryBuilder(creep.end())
-                .lineToLinearHeading(SCORE)
-                .build();
-
-        Trajectory park = robot.drive.trajectoryBuilder(intake.end())
-                .lineToLinearHeading(PARK)
-                .build();
-
-        stopTargetingCamera();
-
-        // reset things
-        addArmPivot(0, ARM_PIVOT_POSITION.getDown());
-        addArmHopper(0, ARM_HOPPER_POSITION.getDown());
-        addIntakeServo(0.5, INTAKE_SERVO_DOWN);
-        resetIntake(INTAKE_RESET_TIME);
-
-        // score preloaded
-        switch(getTeamElementLocation()) {
-            case LEFT:
-                addExtend(10000, alliance, LOW);
-                addRetract(10000, alliance, LOW);
-                break;
-            case MIDDLE:
-                addExtend(10000, alliance, MID);
-                addRetract(10000, alliance, MID);
-                break;
-            case RIGHT:
-            case UNKNOWN:
-                addExtend(10000, alliance, HIGH);
-                addRetract(10000, alliance, HIGH);
-                break;
-        }
-
-        robot.drive.followTrajectory(intake); // go into the warehouse
-        // cycle
-        int cycles = 3;
-        for (int i = 0; i < cycles; i++) {
-            cycleBlockInAuto(1000, intake, score, creep, alliance, HIGH);
-        }
-
-        // park
-        followTrajectory(park);
-    }
-}
+//package org.firstinspires.ftc.teamcode.opmodes;
+//
+//import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_HOPPER_POSITION;
+//import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_PIVOT_POSITION;
+//import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_RESET_TIME;
+//import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SERVO_DOWN;
+//import static org.firstinspires.ftc.teamcode.util.Alliance.BLUE;
+//import static org.firstinspires.ftc.teamcode.util.DepositPosition.HIGH;
+//import static org.firstinspires.ftc.teamcode.util.DepositPosition.LOW;
+//import static org.firstinspires.ftc.teamcode.util.DepositPosition.MID;
+//
+//import com.acmerobotics.roadrunner.geometry.Pose2d;
+//import com.acmerobotics.roadrunner.trajectory.Trajectory;
+//import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+//
+//import org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants;
+//import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
+//import org.firstinspires.ftc.teamcode.util.BarcodeLocation;
+//import org.firstinspires.ftc.teamcode.util.CameraPosition;
+//
+//@Autonomous(name = "Blue Warehouse", group = "Competition", preselectTeleOp = "Blue TeleOp")
+//public class BlueWarehouse extends AbstractAuto {
+//    public static Pose2d START_POSE = new Pose2d(12, 63, Math.toRadians(0));
+//    public static Pose2d INTAKE = new Pose2d(36, 63, Math.toRadians(0));
+//    public static Pose2d CREEP = new Pose2d(40, 63, Math.toRadians(0));
+//    public static Pose2d SCORE = new Pose2d(12, 63, Math.toRadians(0));
+//    public static Pose2d PARK = new Pose2d(36, 63, Math.toRadians(0));
+//
+//    @Override
+//    public void setAlliance() {
+//        this.alliance = BLUE;
+//    }
+//
+//    @Override
+//    public void setCameraPosition() {
+//        this.cameraPosition = CameraPosition.RIGHT;
+//    }
+//
+//    @Override
+//    public void initializeSteps(BarcodeLocation location) {
+//        robot.drive.setPoseEstimate(START_POSE);
+//
+//        Trajectory intake = robot.drive.trajectoryBuilder(START_POSE)
+//                .lineToLinearHeading(INTAKE)
+//                .build();
+//
+//        Trajectory creep = robot.drive.trajectoryBuilder(intake.end())
+//                .lineToLinearHeading(CREEP,
+//                        SampleMecanumDrive.getVelocityConstraint(5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+//                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+//                )
+//                .build();
+//
+//        Trajectory score = robot.drive.trajectoryBuilder(creep.end())
+//                .lineToLinearHeading(SCORE)
+//                .build();
+//
+//        Trajectory park = robot.drive.trajectoryBuilder(intake.end())
+//                .lineToLinearHeading(PARK)
+//                .build();
+//
+//        stopTargetingCamera();
+//
+//        // reset things
+//        addArmPivot(0, ARM_PIVOT_POSITION.getDown());
+//        addArmHopper(0, ARM_HOPPER_POSITION.getDown());
+//        addIntakeServo(0.5, INTAKE_SERVO_DOWN);
+//        resetIntake(INTAKE_RESET_TIME);
+//
+//        // score preloaded
+//        switch(getTeamElementLocation()) {
+//            case LEFT:
+//                addExtend(10000, alliance, LOW);
+//                addRetract(10000, alliance, LOW);
+//                break;
+//            case MIDDLE:
+//                addExtend(10000, alliance, MID);
+//                addRetract(10000, alliance, MID);
+//                break;
+//            case RIGHT:
+//            case UNKNOWN:
+//                addExtend(10000, alliance, HIGH);
+//                addRetract(10000, alliance, HIGH);
+//                break;
+//        }
+//
+//        robot.drive.followTrajectory(intake); // go into the warehouse
+//        // cycle
+//        int cycles = 3;
+//        for (int i = 0; i < cycles; i++) {
+//            cycleBlockInAuto(1000, intake, score, creep, alliance, HIGH);
+//        }
+//
+//        // park
+//        followTrajectory(park);
+//    }
+//}

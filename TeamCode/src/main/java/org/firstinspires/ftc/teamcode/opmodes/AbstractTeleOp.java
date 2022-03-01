@@ -67,6 +67,8 @@ public class AbstractTeleOp extends OpMode {
         driver2 = new Controller(gamepad2);
 
         robot = new Robot(hardwareMap, alliance);
+        // set the pose from auto
+        robot.drive.setPoseEstimate(PoseStorage.currentPose);
 
         setAlliance();
 

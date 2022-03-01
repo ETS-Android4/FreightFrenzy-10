@@ -367,6 +367,7 @@ public class Actuators {
                         SLIDES_ALLIANCE_HIGH = (int) slidesController.getSetPoint();
                     }
 
+                    // score
                     if (depoPos == GENERAL) {
                         setArmHopper(ARM_HOPPER_POSITION.getGeneral());
                         setArmPivot(ARM_PIVOT_POSITION.getGeneral());

@@ -18,6 +18,8 @@ import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.BarcodeLocation;
 import org.firstinspires.ftc.teamcode.util.CameraPosition;
 
+import java.util.ArrayList;
+
 @Autonomous(name = "Red Warehouse", group = "Competition", preselectTeleOp = "Red TeleOp")
 public class RedWarehouse extends AbstractAuto {
     public static Pose2d START_POSE = new Pose2d(12, -63, Math.toRadians(0));
@@ -66,30 +68,30 @@ public class RedWarehouse extends AbstractAuto {
     }
 
     @Override
-    public void initializeSteps(BarcodeLocation location) {
+    public void initializeSteps(BarcodeLocation location, ArrayList<Step> stepList) {
 
-        stopTargetingCamera();
+        stopTargetingCamera(stepList);
 
         // reset things
-        addArmPivot(0, ARM_PIVOT_POSITION.getDown());
-        addArmHopper(0, ARM_HOPPER_POSITION.getDown());
-        addIntakeServo(0.5, INTAKE_SERVO_DOWN);
-        resetIntake(INTAKE_RESET_TIME);
+        addArmPivot(stepList,0, ARM_PIVOT_POSITION.getDown());
+        addArmHopper(stepList,0, ARM_HOPPER_POSITION.getDown());
+        addIntakeServo(stepList,0.5, INTAKE_SERVO_DOWN);
+        resetIntake(stepList,INTAKE_RESET_TIME);
 
         // score preloaded
-        switch(getTeamElementLocation()) {
+        switch(location) {
             case LEFT:
-                addExtend(10000, alliance, LOW);
-                addRetract(10000, alliance, LOW);
+                addExtend(stepList,10000, alliance, LOW);
+                addRetract(stepList,10000, alliance, LOW);
                 break;
             case MIDDLE:
-                addExtend(10000, alliance, MID);
-                addRetract(10000, alliance, MID);
+                addExtend(stepList,10000, alliance, MID);
+                addRetract(stepList,10000, alliance, MID);
                 break;
             case RIGHT:
             case UNKNOWN:
-                addExtend(10000, alliance, HIGH);
-                addRetract(10000, alliance, HIGH);
+                addExtend(stepList,10000, alliance, HIGH);
+                addRetract(stepList,10000, alliance, HIGH);
                 break;
         }
 
@@ -97,10 +99,10 @@ public class RedWarehouse extends AbstractAuto {
         // cycle
         int cycles = 3;
         for (int i = 0; i < cycles; i++) {
-            cycleBlockInAuto(1000, intake, score, creep, alliance, HIGH);
+            cycleBlockInAuto(stepList,1000, intake, score, creep, alliance, HIGH);
         }
 
         // park
-        followTrajectory(park);
+        followTrajectory(stepList, park);
     }
 }
