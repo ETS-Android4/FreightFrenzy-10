@@ -39,10 +39,10 @@ public class Robot {
         lights = new Lights(hardwareMap);
         this.alliance = alliance;
     }
-
+    //removed references to runningShared
     public void updateLights() {
         if (alliance == Alliance.RED) {
-            if (actuators.runningExtend || actuators.runningShared || actuators.runningRetract) {
+            if (actuators.runningExtend || actuators.runningRetract) {
                 lights.setPattern(REDSCORING);
             } else if (actuators.hopperIsFull()) {
                 lights.setPattern(REDFULL);
@@ -50,7 +50,7 @@ public class Robot {
                 lights.setPattern(RED);
             }
         } else if (alliance == Alliance.BLUE) {
-            if (actuators.runningExtend || actuators.runningShared || actuators.runningRetract) {
+            if (actuators.runningExtend || actuators.runningRetract) {
                 lights.setPattern(BLUESCORING);
             } else if (actuators.hopperIsFull()) {
                 lights.setPattern(BLUEFULL);
