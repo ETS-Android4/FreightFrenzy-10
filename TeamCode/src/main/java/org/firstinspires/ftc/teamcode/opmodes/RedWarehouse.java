@@ -18,8 +18,6 @@ import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.BarcodeLocation;
 import org.firstinspires.ftc.teamcode.util.CameraPosition;
 
-import java.util.ArrayList;
-
 @Autonomous(name = "Red Warehouse", group = "Competition", preselectTeleOp = "Red TeleOp")
 public class RedWarehouse extends AbstractAuto {
     public static Pose2d START_POSE = new Pose2d(12, -63, Math.toRadians(0));
@@ -46,9 +44,15 @@ public class RedWarehouse extends AbstractAuto {
     public void makeTrajectories() {
         robot.drive.setPoseEstimate(START_POSE);
 
+        telemetry.addLine("start pos set");
+        telemetry.update();
+
         intake = robot.drive.trajectoryBuilder(START_POSE)
                 .lineToLinearHeading(INTAKE)
                 .build();
+
+        telemetry.addLine("first built");
+        telemetry.update();
 
         creep = robot.drive.trajectoryBuilder(intake.end())
                 .lineToLinearHeading(CREEP,
@@ -57,52 +61,64 @@ public class RedWarehouse extends AbstractAuto {
                 )
                 .build();
 
+        telemetry.addLine("2 built");
+        telemetry.update();
+
         score = robot.drive.trajectoryBuilder(creep.end())
                 .lineToLinearHeading(SCORE)
                 .build();
 
-        park = robot.drive.trajectoryBuilder(intake.end())
+        telemetry.addLine("3 built");
+        telemetry.update();
+
+        park = robot.drive.trajectoryBuilder(creep.end())
                 .lineToLinearHeading(PARK)
                 .build();
+
+        telemetry.addLine("all 4 built");
+        telemetry.update();
 
     }
 
     @Override
-    public void initializeSteps(BarcodeLocation location, ArrayList<Step> stepList) {
+    public void initializeSteps(BarcodeLocation location) {
 
-        stopTargetingCamera(stepList);
+        stopTargetingCamera();
 
         // reset things
-        addArmPivot(stepList,0, ARM_PIVOT_POSITION.getDown());
-        addArmHopper(stepList,0, ARM_HOPPER_POSITION.getDown());
-        addIntakeServo(stepList,0.5, INTAKE_SERVO_DOWN);
-        resetIntake(stepList,INTAKE_RESET_TIME);
+        addArmPivot(0, ARM_PIVOT_POSITION.getDown());
+        addArmHopper(0, ARM_HOPPER_POSITION.getDown());
+        addIntakeServo(0.5, INTAKE_SERVO_DOWN);
+        resetIntake(INTAKE_RESET_TIME);
 
         // score preloaded
-        switch(location) {
+        addExtend(10000, alliance, LOW);
+        addRetract(10000, alliance, LOW);
+        /*switch(getTeamElementLocation()) {
             case LEFT:
-                addExtend(stepList,10000, alliance, LOW);
-                addRetract(stepList,10000, alliance, LOW);
+                addExtend(10000, alliance, LOW);
+                addRetract(10000, alliance, LOW);
                 break;
             case MIDDLE:
-                addExtend(stepList,10000, alliance, MID);
-                addRetract(stepList,10000, alliance, MID);
+                addExtend(10000, alliance, MID);
+                addRetract(10000, alliance, MID);
                 break;
             case RIGHT:
             case UNKNOWN:
-                addExtend(stepList,10000, alliance, HIGH);
-                addRetract(stepList,10000, alliance, HIGH);
+                addExtend(10000, alliance, HIGH);
+                addRetract(10000, alliance, HIGH);
                 break;
-        }
+        }*/
+        robot.actuators.update();
 
         robot.drive.followTrajectory(intake); // go into the warehouse
         // cycle
         int cycles = 3;
         for (int i = 0; i < cycles; i++) {
-            cycleBlockInAuto(stepList,1000, intake, score, creep, alliance, HIGH);
+            cycleBlockInAuto(1000, intake, score, creep, alliance, HIGH);
         }
 
         // park
-        followTrajectory(stepList, park);
+        followTrajectory(park);
     }
 }
