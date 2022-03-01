@@ -109,14 +109,13 @@ public class RedWarehouse extends AbstractAuto {
                 addRetract(10000, alliance, HIGH);
                 break;
         }*/
-        robot.actuators.update();
 
-        robot.drive.followTrajectory(intake); // go into the warehouse
+        addTrajectory(10000, alliance, intake); // go into the warehouse
         // cycle
-        int cycles = 3;
-        for (int i = 0; i < cycles; i++) {
-            cycleBlockInAuto(1000, intake, score, creep, alliance, HIGH);
-        }
+        addCycle(1000, alliance, intake, score, creep);
+        addCycle(1000, alliance, intake, score, creep);
+        addCycle(1000, alliance, intake, score, creep);
+
 
         // park
         followTrajectory(park);

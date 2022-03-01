@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_HOPPER_POSITION;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_PIVOT_POSITION;
 import static org.firstinspires.ftc.teamcode.opmodes.AbstractTeleOp.INTAKE_SPEED;
+import static org.firstinspires.ftc.teamcode.util.DepositPosition.HIGH;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
@@ -474,6 +475,53 @@ public abstract class AbstractAuto extends LinearOpMode {
                 } else {
                     return false;
                 }
+            }
+        });
+    }
+
+    public void addCycle(double timeout, Alliance alliance, Trajectory intake, Trajectory score, Trajectory creep) {
+        steps.add(new Step("following trajectory", timeout) {
+            @Override
+            public void start() {
+                cycleBlockInAuto(1000, intake, score, creep, alliance, HIGH);
+            }
+
+            @Override
+            public void whileRunning() {
+
+            }
+
+            @Override
+            public void end() {
+            }
+
+            @Override
+            public boolean isFinished() {
+                return stepCaseStep==-1;
+            }
+        });
+    }
+
+
+    public void addTrajectory(double timeout, Alliance alliance, Trajectory path) {
+        steps.add(new Step("following trajectory", timeout) {
+            @Override
+            public void start() {
+                robot.drive.followTrajectory(path);
+            }
+
+            @Override
+            public void whileRunning() {
+                robot.drive.update();
+            }
+
+            @Override
+            public void end() {
+            }
+
+            @Override
+            public boolean isFinished() {
+                return !robot.actuators.runningExtend;
             }
         });
     }
