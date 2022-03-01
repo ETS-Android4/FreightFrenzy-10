@@ -80,7 +80,7 @@ public abstract class AbstractAuto extends LinearOpMode {
         }
         resetStartTime();
 
-        // start up the first step
+        // build the first step
         steps = new ArrayList<>();
         initializeSteps(teamElementLocation);
 
@@ -242,6 +242,10 @@ public abstract class AbstractAuto extends LinearOpMode {
                 return false;
             }
         });
+    }
+
+    public BarcodeLocation getTeamElementLocation() {
+        return teamElementLocation;
     }
 
     public void addArmHopper(double timeout, final double armHopperPosition) {

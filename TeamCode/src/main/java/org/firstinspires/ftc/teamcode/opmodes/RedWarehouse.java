@@ -22,10 +22,6 @@ public class RedWarehouse extends AbstractAuto {
     public static Pose2d INTAKE = new Pose2d(36, -63, Math.toRadians(0));
     public static Pose2d CREEP = new Pose2d(40, -59, Math.toRadians(0));
     public static Pose2d SCORE = new Pose2d(12, -63, Math.toRadians(0));
-//    public static Pose2d INTAKE2 = new Pose2d(34, -63.5, Math.toRadians(0));
-//    public static Pose2d SCORE2 = new Pose2d(12, -63.5, Math.toRadians(0));
-//    public static Pose2d INTAKE3 = new Pose2d(34, -63.5, Math.toRadians(0));
-//    public static Pose2d SCORE3 = new Pose2d(12, -63.5, Math.toRadians(0));
     public static Pose2d PARK = new Pose2d(36, -63, Math.toRadians(0));
 
     @Override
@@ -70,17 +66,30 @@ public class RedWarehouse extends AbstractAuto {
         resetIntake(INTAKE_RESET_TIME);
 
         // score preloaded
-//        addAlliance(10000, alliance, RIGHT);
-//        addDeposit(10000, alliance, RIGHT);
+        addAlliance(10000, alliance, getTeamElementLocation());
+        addDeposit(10000, alliance, getTeamElementLocation());
 
         // cycle
-        for (int i = 0; i < 3; i++) {
+        /*for (int i = 0; i < 3; i++) {
             cycleBlockInAuto(1000, intake, score, creep, alliance, RIGHT);
-        }
+        }*/
         for (int i = 0; i < 3; i++) {
             cycleBlockInAuto2(1000, intake, score, creep, alliance, RIGHT);
         }
 
+        // park
+        followTrajectory(park);
+
+    }
+}
+
+
+
+
+
+
+
+//OLD CODE
 //        // 1 block
 //        addIntake(0, -INTAKE_SPEED);
 //        followTrajectory(intake1);
@@ -122,9 +131,3 @@ public class RedWarehouse extends AbstractAuto {
 //            addAlliance(10000, alliance, RIGHT);
 //            addDeposit(10000, alliance, RIGHT);
 //        }
-
-
-        // park
-        followTrajectory(park);
-    }
-}
