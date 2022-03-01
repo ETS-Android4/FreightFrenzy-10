@@ -2,23 +2,24 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_HOPPER_POSITION;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_PIVOT_POSITION;
-import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SERVO_UP;
-import static org.firstinspires.ftc.teamcode.hardware.Actuators.TURRET_ALLIANCE;
 import static org.firstinspires.ftc.teamcode.opmodes.AbstractTeleOp.INTAKE_SPEED;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.hardware.Actuators;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.BarcodeLocation;
 import org.firstinspires.ftc.teamcode.util.CameraPosition;
+import org.firstinspires.ftc.teamcode.util.DepositPosition;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
+@Config
 public abstract class AbstractAuto extends LinearOpMode {
+    public static double RETURN_MACRO_WAIT = 1;
     Alliance alliance;
     CameraPosition cameraPosition;
     public Robot robot;
@@ -66,11 +67,8 @@ public abstract class AbstractAuto extends LinearOpMode {
 //            robot.actuators.resetIntake();
 //        }
 
-        robot.actuators.setIntakeVerticalPositionInAuto((int) robot.actuators.getIntakePosition() + 72);
-
         // wait for start
         while (!(isStarted() || isStopRequested())) {
-//            teamElementLocation = robot.camera.checkTeamElementLocationUsingAprilTags();
             robot.updateLights();
             teamElementLocation = robot.camera.checkTeamElementLocation();
             telemetry.addLine("Initialized");
@@ -80,7 +78,7 @@ public abstract class AbstractAuto extends LinearOpMode {
         }
         resetStartTime();
 
-        // build the first step
+        // start up the first step
         steps = new ArrayList<>();
         initializeSteps(teamElementLocation);
 
@@ -122,6 +120,10 @@ public abstract class AbstractAuto extends LinearOpMode {
     // Load up all of the steps for the autonomous
     public void initializeSteps(BarcodeLocation location) {
         addDelay(5);
+    }
+
+    public BarcodeLocation getTeamElementLocation() {
+        return teamElementLocation;
     }
 
     // Functions to add steps
@@ -218,10 +220,7 @@ public abstract class AbstractAuto extends LinearOpMode {
         steps.add(new Step("Resetting Intake", timeout) {
             @Override
             public void start() {
-//                robot.actuators.setIntake(0);
                 int newPos = (int) (robot.actuators.getIntakePosition() + (145.1 / 8.0) - (robot.actuators.getIntakePosition() % (145.1)));
-//                int newPos = (int) (robot.actuators.getIntakePosition() + 145.1*5 + (robot.actuators.getIntakePosition()  % (145.1)));
-//                int newPos = (int) (robot.actuators.getIntakePosition() - (robot.actuators.getIntakePosition()  % (145.1)));
                 robot.actuators.setIntakePosition(newPos);
             }
 
@@ -242,10 +241,6 @@ public abstract class AbstractAuto extends LinearOpMode {
                 return false;
             }
         });
-    }
-
-    public BarcodeLocation getTeamElementLocation() {
-        return teamElementLocation;
     }
 
     public void addArmHopper(double timeout, final double armHopperPosition) {
@@ -380,87 +375,7 @@ public abstract class AbstractAuto extends LinearOpMode {
         });
     }
 
-    public void cycleBlockInAuto(double timeout, Trajectory trajectoryIn, Trajectory trajectoryOut, Trajectory creep, Alliance alliance, BarcodeLocation barcodeLocation) {
-        steps.add(new Step("Scoring Alliance Hub ", timeout) {
-            @Override
-            public void start() {
-                stepStartTime = currentRuntime;
-                stepCaseStep = 0;
-            }
-
-            @Override
-            public void whileRunning() {
-                stepTime = currentRuntime - stepStartTime;
-                switch (stepCaseStep) {
-                    case 0:
-                        robot.drive.followTrajectoryAsync(trajectoryIn);
-                        robot.actuators.setIntake(-INTAKE_SPEED/2);
-                        stepCaseStep++;
-                        break;
-                    case 1:
-                        if (!robot.drive.isBusy()) {
-                            robot.drive.followTrajectoryAsync(creep);
-                            stepCaseStep++;
-                        }
-                        break;
-                    case 2:
-                        if (robot.actuators.hopperIsFull()) {
-                            robot.drive.followTrajectoryAsync(trajectoryOut);
-                            robot.actuators.setIntake(0);
-                            robot.drive.followTrajectoryAsync(trajectoryOut);
-                            robot.actuators.setIntakePosition( (int) (robot.actuators.getIntakePosition() - (robot.actuators.getIntakePosition() % 145.1)));
-                            stepCaseStep++;
-                        }
-
-                        break;
-                    case 3:
-                        if (!robot.drive.isBusy()) {
-                            stepCaseStep = 6;
-                        }
-                        robot.actuators.resetIntake();
-                        if (robot.actuators.intakeIsReset()) {
-                            //START THE ALLIANCE SCORE MACRO.
-                            robot.actuators.runningAlliance = true;
-                            stepCaseStep++;
-                        }
-                        break;
-                    case 4:
-                        if (!robot.drive.isBusy() && !robot.actuators.runningAlliance) {//if we are fully out, in scoring position
-                            robot.actuators.runningDeposit = true;
-                            stepCaseStep++;
-                        }
-                        break;
-                    case 5:
-                        if (!robot.actuators.runningDeposit) {
-                            stepCaseStep++;
-                        }
-                        break;
-                }//end of switch
-
-                //update the drive base pid
-                robot.drive.update();
-                //run the alliance macro if it is set to true
-                robot.actuators.runningAlliance(getRuntime(), alliance, barcodeLocation);
-                //run the deposit macro if set to true
-                robot.actuators.runningDeposit(getRuntime(), alliance, barcodeLocation);
-            }
-
-            @Override
-            public void end() {
-            }
-
-            @Override
-            public boolean isFinished() {
-                if (!robot.drive.isBusy() && !robot.actuators.runningAlliance && !robot.actuators.runningDeposit && stepCaseStep == 6) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        });
-    }
-
-    public void cycleBlockInAuto2(double timeout, Trajectory trajectoryIn, Trajectory trajectoryOut, Trajectory creep, Alliance alliance, BarcodeLocation barcodeLocation) {
+    public void cycleBlockInAuto(double timeout, Trajectory trajectoryIn, Trajectory trajectoryOut, Trajectory creep, Alliance alliance, DepositPosition depoPos) {
         steps.add(new Step("Scoring Alliance Hub ", timeout) {
             @Override
             public void start() {
@@ -488,7 +403,7 @@ public abstract class AbstractAuto extends LinearOpMode {
                             //for now just move on. try a second creep in future iterations
                             stepCaseStep++;
                         }
-                       break;
+                        break;
                     case 2: // as we leave the warehouse, reset the intake
                         robot.actuators.setIntakePosition( (int) (robot.actuators.getIntakePosition() - (robot.actuators.getIntakePosition() % 145.1)));
                         stepCaseStep++;
@@ -496,13 +411,13 @@ public abstract class AbstractAuto extends LinearOpMode {
                     case 3:
                         robot.actuators.resetIntake();//update the intake PID each loop
                         if(robot.actuators.intakeIsReset()){ //once the intake is reset,
-                            robot.actuators.runningAlliance = true; //run the score macro
+                            robot.actuators.runningExtend = true; //run the score macro
                             stepCaseStep++; //and move on to the next step
                         }
                         break;
                     case 4:
-                        if (!robot.drive.isBusy() && robot.actuators.justFinishedAllianceMacro) { // if we are into the scoring location and the macro is ready:
-                            robot.actuators.runningDeposit=true; //run the deposit macro
+                        if (!robot.drive.isBusy() && !robot.actuators.runningExtend) { // if we are into the scoring location and the macro is ready:
+                            robot.actuators.runningRetract =true; //run the deposit macro
                             stepCaseStep++; //and move to the next step
                         }
                         break;
@@ -513,7 +428,7 @@ public abstract class AbstractAuto extends LinearOpMode {
                         }
                         break;
                     case 6:
-                        if (!robot.actuators.runningDeposit) { //if the deposit macro is over
+                        if (!robot.actuators.runningRetract && !robot.drive.isBusy()) { //if the deposit macro is over and the robot is back
                             stepCaseStep=-1; //end the state machine because we are ready to do another cycle
                         }
                         break;
@@ -522,10 +437,10 @@ public abstract class AbstractAuto extends LinearOpMode {
                 //at the end of each and every run through the loop:
                 //update the drive base pid
                 robot.drive.update();
-                //run the alliance macro if it is set to true
-                robot.actuators.runningAlliance(getRuntime(), alliance, barcodeLocation);
-                //run the deposit macro if set to true
-                robot.actuators.runningDeposit(getRuntime(), alliance, barcodeLocation);
+                //run the extend macro if it is set to true
+                robot.actuators.runningExtend(getRuntime(), alliance, depoPos);
+                //run the retract macro if set to true
+                robot.actuators.runningRetract(getRuntime(), alliance, depoPos);
             }
 
             @Override
@@ -543,18 +458,16 @@ public abstract class AbstractAuto extends LinearOpMode {
         });
     }
 
-
-
-    public void addAlliance(double timeout, Alliance alliance, BarcodeLocation barcodeLocation) {
-        steps.add(new Step("Scoring Alliance Hub ", timeout) {
+    public void addExtend(double timeout, Alliance alliance, DepositPosition depoPos) {
+        steps.add(new Step("Extending ", timeout) {
             @Override
             public void start() {
-                robot.actuators.runningAlliance = true;
+                robot.actuators.runningExtend = true;
             }
 
             @Override
             public void whileRunning() {
-                robot.actuators.runningAlliance(getRuntime(), alliance, barcodeLocation);
+                robot.actuators.runningExtend(getRuntime(), alliance, depoPos);
             }
 
             @Override
@@ -563,21 +476,21 @@ public abstract class AbstractAuto extends LinearOpMode {
 
             @Override
             public boolean isFinished() {
-                return !robot.actuators.runningAlliance;
+                return !robot.actuators.runningExtend;
             }
         });
     }
 
-    public void addShared(double timeout, Alliance alliance, BarcodeLocation barcodeLocation) {
-        steps.add(new Step("Scoring Shared Hub ", timeout) {
+    public void addRetract(double timeout, Alliance alliance, DepositPosition depoPos) {
+        steps.add(new Step("Retracting", timeout) {
             @Override
             public void start() {
-                robot.actuators.runningShared = true;
+                robot.actuators.runningRetract = true;
             }
 
             @Override
             public void whileRunning() {
-                robot.actuators.runningShared(getRuntime(), alliance, barcodeLocation);
+                robot.actuators.runningRetract(getRuntime(), alliance, depoPos);
             }
 
             @Override
@@ -586,59 +499,13 @@ public abstract class AbstractAuto extends LinearOpMode {
 
             @Override
             public boolean isFinished() {
-                return !robot.actuators.runningShared;
-            }
-        });
-    }
-
-    public void addDeposit(double timeout, Alliance alliance, BarcodeLocation barcodeLocation) {
-        steps.add(new Step("Depositing", timeout) {
-            @Override
-            public void start() {
-                robot.actuators.runningDeposit = true;
-            }
-
-            @Override
-            public void whileRunning() {
-                robot.actuators.runningDeposit(getRuntime(), alliance, barcodeLocation);
-            }
-
-            @Override
-            public void end() {
-            }
-
-            @Override
-            public boolean isFinished() {
-                return !robot.actuators.runningDeposit;
-            }
-        });
-    }
-
-    public void addArm(double timeout) {
-        steps.add(new Step("Depositing", timeout) {
-            @Override
-            public void start() {
-                robot.actuators.runningArm = true;
-            }
-
-            @Override
-            public void whileRunning() {
-                robot.actuators.runningArm(getRuntime());
-            }
-
-            @Override
-            public void end() {
-            }
-
-            @Override
-            public boolean isFinished() {
-                return !robot.actuators.runningArm;
+                return !robot.actuators.runningRetract;
             }
         });
     }
 
     public void addIntakeServo(double timeout, double position) {
-        steps.add(new Step("Depositing", timeout) {
+        steps.add(new Step("Moving Intake Servo", timeout) {
             @Override
             public void start() {
                 robot.actuators.setIntakeServo(position);
