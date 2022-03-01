@@ -51,11 +51,11 @@ public class Actuators {
 
     // pid variables
     public static double TURRET_TOLERANCE = 0;
-    public static double SLIDES_TOLERANCE = 3;
+    public static double SLIDES_TOLERANCE = 50;
     public static double INTAKE_TOLERANCE = 50;
 
     public static PIDCoefficients TURRET_COEFFICIENTS = new PIDCoefficients(0.003, 0, 0);
-    public static PIDCoefficients SLIDES_COEFFICIENTS = new PIDCoefficients(0.0025, 0, 0);
+    public static PIDCoefficients SLIDES_COEFFICIENTS = new PIDCoefficients(0.002, 0, 0);
     public static PIDCoefficients INTAKE_COEFFICIENTS = new PIDCoefficients(0.005, 0, 0.0001);
 
     // actuator positions
@@ -261,10 +261,12 @@ public class Actuators {
                 // arm almost
                 case 2:
                     setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
+                    setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
                     time = currentTime;
+                    state++;
                     break;
                 case 3:
-                    if (time > currentTime + EXTEND_ARM_ALMOST_DOWN) {
+                    if (currentTime > time + EXTEND_ARM_ALMOST_DOWN) {
                         state++;
                     }
                     break;
@@ -281,11 +283,12 @@ public class Actuators {
                     } else if (depoPos == HIGH) {
                         setArmPivot(ARM_PIVOT_POSITION.getAlmostHigh());
                     }
-                    setArmHopper(0.3); // make configurable?
+//                    setArmHopper(0.3); // make configurable?
                     time = currentTime;
+                    state++;
                     break;
                 case 5:
-                    if (time > currentTime + EXTEND_ARM_ALMOST_SCORE) {
+                    if (currentTime > time + EXTEND_ARM_ALMOST_SCORE) {
                         state++;
                     }
                     break;
@@ -316,6 +319,7 @@ public class Actuators {
                         setSlides(SLIDES_ALLIANCE_HIGH);
                     }
                     time = currentTime;
+                    state++;
                     break;
                 case 7:
                     if (turretController.atSetPoint() && slidesController.atSetPoint()) {
