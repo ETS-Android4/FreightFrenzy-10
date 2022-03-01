@@ -55,6 +55,7 @@ public class Drive {
         boolean slow = gamepad.right_trigger > 0.2;
         double drive = -gamepad.right_stick_y;
         double turn  =  gamepad.left_stick_x;
+        double difference = 0;
 
         // Mix the two joysticks
         double left  = drive + turn;
@@ -72,9 +73,12 @@ public class Drive {
         if (turbo) {
             left *= Constants.TURBO_MODE_MAX_POWER;
             right *= Constants.TURBO_MODE_MAX_POWER;
-        } else if (slow) {
+        } else if (slow || Robot.Constants.autoSlowdown == 1) {
             left *= Constants.SLOW_MODE_MAX_POWER;
             right *= Constants.SLOW_MODE_MAX_POWER;
+            difference = left-right;
+            left = left+difference;
+            right = right-difference;
         } else {
             left *= Constants.DEFAULT_MAX_POWER;
             right *= Constants.DEFAULT_MAX_POWER;

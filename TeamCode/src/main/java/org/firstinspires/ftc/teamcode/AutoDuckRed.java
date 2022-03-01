@@ -30,6 +30,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -37,6 +38,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.visioncode.BarcodePipeline;
 import org.firstinspires.ftc.teamcode.visioncode.Cvhelper;
 import org.firstinspires.ftc.teamcode.visioncode.Detection;
@@ -81,7 +85,7 @@ public class AutoDuckRed extends LinearOpMode {
     Servo hopper;
     int CLocation;
     Camera camera;
-
+    private BNO055IMU imu;
     //Variables
     double LinearSPos = 40;
     int noLinear = 1;
@@ -115,6 +119,13 @@ public class AutoDuckRed extends LinearOpMode {
 
         duckWheel = this.hardwareMap.get(CRServo.class, "duckWheel");
 
+        this.imu = hardwareMap.get(BNO055IMU.class, "imu");
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.mode = BNO055IMU.SensorMode.IMU;
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.loggingEnabled = false;
+        this.imu.initialize(parameters);
 //        elementHolder = this.hardwareMap.get(Servo.class, "elementHolder");
 //        elementHolder.setPosition(0.1);
 //
@@ -130,6 +141,7 @@ public class AutoDuckRed extends LinearOpMode {
         while(!isStarted() || isStopRequested()){
             teamElementLocation = camera.checkTeamElementLocation();
             telemetry.addData("Camera", teamElementLocation);
+            telemetry.addData("imu", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
             telemetry.update();
         }
 
@@ -141,12 +153,12 @@ public class AutoDuckRed extends LinearOpMode {
 
         //Read Camera
         if(teamElementLocation == Cvhelper.BarcodeLocation.LEFT){
-            LinearSPos = 100;
+            LinearSPos = 110;
             noLinear = 1;
         } else if(teamElementLocation == Cvhelper.BarcodeLocation.MIDDLE){
-            LinearSPos = 70;
+            LinearSPos = 101.8;
         } else if(teamElementLocation == Cvhelper.BarcodeLocation.RIGHT){
-            LinearSPos = 40;
+            LinearSPos = 93;
         }
 
         //Finish Init
@@ -160,50 +172,81 @@ public class AutoDuckRed extends LinearOpMode {
 
         //Drive forward
         driveInchesEnc(firstMoveDist*driveModifier, driveSpeed);
-        sleep(sleeptime);
-        driveInchesEnc(-19*driveModifier, -driveSpeed);
+        sleep(500);
+        driveInchesEnc(-15*driveModifier, -driveSpeed);
         telemetry.addData("Status", "Run beater");
         telemetry.update();
         runBeater(1000, -1.0);
-        sleep(sleeptime);
+        sleep(500);
 
         //Turn right towards score
         turnDumbEnc(4.2*turnModifier*rightTurnModifier, -driveSpeed);
-        sleep(sleeptime);
+        sleep(sleeptime/4);
+        align(-45);
+        sleep(250);
 
         //Drive slightly forward before score
-        driveInchesEnc(6*driveModifier, driveSpeed);
+        driveInchesEnc(7.5*driveModifier, driveSpeed);
         sleep(sleeptime/2);
 
         //Score
-        driveLinearSlide((110-LinearSPos)*noLinear, 1);
+        driveLinearSlide((110-LinearSPos)*noLinear, .75);
+        linearSlide.setPower(.01);
         intakeMotor.setPower(1.0);
         hopper.setPosition(1.0);
-        sleep(500);
+        sleep(400);
         intakeMotor.setPower(0);
         hopper.setPosition(0.5);
-        driveLinearSlide((-110+LinearSPos)*noLinear, -1);
+        linearSlide.setPower(0);
+        driveLinearSlide((-107+LinearSPos)*noLinear, -.75);
         linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //Line up with Duck Wheel
-        turnDumbEnc(1.15*turnModifier*rightTurnModifier, -driveSpeed);
-        sleep(sleeptime);
+        align(-49);
+        sleep(200);
 
         //Spin wheel and back up
         duckWheel.setPower(1.5);
-        driveInchesEnc(-36*driveModifier, -driveSpeed/3);
-        sleep(sleeptime/2);
-        driveInchesEnc(-.75*driveModifier, -driveSpeed/12);
+        driveInchesEnc(-35.2*driveModifier, -driveSpeed/2);
+        sleep(200);
+        driveInchesEnc(-1*driveModifier, -driveSpeed/12);
         sleep(sleeptime);
+        hopper.setPosition(0);
+        intakeMotor.setPower(1);
         duckWheel.setPower(0);
 
-        //Park
-        driveInchesEnc(2*driveModifier, driveSpeed);
-        sleep(sleeptime/2);
-        turnDumbEnc(-6*turnModifier*leftTurnModifier, -driveSpeed);
-        sleep(sleeptime);
-//        driveInchesEnc(-5*driveModifier, -driveSpeed);
+        driveInchesEnc(.7, driveSpeed);
+        turnDumbEnc(-16*turnModifier, driveSpeed/3.5);
+        sleep(200);
+        driveInchesEnc(-.7, -driveSpeed);
+        sleep(200);
+        turnDumbEnc(15, -driveSpeed);
+
+        align(-49);
+        hopper.setPosition(.5);
+        intakeMotor.setPower(0);
+        driveInchesEnc(8.65, driveSpeed*1.5);
+
+        //Score again
+        driveLinearSlide((18)*noLinear, .75);
+        linearSlide.setPower(.01);
+        intakeMotor.setPower(1.0);
+        hopper.setPosition(1.0);
+        sleep(400);
+        intakeMotor.setPower(0);
+        hopper.setPosition(0.5);
+        linearSlide.setPower(0);
+        driveLinearSlide((-16.5)*noLinear, -.75);
+        linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        turnDumbEnc(4.1, -driveSpeed);
+        driveInchesEnc(-12, -driveSpeed*2);
+//        //Park
+//        driveInchesEnc(2*driveModifier, driveSpeed);
+//        sleep(sleeptime/2);
+//        turnDumbEnc(-6*turnModifier*leftTurnModifier, -driveSpeed);
 //        sleep(sleeptime);
+//        driveInchesEnc(-5*driveModifier, -driveSpeed);
+//        sleep(sleeptime)
 
         // Show the elapsed game time and wheel power.
         telemetry.addData("Status", "Run Time: " + runtime.toString());
@@ -274,6 +317,57 @@ public class AutoDuckRed extends LinearOpMode {
         }
 
         linearSlide.setPower(0);
+    }
+    private void align(double angle) {
+        driveFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        driveFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        driveBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        driveBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        driveBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        driveBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        driveFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        driveFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+//        while (imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle > angle+2.5 || imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle < angle-2.5){
+//            telemetry.addData("CA", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
+//            telemetry.update();
+//            if (imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle > angle+2.5){
+//                driveBackLeft.setPower(-.15);
+//                driveFrontLeft.setPower(-.15);
+//                driveBackRight.setPower(-.15);
+//                driveFrontRight.setPower(-.15);
+//            }
+//            if (imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle < angle-2.5){
+//                driveBackLeft.setPower(.15);
+//                driveFrontLeft.setPower(.15);
+//                driveBackRight.setPower(.15);
+//                driveFrontRight.setPower(.15);
+//            }
+//        }
+//
+//        sleep(20);
+        //precision alignment
+        while (imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle > angle+.45 || imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle < angle-.45){
+            telemetry.addData("CA", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
+            telemetry.update();
+            if (imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle > angle+.45){
+                driveBackLeft.setPower(-.07);
+                driveFrontLeft.setPower(-.07);
+                driveBackRight.setPower(-.07);
+                driveFrontRight.setPower(-.07);
+            }
+            if (imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle < angle-.45){
+                driveBackLeft.setPower(.07);
+                driveFrontLeft.setPower(.07);
+                driveBackRight.setPower(.07);
+                driveFrontRight.setPower(.07);
+            }
+        }
+        driveBackLeft.setPower(0);
+        driveFrontLeft.setPower(0);
+        driveBackRight.setPower(0);
+        driveFrontRight.setPower(0);
     }
 //    private void driveInches(int distance, double driveSpeed) {
 //        telemetry.addData("Status", "Dist: " + distance);

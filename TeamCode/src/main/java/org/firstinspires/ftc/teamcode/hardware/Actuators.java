@@ -34,6 +34,8 @@ public class Actuators {
     private double intakePower;
     private double linearSlidePower;
     private double duckWheelServoPower;
+    boolean hasBlock = false;
+    double x = 0;
 
     private boolean intakeWasPressed;
     private JiggleState jiggleState = JiggleState.Idle;
@@ -64,7 +66,7 @@ public class Actuators {
         this.linearSlideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         this.linearSlideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         this.linearSlideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        this.linearSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        this.linearSlideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior. BRAKE);
         this.elementHolderServo.scaleRange(0.08, 1.0);
         //this.elementHolderServo.setPosition(0);
 
@@ -87,25 +89,27 @@ public class Actuators {
         boolean hopperPress = gamepad.a;
         double elementStick = gamepad.left_stick_y;
 
-        // Middle Element Position
-        if(gamepad.left_bumper){
-            elementStick = .5;
+
+        if(hasBlock){
+
         }
+        // Middle Element Position
 
         // Intake
-        if(intakePress) {
+        if(intakePress && !hasBlock) {
             this.intakePower = 1;
-            this.targetHopperPosition = 0;
+            this.targetHopperPosition = 0.02;
+            Robot.Constants.autoSlowdown = 1;
         } else {
             this.intakePower = 0;
-            this.targetHopperPosition = .5;
-
+            this.targetHopperPosition = .52;
+            Robot.Constants.autoSlowdown = 0;
         }
 
-        if(!intakePress && this.intakeWasPressed){
-            this.jiggleState = JiggleState.FirstUp;
-            this.jiggleStartTime = System.currentTimeMillis();
-        }
+//        if(!intakePress && this.intakeWasPressed){
+//            this.jiggleState = JiggleState.FirstUp;
+//            this.jiggleStartTime = System.currentTimeMillis();
+//        }
 
          //First up takes 300ms
 //        if(this.jiggleState != JiggleState.Idle) {
@@ -139,25 +143,48 @@ public class Actuators {
 
         // Hopper
         if(hopperPress) {
-            this.targetHopperPosition = 1.0;
+            this.targetHopperPosition = 1.02;
         }
-
+        x+=1;
         //Hopper Lights
         double distance = hopperSensor.getDistance(DistanceUnit.MM);
         if(distance >= 10 && distance <= 55){
             hopperLights.setPattern(hopperPatternBlock);
+            if(x>=0) {
+                hasBlock = true;
+            }
+
         } else{
             hopperLights.setPattern(hopperPatternNeutral);
+            hasBlock = false;
+            x=0;
+        }
+        if(x>=70){
+            hasBlock = false;
         }
         // Linear Slide
         int currentPosition = this.linearSlideMotor.getCurrentPosition();
         if(slideUp && currentPosition > Constants.LINEAR_SLIDE_MAX_POSITION) {
             this.linearSlidePower = -1;
             //New Stuff 5/5
-        } else if(slideDown && this.linearSlideMotor.getCurrentPosition() < 10) { //&& currentPosition < Constants.LINEAR_SLIDE_DEADZONE
-            this.linearSlidePower = 1;
+        } else if(slideDown && this.linearSlideMotor.getCurrentPosition() < 0 && this.linearSlideMotor.getCurrentPosition() > -400) { //&& currentPosition < Constants.LINEAR_SLIDE_DEADZONE
+            this.linearSlidePower = .3;
+        } else if(slideDown && this.linearSlideMotor.getCurrentPosition() < 50) { //&& currentPosition < Constants.LINEAR_SLIDE_DEADZONE
+            this.linearSlidePower = .7;
+        } else if(currentPosition < -100 && currentPosition > Constants.LINEAR_SLIDE_MAX_POSITION){
+            this.linearSlidePower = -.01;
         } else{
             this.linearSlidePower = 0;
+        }
+
+        //Middle Element
+        if(gamepad.left_bumper){
+            elementStick = .5;
+            if(this.linearSlidePower > 0){
+                this.linearSlidePower = .2;
+            } else if(this.linearSlidePower < -.01){
+                this.linearSlidePower = -.2;
+            }
         }
 
         // Duck Wheel
@@ -165,7 +192,7 @@ public class Actuators {
 
         // Element Holder
         this.elementHolderServo.setPosition(elementStick);
-        this.intakeWasPressed = intakePress;
+//        this.intakeWasPressed = intakePress;
         this.setPower();
     }
 

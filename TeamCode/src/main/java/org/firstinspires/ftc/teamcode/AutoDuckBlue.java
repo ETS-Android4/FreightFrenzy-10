@@ -32,13 +32,18 @@ package org.firstinspires.ftc.teamcode;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.OrientationSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.drive.SampleTankDrive;
 import org.firstinspires.ftc.teamcode.visioncode.BarcodePipeline;
 import org.firstinspires.ftc.teamcode.visioncode.Cvhelper;
@@ -83,6 +88,7 @@ public class AutoDuckBlue extends LinearOpMode {
     Servo hopper;
     int CLocation;
     Camera camera;
+    private BNO055IMU imu;
 
     //Variables
     double LinearSPos = 40;
@@ -91,7 +97,6 @@ public class AutoDuckBlue extends LinearOpMode {
     double driveModifier = 1;
     double leftTurnModifier = 1;
     double rightTurnModifier = 1;
-
     double TICKS_PER_INCH = 28.53; // Ticks per revolution = 537.7;
 
     @Override
@@ -114,6 +119,14 @@ public class AutoDuckBlue extends LinearOpMode {
         linearSlide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         duckWheel = this.hardwareMap.get(CRServo.class, "duckWheel");
 
+        this.imu = hardwareMap.get(BNO055IMU.class, "imu");
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.mode = BNO055IMU.SensorMode.IMU;
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.loggingEnabled = false;
+        this.imu.initialize(parameters);
+
         while (camera.getFrameCount() < 1) {
             idle();
         }
@@ -122,6 +135,7 @@ public class AutoDuckBlue extends LinearOpMode {
         while(!isStarted() || isStopRequested()){
             teamElementLocation = camera.checkTeamElementLocation();
             telemetry.addData("Camera", teamElementLocation);
+            telemetry.addData("imu", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
             telemetry.update();
         }
 
@@ -134,69 +148,114 @@ public class AutoDuckBlue extends LinearOpMode {
 
         //Read Camera
         if(teamElementLocation == Cvhelper.BarcodeLocation.LEFT){
-            LinearSPos = 106;
+            LinearSPos = 110;
             noLinear = 1;
         } else if(teamElementLocation == Cvhelper.BarcodeLocation.MIDDLE){
-            LinearSPos = 75;
+            LinearSPos = 101.8;
         } else if(teamElementLocation == Cvhelper.BarcodeLocation.RIGHT){
-            LinearSPos = 40;
+            LinearSPos = 93;
         }
 
         //Finish Init
         hopper = this.hardwareMap.get(Servo.class, "hopper");
         hopper.scaleRange(0.25, 1.0);
-        hopper.setPosition(0.5);
+        hopper.setPosition(0.52);
         elementHolder = this.hardwareMap.get(Servo.class, "elementHolder");
         this.elementHolder.scaleRange(0.08, 1.0);
         elementHolder.setPosition(0);
-        sleep(sleeptime);
+        sleep(sleeptime/3);
 
         //Push Element out of the Way
         driveInchesEnc(firstMoveDist*driveModifier, driveSpeed);
-        sleep(sleeptime);
-        driveInchesEnc(-17*driveModifier, -driveSpeed);
+        sleep(500);
+        driveInchesEnc(-15*driveModifier, -driveSpeed);
         runBeater(1000, -1.0);
         telemetry.addData("Status", "Run beater");
         telemetry.update();
-        sleep(sleeptime);
+        sleep(550);
 
 
 
         //Turn left towards score
-        turnDumbEnc(5.5*turnModifier*leftTurnModifier, driveSpeed);
-        sleep(sleeptime);
+        turnDumbEnc(4.85*turnModifier*leftTurnModifier, driveSpeed);
+        sleep(sleeptime/4);
+        align(45);
+        sleep(250);
 
         //Drive slightly forward before score
         driveInchesEnc(8.2*driveModifier, driveSpeed);
-        sleep(sleeptime);
+        sleep(sleeptime/2);
 
         //Score
-        driveLinearSlide((110-LinearSPos)*noLinear, 1);
+        driveLinearSlide((110-LinearSPos)*noLinear, .75);
+        linearSlide.setPower(.01);
         intakeMotor.setPower(1.0);
-        hopper.setPosition(1.0);
-        sleep(500);
+        hopper.setPosition(1.02);
+        sleep(400);
         intakeMotor.setPower(0);
-        hopper.setPosition(0.5);
-        driveLinearSlide((-110+LinearSPos)*noLinear, -1);
+        hopper.setPosition(0.52);
+        linearSlide.setPower(0);
+        driveLinearSlide((-107+LinearSPos)*noLinear, -.75);
         linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        //align to Ducks
+        align(51.8);
+        sleep(200);
         //Line up to Duck Wheel
-        turnDumbEnc(1.05*turnModifier*leftTurnModifier, driveSpeed);
-        sleep(sleeptime/3);
+//        turnDumbEnc(1.05*turnModifier*leftTurnModifier, driveSpeed);
+//        sleep(sleeptime/3);
 
         //Turn on Duck Wheel and move to it
         duckWheel.setPower(-1.5);
-        driveInchesEnc(-37.7*driveModifier, -driveSpeed/3);
-        sleep(sleeptime);
-        driveInchesEnc(-.75, -driveSpeed/12);
-        sleep(1500);
+        driveInchesEnc(-35.25*driveModifier, -driveSpeed/2);//used to be driveSpeed/3
+        sleep(200);
+        driveInchesEnc(-1, -driveSpeed/12);
+        hopper.setPosition(0);
+        intakeMotor.setPower(1);
+        sleep(1000);
+
+        /*Used to be
+        driveInchesEnc(2, driveSpeed);
+        sleep(300);
+        turnDumbEnc(6, driveSpeed);
+
+         */
+        //Pick up duck
+//        driveInchesEnc(2*driveModifier, driveSpeed);
+
+        turnDumbEnc(-4*turnModifier, -driveSpeed/4);
         duckWheel.setPower(0);
+        driveInchesEnc(2, driveSpeed/2);
+        turnDumbEnc(-10, -driveSpeed/4);
+        driveInchesEnc(-1, -driveSpeed);
+        turnDumbEnc(14*turnModifier, driveSpeed*1.5);
+        driveInchesEnc(-1, -driveSpeed);
+        sleep(200);
+
+
+        //Go back to shipping hub
+        align(46);
+        hopper.setPosition(.52);
+        intakeMotor.setPower(0);
+        driveInchesEnc(10.4, driveSpeed*1.5);
+
+        //Score again
+        driveLinearSlide((18)*noLinear, .75);
+        linearSlide.setPower(.01);
+        intakeMotor.setPower(1.0);
+        hopper.setPosition(1.0);
+        sleep(400);
+        intakeMotor.setPower(0);
+        hopper.setPosition(0.5);
+        linearSlide.setPower(0);
+        driveLinearSlide((-16.5)*noLinear, -.75);
+        linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        turnDumbEnc(4.1, driveSpeed);
+        driveInchesEnc(-12, -driveSpeed*2);
+
 
         //Park
-        driveInchesEnc(2*driveModifier, driveSpeed);
-        sleep(sleeptime/2);
-        turnDumbEnc(6*turnModifier*rightTurnModifier, driveSpeed);
-        sleep(sleeptime/2);
+//        turnDumbEnc(13*turnModifier*rightTurnModifier, driveSpeed);
 //        driveInchesEnc(-4*driveModifier, -driveSpeed);
 //        sleep(sleeptime);
 
@@ -249,6 +308,58 @@ public class AutoDuckBlue extends LinearOpMode {
         driveBackLeft.setPower(0);
         driveFrontRight.setPower(0);
         driveFrontLeft.setPower(0);
+    }
+    //new stuff
+    private void align(double angle) {
+        driveFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        driveFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        driveBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        driveBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        driveBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        driveBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        driveFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        driveFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+//        while (imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle > angle+2.5 || imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle < angle-2.5){
+//            telemetry.addData("CA", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
+//            telemetry.update();
+//            if (imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle > angle+2.5){
+//                driveBackLeft.setPower(-.15);
+//                driveFrontLeft.setPower(-.15);
+//                driveBackRight.setPower(-.15);
+//                driveFrontRight.setPower(-.15);
+//            }
+//            if (imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle < angle-2.5){
+//                driveBackLeft.setPower(.15);
+//                driveFrontLeft.setPower(.15);
+//                driveBackRight.setPower(.15);
+//                driveFrontRight.setPower(.15);
+//            }
+//        }
+//
+//        sleep(20);
+        //precision alignment
+        while (imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle > angle+.45 || imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle < angle-.45){
+            telemetry.addData("CA", imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle);
+            telemetry.update();
+            if (imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle > angle+.45){
+                driveBackLeft.setPower(-.07);
+                driveFrontLeft.setPower(-.07);
+                driveBackRight.setPower(-.07);
+                driveFrontRight.setPower(-.07);
+            }
+            if (imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES).firstAngle < angle-.45){
+                driveBackLeft.setPower(.07);
+                driveFrontLeft.setPower(.07);
+                driveBackRight.setPower(.07);
+                driveFrontRight.setPower(.07);
+            }
+        }
+        driveBackLeft.setPower(0);
+        driveFrontLeft.setPower(0);
+        driveBackRight.setPower(0);
+        driveFrontRight.setPower(0);
     }
     private void spinDucks(double driveSpeed, double time) {
         driveFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

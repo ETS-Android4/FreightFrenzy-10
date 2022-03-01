@@ -76,5 +76,6 @@ public class Robot {
         public static final String HOPPER_SENSOR_NAME = "hopperSensor";
         public static final String HOPPER_LIGHTS_NAME = "hopperLights";
         public static final String IMU_NAME = "imu";
+        public static double autoSlowdown = 0;
     }
 }
