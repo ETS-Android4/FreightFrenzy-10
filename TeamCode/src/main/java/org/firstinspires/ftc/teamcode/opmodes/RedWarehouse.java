@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_HOPPER_POSIT
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_PIVOT_POSITION;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_RESET_TIME;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SERVO_DOWN;
+import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SERVO_SPEED;
 import static org.firstinspires.ftc.teamcode.util.Alliance.RED;
 import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.RIGHT;
 
@@ -73,9 +74,29 @@ public class RedWarehouse extends AbstractAuto {
         /*for (int i = 0; i < 3; i++) {
             cycleBlockInAuto(1000, intake, score, creep, alliance, RIGHT);
         }*/
+
+        //cycle faster
         for (int i = 0; i < 3; i++) {
             cycleBlockInAuto2(1000, intake, score, creep, alliance, RIGHT);
         }
+
+
+        /*while(getRuntime()<20){
+            cycleBlockInAuto2(1000, intake, score, creep, alliance, RIGHT);
+        }
+        while(getRuntime()<24){
+            if(robot.actuators.hopperIsFull()){
+                cycleBlockInAuto2(1000, intake, score, creep, alliance, RIGHT);
+            }
+        }
+        robot.actuators.setIntake(-INTAKE_SERVO_SPEED/2);
+        robot.drive.followTrajectory(creep);
+        while(getRuntime()<29.8){
+            robot.drive.update();
+        }
+        robot.actuators.setIntake(0);
+        robot.drive.stopthetrajectory*/
+
 
         // park
         followTrajectory(park);

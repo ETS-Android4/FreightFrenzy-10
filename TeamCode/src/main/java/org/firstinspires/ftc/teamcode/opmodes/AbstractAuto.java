@@ -473,9 +473,9 @@ public abstract class AbstractAuto extends LinearOpMode {
                 stepTime = currentRuntime - stepStartTime;
                 switch (stepCaseStep) {
                     case 0: //if the hopper is empty, creep and spin intake
-                        if(!robot.actuators.hopperIsFull()) {
-                            robot.actuators.setIntake(-INTAKE_SPEED / 2);
-                            robot.drive.followTrajectoryAsync(creep);
+                        if(!robot.actuators.hopperIsFull()) { //if the hopper is empty
+                            robot.actuators.setIntake(-INTAKE_SPEED / 2); //run the intake forward slow
+                            robot.drive.followTrajectoryAsync(creep); //and move to pickup blocks
                         }
                         stepCaseStep++;
                         break;
@@ -485,7 +485,7 @@ public abstract class AbstractAuto extends LinearOpMode {
                             robot.actuators.setIntake(0); // and try to prepare to reset the intake
                             stepCaseStep++;
                         }else if(!robot.actuators.hopperIsFull() && !robot.drive.isBusy()){//if we have done the creep and got no block, then:
-                            //for now just move on. try a second creep in the future
+                            //for now just move on. try a second creep in future iterations
                             stepCaseStep++;
                         }
                        break;
