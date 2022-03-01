@@ -70,6 +70,7 @@ public class RedWarehouse extends AbstractAuto {
         addAlliance(10000, alliance, getTeamElementLocation());
         addDeposit(10000, alliance, getTeamElementLocation());
 
+        robot.drive.followTrajectory(intake); // go into the warehouse
         // cycle
         /*for (int i = 0; i < 3; i++) {
             cycleBlockInAuto(1000, intake, score, creep, alliance, RIGHT);
