@@ -67,6 +67,8 @@ public abstract class AbstractAuto extends LinearOpMode {
 //            robot.actuators.resetIntake();
 //        }
 
+        makeTrajectories();
+
         // wait for start
         while (!(isStarted() || isStopRequested())) {
             robot.updateLights();
@@ -116,6 +118,10 @@ public abstract class AbstractAuto extends LinearOpMode {
             telemetry.update();
         }
     }
+
+    public void makeTrajectories() {
+    }
+
 
     // Load up all of the steps for the autonomous
     public void initializeSteps(BarcodeLocation location) {

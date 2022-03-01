@@ -338,6 +338,7 @@ public class Actuators {
         }
     }
 
+
     public void runningRetract(double currentTime, Alliance alliance, DepositPosition depoPos) {
         if (runningRetract) {
             switch (state) {

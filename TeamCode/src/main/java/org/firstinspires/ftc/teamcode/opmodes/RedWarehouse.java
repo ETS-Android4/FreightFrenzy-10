@@ -25,6 +25,10 @@ public class RedWarehouse extends AbstractAuto {
     public static Pose2d CREEP = new Pose2d(40, -63, Math.toRadians(0));
     public static Pose2d SCORE = new Pose2d(12, -63, Math.toRadians(0));
     public static Pose2d PARK = new Pose2d(36, -63, Math.toRadians(0));
+    Trajectory intake;
+    Trajectory creep;
+    Trajectory score;
+    Trajectory park;
 
     @Override
     public void setAlliance() {
@@ -37,7 +41,7 @@ public class RedWarehouse extends AbstractAuto {
     }
 
     @Override
-    public void initializeSteps(BarcodeLocation location) {
+    public void makeTrajectories() {
         robot.drive.setPoseEstimate(START_POSE);
 
         Trajectory intake = robot.drive.trajectoryBuilder(START_POSE)
@@ -58,6 +62,11 @@ public class RedWarehouse extends AbstractAuto {
         Trajectory park = robot.drive.trajectoryBuilder(intake.end())
                 .lineToLinearHeading(PARK)
                 .build();
+
+    }
+
+    @Override
+    public void initializeSteps(BarcodeLocation location) {
 
         stopTargetingCamera();
 
