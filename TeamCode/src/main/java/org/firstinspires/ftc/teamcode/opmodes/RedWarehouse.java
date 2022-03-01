@@ -19,14 +19,14 @@ import org.firstinspires.ftc.teamcode.util.CameraPosition;
 @Autonomous(name = "Red Warehouse", group = "Competition", preselectTeleOp = "Red TeleOp")
 public class RedWarehouse extends AbstractAuto {
     public static Pose2d START_POSE = new Pose2d(12, -63, Math.toRadians(0));
-    public static Pose2d INTAKE = new Pose2d(34, -63, Math.toRadians(0));
-    public static Pose2d CREEP = new Pose2d(50, -63, Math.toRadians(0));
+    public static Pose2d INTAKE = new Pose2d(36, -63, Math.toRadians(0));
+    public static Pose2d CREEP = new Pose2d(40, -59, Math.toRadians(0));
     public static Pose2d SCORE = new Pose2d(12, -63, Math.toRadians(0));
 //    public static Pose2d INTAKE2 = new Pose2d(34, -63.5, Math.toRadians(0));
 //    public static Pose2d SCORE2 = new Pose2d(12, -63.5, Math.toRadians(0));
 //    public static Pose2d INTAKE3 = new Pose2d(34, -63.5, Math.toRadians(0));
 //    public static Pose2d SCORE3 = new Pose2d(12, -63.5, Math.toRadians(0));
-    public static Pose2d PARK = new Pose2d(42, -63, Math.toRadians(0));
+    public static Pose2d PARK = new Pose2d(36, -63, Math.toRadians(0));
 
     @Override
     public void setAlliance() {
@@ -46,33 +46,18 @@ public class RedWarehouse extends AbstractAuto {
                 .lineToLinearHeading(INTAKE)
                 .build();
 
-        Trajectory creep = robot.drive.trajectoryBuilder(new Pose2d(38, -63, Math.toRadians(0)))
+        Trajectory creep = robot.drive.trajectoryBuilder(intake.end())
                 .lineToLinearHeading(CREEP,
-                        SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getVelocityConstraint(5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
 
-        Trajectory score = robot.drive.trajectoryBuilder(new Pose2d(30, -63, Math.toRadians(0)))
+        Trajectory score = robot.drive.trajectoryBuilder(intake.end())
                 .lineToLinearHeading(SCORE)
                 .build();
 
-
-//        Trajectory intake2 = robot.drive.trajectoryBuilder(score1.end())
-//                .lineToLinearHeading(INTAKE2)
-//                .build();
-//        Trajectory score2 = robot.drive.trajectoryBuilder(intake2.end())
-//                .lineToLinearHeading(SCORE2)
-//                .build();
-//
-//        Trajectory intake3 = robot.drive.trajectoryBuilder(score2.end())
-//                .lineToLinearHeading(INTAKE3)
-//                .build();
-//        Trajectory score3 = robot.drive.trajectoryBuilder(intake3.end())
-//                .lineToLinearHeading(SCORE3)
-//                .build();
-
-        Trajectory park = robot.drive.trajectoryBuilder(score.end())
+        Trajectory park = robot.drive.trajectoryBuilder(intake.end())
                 .lineToLinearHeading(PARK)
                 .build();
 
@@ -89,8 +74,11 @@ public class RedWarehouse extends AbstractAuto {
 //        addDeposit(10000, alliance, RIGHT);
 
         // cycle
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 3; i++) {
             cycleBlockInAuto(1000, intake, score, creep, alliance, RIGHT);
+        }
+        for (int i = 0; i < 3; i++) {
+            cycleBlockInAuto2(1000, intake, score, creep, alliance, RIGHT);
         }
 
 //        // 1 block

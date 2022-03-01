@@ -277,7 +277,7 @@ public class Actuators {
 
     public void runningAlliance(double currentTime, Alliance alliance, BarcodeLocation barcodeLocation) {
         if (runningAlliance) {
-            resetIntake();
+            resetIntake(); // update intake PID
             switch (state) {
                 case 0:
                     time = currentTime;
@@ -289,7 +289,7 @@ public class Actuators {
                     if (currentTime > time + DEPOSIT1_ALMOST) {
                         state++;
                     }
-                    if (currentTime > time + DEPOSIT1_ALMOST / 2.0) {
+                    if (currentTime > time + DEPOSIT1_ALMOST*0.25) {
                         setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
                     }
                     break;
