@@ -74,9 +74,9 @@ public class Actuators {
 
     public static int SLIDES_GENERAL = 0;
     public static int SLIDES_SHARED = 0;
-    public static int SLIDES_ALLIANCE_LOW = 1422;
-    public static int SLIDES_ALLIANCE_MID = 1649;
-    public static int SLIDES_ALLIANCE_HIGH = 2200;
+    public static int SLIDES_ALLIANCE_LOW = (int)(1422*0.377373212);
+    public static int SLIDES_ALLIANCE_MID = (int)(1649*0.377373212);
+    public static int SLIDES_ALLIANCE_HIGH = (int)(2200*0.377373212);
 
     // timing variables
     public static double INTAKE_RESET_TIME = 1;
@@ -93,17 +93,6 @@ public class Actuators {
     private PIDController slidesController;
     private PIDController intakeController;
 
-    private DcMotor intake;
-    private DcMotor turret;
-    private DcMotor slides;
-    private Servo hopperServo;
-    private Servo pivotServo;
-    private CRServo leftDucky;
-    private CRServo rightDucky;
-    private Servo intakeServo;
-    private Servo odoServo;
-    private RevColorSensorV3 colorSensor;
-
     // state machine variables
     public boolean runningExtend;
     public boolean runningRetract;
@@ -115,6 +104,18 @@ public class Actuators {
     private double time;
 
     public static double HOPPER_DISTANCE_CUTOFF = 30;
+
+    // hardware
+    private DcMotor intake;
+    private DcMotor turret;
+    private DcMotor slides;
+    private Servo hopperServo;
+    private Servo pivotServo;
+    private CRServo leftDucky;
+    private CRServo rightDucky;
+    private Servo intakeServo;
+    private Servo odoServo;
+    private RevColorSensorV3 colorSensor;
 
     public Actuators(HardwareMap hardwareMap) {
         this.intake = hardwareMap.get(DcMotor.class, INTAKE);
