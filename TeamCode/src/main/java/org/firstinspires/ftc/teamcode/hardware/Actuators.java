@@ -135,9 +135,6 @@ public class Actuators {
     public static double RETRACT_ALMOST = 1.2;
     public static double RETRACT_DOWN = 0.4;
 
-    public boolean runningExtend;
-    public boolean runningRetract;
-
     private int state;
     private double time;
 
@@ -204,6 +201,10 @@ public class Actuators {
     // intake
     public int getIntakePosition() {
         return intake.getCurrentPosition();
+    }
+
+    public void setIntake(double power){
+        setIntakePower(power);
     }
 
     public void setIntakePower(double power) {
