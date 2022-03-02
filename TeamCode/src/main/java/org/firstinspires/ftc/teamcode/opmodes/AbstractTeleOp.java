@@ -142,7 +142,7 @@ public class AbstractTeleOp extends OpMode {
 //                            .lineToSplineHeading(new Pose2d(score2Pos.getX(), score2Pos.getY(), score2Heading))
 //                            .splineTo(score1Pos, score1Heading)
 //                            .splineTo(score2Pos, score2Heading)
-                            .addDisplacementMarker(() -> robot.drive.followTrajectoryAsync(pathToScore2))
+                            //.addDisplacementMarker(() -> robot.drive.followTrajectoryAsync(pathToScore2))
                             .build();
 
                     pathToScore2 = robot.drive.trajectoryBuilder(pathToScore.end())
