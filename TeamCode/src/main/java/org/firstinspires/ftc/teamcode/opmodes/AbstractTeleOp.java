@@ -32,8 +32,12 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.teamcode.hardware.Actuators;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
+import org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants;
+import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.Alliance;
+import org.firstinspires.ftc.teamcode.util.ArmPosition;
 import org.firstinspires.ftc.teamcode.util.BarcodeLocation;
 import org.firstinspires.ftc.teamcode.util.DepositPosition;
 import org.firstinspires.ftc.teamcode.util.controller.Controller;
@@ -47,10 +51,14 @@ public class AbstractTeleOp extends OpMode {
 
     Mode currentMode = Mode.DRIVER_CONTROL;
 
-    Vector2d score1Pos = new Vector2d(36, -63);
+    public int state = 0;
+
+    Vector2d score1Pos = new Vector2d(40, 63);
     double score1Heading = Math.toRadians(0);
-    Vector2d score2Pos = new Vector2d(12, -63);
+    Vector2d score2Pos = new Vector2d(12, 63);
     double score2Heading = Math.toRadians(0);
+    Trajectory pathToScore;
+    Trajectory pathToScore2;
 
     public static double INTAKE_SPEED = 0.4;
     public static double INTAKE_SLOW_SPEED = 0.15;
@@ -94,6 +102,20 @@ public class AbstractTeleOp extends OpMode {
         setAlliance();
 
         robot.actuators.intakeStartPos = 0;
+
+        // reset positions every teleop
+        Actuators.TURRET_GENERAL = 0;
+        Actuators.TURRET_SHARED = -800;
+        Actuators.TURRET_ALLIANCE = 600;
+
+        Actuators.SLIDES_GENERAL = 0;
+        Actuators.SLIDES_SHARED = 0;
+        Actuators.SLIDES_ALLIANCE_LOW = (int) (1422*0.377373212);
+        Actuators.SLIDES_ALLIANCE_MID = (int)(1649*0.377373212);
+        Actuators.SLIDES_ALLIANCE_HIGH = (int) (2200*0.377373212);
+
+        Actuators.ARM_PIVOT_POSITION = new ArmPosition(0.05, 0.05, 0.15, 0.51, 0.95, 0.95, 0.95, 0.85, 0.77, 0.95, 0.95, 0.95, 0.85, 0.77);
+        Actuators.ARM_HOPPER_POSITION = new ArmPosition(0.67, 0.67, 0.71, 0.74, 0.95, 0.95, 0.92, 0.92, 0.99, 0.68, 0.68, 0.68, 0.64, 0.58);
     }
 
     @Override
@@ -133,12 +155,13 @@ public class AbstractTeleOp extends OpMode {
 
                 // if x is pressed, go into automatic mode
                 if (driver1.getX().isJustPressed()) {
-                    Trajectory pathToScore;
-                    Trajectory pathToScore2;
 
                     // make a finite state machine here to chain the 2 trajectories!
                     pathToScore = robot.drive.trajectoryBuilder(robot.drive.getPoseEstimate())
-                            .lineToSplineHeading(new Pose2d(score1Pos.getX(), score1Pos.getY(), score1Heading))
+                            .lineToSplineHeading(new Pose2d(score1Pos.getX(), score1Pos.getY(), score1Heading),
+                                    SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                                    SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                            )
 //                            .lineToSplineHeading(new Pose2d(score2Pos.getX(), score2Pos.getY(), score2Heading))
 //                            .splineTo(score1Pos, score1Heading)
 //                            .splineTo(score2Pos, score2Heading)
@@ -147,24 +170,55 @@ public class AbstractTeleOp extends OpMode {
 
                     pathToScore2 = robot.drive.trajectoryBuilder(pathToScore.end())
 //                            .lineToSplineHeading(new Pose2d(score1Pos.getX(), score1Pos.getY(), score1Heading))
-                            .lineToSplineHeading(new Pose2d(score2Pos.getX(), score2Pos.getY(), score2Heading))
+                            .lineToSplineHeading(new Pose2d(score2Pos.getX(), score2Pos.getY(), score2Heading),
+                                    SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                                    SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                            )
 //                            .splineTo(score1Pos, score1Heading)
 //                            .splineTo(score2Pos, score2Heading)
                             .build();
 
-                    robot.drive.followTrajectoryAsync(pathToScore);
                     currentMode = Mode.AUTOMATIC_CONTROL;
                 }
                 break;
             case AUTOMATIC_CONTROL:
+                switch(state) {
+                    case 0:
+                        robot.drive.followTrajectoryAsync(pathToScore);
+                        robot.actuators.setIntakePosition((int) (robot.actuators.intakeStartPos + (robot.actuators.getIntakePosition() - (robot.actuators.getIntakePosition() % 145.1))));
+                        state++;
+                        break;
+                    case 1:
+                        if (!robot.drive.isBusy() && robot.actuators.intakeIsReset()) {
+                            state++;
+                        }
+                        break;
+                    case 2:
+                        robot.drive.followTrajectoryAsync(pathToScore2);
+                        // start macro
+                        robot.actuators.runningExtend = true;
+                        extendTo = HIGH;
+                        state++;
+                        break;
+                    case 3:
+                        if (!robot.actuators.runningExtend) {
+//                            robot.drive.setPoseEstimate(PoseStorage.currentPose);//maybe get rid of this
+                            state++;
+                        }
+                        break;
+                }
+                robot.actuators.resetIntake();
+
+
+                // if drive finishes its task, cede control to the driver
+                if (state == 4) {
+                    currentMode = Mode.DRIVER_CONTROL;
+                    state = 0;
+                }
+
                 // if x is pressed, we break out of the automatic following
                 if (driver1.getX().isJustPressed()) {
                     robot.drive.breakFollowing();
-                    currentMode = Mode.DRIVER_CONTROL;
-                }
-
-                // if drive finishes its task, cede control to the driver
-                if (!robot.drive.isBusy()) {
                     currentMode = Mode.DRIVER_CONTROL;
                 }
                 break;

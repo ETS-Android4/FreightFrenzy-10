@@ -92,8 +92,8 @@ public class Actuators {
     public static int SLIDES_ALLIANCE_MID = (int)(1649*0.377373212);
     public static int SLIDES_ALLIANCE_HIGH = (int) (2200*0.377373212);
 
-    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.06, 0.03, 0.12, 0.51, 0.95, 0.95, 0.95, 0.85, 0.8, 0.95, 0.95, 0.95, 0.85, 0.8);
-    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.62, 0.62, 0.68, 0.74, 0.95, 0.95, 0.92, 0.92, 0.92, 0.68, 0.68, 0.68, 0.64, 0.49);
+    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.05, 0.05, 0.15, 0.51, 0.95, 0.95, 0.95, 0.85, 0.77, 0.95, 0.95, 0.95, 0.85, 0.77);
+    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.67, 0.67, 0.71, 0.74, 0.95, 0.95, 0.92, 0.92, 0.99, 0.68, 0.68, 0.68, 0.64, 0.58);
 
     // macro timeouts
     public static double DEPOSIT1_ALMOST = 0.6;
@@ -337,7 +337,7 @@ public class Actuators {
             switch(state) {
                 // reset intake
                 case 0:
-                    setIntakePosition((int) (intakeStartPos + (getIntakePosition() - (getIntakePosition() % 145.1))));
+//                    setIntakePosition((int) (intakeStartPos + (getIntakePosition() - (getIntakePosition() % 145.1))));
                     state++;
                     break;
                 case 1:
@@ -497,7 +497,17 @@ public class Actuators {
                     break;
                 // move hopper out of danger grabbing zone
                 case 2:
-                    setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
+                    if (depoPos == GENERAL) {
+                        setArmHopper(ARM_HOPPER_POSITION.getAlmostGeneral());
+                    } else if (depoPos == SHARED) {
+                        setArmHopper(ARM_HOPPER_POSITION.getAlmostShared());
+                    } else if (depoPos == LOW) {
+                        setArmHopper(ARM_HOPPER_POSITION.getAlmostLow());
+                    } else if (depoPos == MID) {
+                        setArmHopper(ARM_HOPPER_POSITION.getAlmostMid());
+                    } else if (depoPos == HIGH) {
+                        setArmHopper(ARM_HOPPER_POSITION.getAlmostHigh());
+                    }
                     time = currentTime;
                     state++;
                     break;
