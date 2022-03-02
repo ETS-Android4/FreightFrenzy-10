@@ -122,6 +122,9 @@ public class Actuators {
     public boolean justFinishedSharedMacro;
     public boolean justFinishedAMacro;
 
+    public boolean runningExtend;
+    public boolean runningRetract;
+
     private int state;
     private double time;
 
