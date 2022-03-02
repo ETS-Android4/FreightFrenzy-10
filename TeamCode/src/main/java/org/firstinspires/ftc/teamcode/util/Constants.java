@@ -45,7 +45,7 @@ public class Constants {
     public static final String TURRET = "turret";
     public static final String SLIDES = "slides";
     public static final String HOPPER_SERVO = "hopperServo";
-    public static final String SLIDES_SERVO = "slidesServo";
+    public static final String PIVOT_SERVO = "slidesServo";
     public static final String LEFT_DUCKY = "leftDucky";
     public static final String RIGHT_DUCKY = "rightDucky";
     public static final String INTAKE_SERVO = "intakeServo";

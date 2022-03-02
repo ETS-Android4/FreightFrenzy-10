@@ -1,18 +1,24 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 import static androidx.core.math.MathUtils.clamp;
+import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_HOPPER_MAX;
+import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_HOPPER_MIN;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_HOPPER_POSITION;
-import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_HOPPER_RANGE;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_HOPPER_SPEED;
+import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_PIVOT_MAX;
+import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_PIVOT_MIN;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_PIVOT_POSITION;
-import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_PIVOT_RANGE;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_PIVOT_SPEED;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.DUCKY_SPEED;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SERVO_DOWN;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SERVO_UP;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.ODO_SERVO_DOWN;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.ODO_SERVO_UP;
+import static org.firstinspires.ftc.teamcode.hardware.Actuators.SLIDES_MAX;
+import static org.firstinspires.ftc.teamcode.hardware.Actuators.SLIDES_MIN;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.SLIDES_SPEED;
+import static org.firstinspires.ftc.teamcode.hardware.Actuators.TURRET_MAX;
+import static org.firstinspires.ftc.teamcode.hardware.Actuators.TURRET_MIN;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.TURRET_SPEED;
 import static org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive.DRIVE_SPEED;
 import static org.firstinspires.ftc.teamcode.util.Alliance.BLUE;
@@ -22,15 +28,30 @@ import static org.firstinspires.ftc.teamcode.util.DepositPosition.SHARED;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 import org.firstinspires.ftc.teamcode.util.Alliance;
+import org.firstinspires.ftc.teamcode.util.BarcodeLocation;
 import org.firstinspires.ftc.teamcode.util.DepositPosition;
 import org.firstinspires.ftc.teamcode.util.controller.Controller;
 
 @Config
 public class AbstractTeleOp extends OpMode {
+    enum Mode {
+        DRIVER_CONTROL,
+        AUTOMATIC_CONTROL
+    }
+
+    Mode currentMode = Mode.DRIVER_CONTROL;
+
+    Vector2d score1Pos = new Vector2d(36, -63);
+    double score1Heading = Math.toRadians(0);
+    Vector2d score2Pos = new Vector2d(12, -63);
+    double score2Heading = Math.toRadians(0);
+
     public static double INTAKE_SPEED = 0.4;
     public static double INTAKE_SLOW_SPEED = 0.15;
 
@@ -72,7 +93,7 @@ public class AbstractTeleOp extends OpMode {
 
         setAlliance();
 
-        //robot.actuators.INTAKE_SERVO_START = 0;
+        robot.actuators.intakeStartPos = 0;
     }
 
     @Override
@@ -82,7 +103,7 @@ public class AbstractTeleOp extends OpMode {
 //            telemetry.addLine(robot.getTelemetry());
 //            telemetry.update();
 //        }
-        robot.lights.setPattern();
+        robot.updateLights();
         telemetry.addLine(("Initialized: " + alliance + " alliance selected."));
         telemetry.update();
     }
@@ -94,42 +115,88 @@ public class AbstractTeleOp extends OpMode {
         driver2.update();
 
         // drive base
-        double x, y, z;
-        if (driver1.getLeftBumper().isPressed()) {
-            x = driver1.getLeftStick().getY();
-            y = -driver1.getLeftStick().getX();
-            z = -driver1.getRightStick().getX();
-        } else {
-            x = driver1.getLeftStick().getY() * DRIVE_SPEED;
-            y = -driver1.getLeftStick().getX() * DRIVE_SPEED;
-            z = -driver1.getRightStick().getX() * DRIVE_SPEED;
+        PoseStorage.currentPose = robot.drive.getPoseEstimate();
+        switch (currentMode) {
+            case DRIVER_CONTROL:
+                // normal driver stuff
+                double x, y, z;
+                if (driver1.getLeftBumper().isPressed()) {
+                    x = driver1.getLeftStick().getY();
+                    y = -driver1.getLeftStick().getX();
+                    z = -driver1.getRightStick().getX();
+                } else {
+                    x = driver1.getLeftStick().getY() * DRIVE_SPEED;
+                    y = -driver1.getLeftStick().getX() * DRIVE_SPEED;
+                    z = -driver1.getRightStick().getX() * DRIVE_SPEED;
+                }
+                robot.drive.setWeightedDrivePower(new Pose2d(x, y, z));
+
+                // if x is pressed, go into automatic mode
+                if (driver1.getX().isJustPressed()) {
+                    Trajectory pathToScore = robot.drive.trajectoryBuilder(PoseStorage.currentPose)
+                            .splineTo(score1Pos, score1Heading)
+                            .splineTo(score2Pos, score2Heading)
+                            .build();
+
+                    robot.drive.followTrajectoryAsync(pathToScore);
+                    currentMode = Mode.AUTOMATIC_CONTROL;
+                }
+                break;
+            case AUTOMATIC_CONTROL:
+                // if x is pressed, we break out of the automatic following
+                if (driver1.getX().isJustPressed()) {
+                    robot.drive.breakFollowing();
+                    currentMode = Mode.DRIVER_CONTROL;
+                }
+
+                // if drive finishes its task, cede control to the driver
+                if (!robot.drive.isBusy()) {
+                    currentMode = Mode.DRIVER_CONTROL;
+                }
+                break;
         }
-        robot.drive.setWeightedDrivePower(new Pose2d(x, y, z));
         robot.drive.update();
 
         // automation
-        if (!(robot.actuators.runningAlliance || robot.actuators.runningDeposit || robot.actuators.runningShared)) {
+        if (!(robot.actuators.runningExtend || robot.actuators.runningRetract || robot.actuators.runningAlliance || robot.actuators.runningDeposit || robot.actuators.runningShared)) {
             if (!driver2.getStart().isPressed() && driver2.getX().isJustPressed()) {
                 robot.actuators.runningAlliance = true;
-                //extendTo = HIGH;
+                // new:
+                robot.actuators.runningExtend = true;
+                extendTo = HIGH;
             } else if (!driver2.getStart().isPressed() && driver2.getB().isJustPressed()) {
                 robot.actuators.runningShared = true;
-                //extendTo = SHARED;
+                // new:
+                robot.actuators.runningExtend = true;
+                extendTo = SHARED;
             } else if (!driver2.getStart().isPressed() && driver2.getA().isJustPressed()) {
                 robot.actuators.runningDeposit = true;
-                //extendFrom = extendTo;
+                // new:
+                robot.actuators.runningRetract = true;
+                extendFrom = extendTo;
             }
-        } else if (robot.actuators.runningAlliance && !robot.actuators.runningDeposit) {
+        } else if ((robot.actuators.runningExtend || robot.actuators.runningAlliance || robot.actuators.runningShared) && !(robot.actuators.runningDeposit && robot.actuators.runningRetract)) {
             if (!driver2.getStart().isPressed() && driver2.getA().isJustPressed()) {
                 robot.actuators.depositQueue = true;
+                // new:
+                robot.actuators.retractQueue = true;
             }
         }
 
-        //if (robot.actuators.runningAlliance) {
-            //robot.actuators.runningExtend(getRuntime(), alliance, extendTo);
-        //} else if (robot.actuators.runningRetract) {
-        //    robot.actuators.runningRetract(getRuntime(), alliance, extendFrom);
-        //} else {
+        // macro or manual control
+//        if (robot.actuators.runningExtend) {
+//            robot.actuators.runningExtend(getRuntime(), alliance, extendTo);
+//        } else if (robot.actuators.runningRetract) {
+//            robot.actuators.runningRetract(getRuntime(), alliance, extendFrom);
+//        }
+
+        if (robot.actuators.runningAlliance) {
+            robot.actuators.runningAlliance(getRuntime(), alliance, BarcodeLocation.RIGHT);
+        } else if (robot.actuators.runningShared) {
+            robot.actuators.runningShared(getRuntime(), alliance, BarcodeLocation.RIGHT);
+        } else if (robot.actuators.runningDeposit) {
+            robot.actuators.runningDeposit(getRuntime(), alliance, BarcodeLocation.RIGHT);
+        } else {
             if (robot.actuators.justFinishedAMacro) {
                 turretPosition = robot.actuators.getTurret();
                 slidesPosition = robot.actuators.getSlides();
@@ -151,29 +218,25 @@ public class AbstractTeleOp extends OpMode {
                 armHopperPosition -= ARM_HOPPER_SPEED;
             }
 
-            turretPosition = clamp(turretPosition, -1000, 1000);
+            turretPosition = clamp(turretPosition, TURRET_MIN, TURRET_MAX);
+            slidesPosition = clamp(slidesPosition, SLIDES_MIN, SLIDES_MAX);
+            armHopperPosition = clamp(armHopperPosition, ARM_HOPPER_MIN, ARM_HOPPER_MAX);
+            armPivotPosition = clamp(armPivotPosition, ARM_PIVOT_MIN, ARM_PIVOT_MAX);
 
-            slidesPosition = clamp(slidesPosition, 0, (int)(2300*0.377373212));
-
-//            turretPosition = clamp(turretPosition, TURRET_RANGE.getMin(), TURRET_RANGE.getMax());
-//            slidesPosition = clamp(slidesPosition, SLIDES_RANGE.getMin(), SLIDES_RANGE.getMax());
-
-            armHopperPosition = clamp(armHopperPosition, ARM_HOPPER_RANGE.getDoubleMin(), ARM_HOPPER_RANGE.getDoubleMax());
-            armPivotPosition = clamp(armPivotPosition, ARM_PIVOT_RANGE.getDoubleMin(), ARM_PIVOT_RANGE.getDoubleMax());
             robot.actuators.setTurret(turretPosition);
             robot.actuators.setSlides(slidesPosition);
             robot.actuators.setArmHopper(armHopperPosition);
             robot.actuators.setArmPivot(armPivotPosition);
+        }
 
-        //}
         // intake
         if (driver2.getLeftBumper().isPressed()) {
             if (driver2.getRightTrigger().getValue() > 0.1) {
-                robot.actuators.setIntake(-driver2.getRightTrigger().getValue() * INTAKE_SLOW_SPEED);
+                robot.actuators.setIntakePower(-driver2.getRightTrigger().getValue() * INTAKE_SLOW_SPEED);
             } else if (driver2.getLeftTrigger().getValue() > 0.1) {
-                robot.actuators.setIntake(driver2.getLeftTrigger().getValue() * INTAKE_SLOW_SPEED);
+                robot.actuators.setIntakePower(driver2.getLeftTrigger().getValue() * INTAKE_SLOW_SPEED);
             } else {
-                robot.actuators.setIntake(0);
+                robot.actuators.setIntakePower(0);
             }
         } else if (driver2.getRightBumper().isJustPressed()) {
             int newPos = (int) (robot.actuators.getIntakePosition() - (robot.actuators.getIntakePosition() % (145.1)));
@@ -182,16 +245,17 @@ public class AbstractTeleOp extends OpMode {
             robot.actuators.resetIntake();
         } else {
             if (driver2.getRightTrigger().getValue() > 0.1) {
-                robot.actuators.setIntake(-driver2.getRightTrigger().getValue() * INTAKE_SPEED);
+                robot.actuators.setIntakePower(-driver2.getRightTrigger().getValue() * INTAKE_SPEED);
             } else if (driver2.getLeftTrigger().getValue() > 0.1) {
-                robot.actuators.setIntake(driver2.getLeftTrigger().getValue() * INTAKE_SPEED);
+                robot.actuators.setIntakePower(driver2.getLeftTrigger().getValue() * INTAKE_SPEED);
             } else {
-                robot.actuators.setIntake(0);
+                robot.actuators.setIntakePower(0);
             }
         }
 
         // cancel macro button
         if(driver2.getLeftStickButton().isJustPressed() || driver2.getRightStickButton().isJustPressed()) {
+            // old macro variables
             robot.actuators.runningAlliance = false;
             robot.actuators.runningDeposit = false;
             robot.actuators.runningShared = false;
@@ -202,8 +266,14 @@ public class AbstractTeleOp extends OpMode {
             robot.actuators.pickingUpFreight = false;
             robot.actuators.justFinishedSharedMacro = false;
             robot.actuators.depositQueue = false;
-            robot.actuators.justFinishedAMacro = true;
-            robot.actuators.setState(0);
+
+            robot.actuators.justFinishedAMacro = true; // used in both
+            robot.actuators.setState(0); // used in both
+
+            // new macro variables
+            robot.actuators.runningRetract = false;
+            robot.actuators.runningExtend = false;
+            robot.actuators.retractQueue = false;
         }
 
         // duckies
@@ -220,9 +290,11 @@ public class AbstractTeleOp extends OpMode {
         if (driver1.getA().isJustPressed()) {
             odoRetracted = !odoRetracted;
         }
+
         robot.actuators.setIntakeServo(intakeRetracted ? INTAKE_SERVO_UP : INTAKE_SERVO_DOWN);
         robot.actuators.setOdoServo(odoRetracted ? ODO_SERVO_UP : ODO_SERVO_DOWN);
 
+        // switch alliance button
         if (driver1.getBack().isJustPressed()) {
             if (alliance == RED) {
                 alliance = BLUE;
@@ -232,6 +304,7 @@ public class AbstractTeleOp extends OpMode {
         }
 
         robot.actuators.update();
+
         // telemetry
         telemetry.addLine("Alliance: " + alliance);
         telemetry.addLine(robot.getTelemetry());

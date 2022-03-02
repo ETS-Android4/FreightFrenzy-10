@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
+import static org.firstinspires.ftc.teamcode.util.Alliance.BLUE;
 import static org.firstinspires.ftc.teamcode.util.Alliance.RED;
 import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.LEFT;
 import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.MIDDLE;
@@ -12,8 +13,13 @@ import static org.firstinspires.ftc.teamcode.util.Constants.LEFT_DUCKY;
 import static org.firstinspires.ftc.teamcode.util.Constants.ODO_SERVO;
 import static org.firstinspires.ftc.teamcode.util.Constants.RIGHT_DUCKY;
 import static org.firstinspires.ftc.teamcode.util.Constants.SLIDES;
-import static org.firstinspires.ftc.teamcode.util.Constants.SLIDES_SERVO;
+import static org.firstinspires.ftc.teamcode.util.Constants.PIVOT_SERVO;
 import static org.firstinspires.ftc.teamcode.util.Constants.TURRET;
+import static org.firstinspires.ftc.teamcode.util.DepositPosition.GENERAL;
+import static org.firstinspires.ftc.teamcode.util.DepositPosition.HIGH;
+import static org.firstinspires.ftc.teamcode.util.DepositPosition.LOW;
+import static org.firstinspires.ftc.teamcode.util.DepositPosition.MID;
+import static org.firstinspires.ftc.teamcode.util.DepositPosition.SHARED;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
@@ -28,61 +34,68 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.ArmPosition;
 import org.firstinspires.ftc.teamcode.util.BarcodeLocation;
-import org.firstinspires.ftc.teamcode.util.Range;
+import org.firstinspires.ftc.teamcode.util.DepositPosition;
 
 import java.util.Locale;
 
 @Config
 public class Actuators {
-    public static double INTAKE_STOP_TIME = 0.2;
+    // misc
     public static double INTAKE_RESET_TIME = 1.5;
+    public static double HOPPER_DISTANCE_CUTOFF = 30;
+    public int auto_intake_orient_pos = 0;
+    public int intakeStartPos = (int) (145.1/8.0);
 
+    // driver variables
     public static int TURRET_SPEED = 15;
     public static int SLIDES_SPEED = 50;
     public static double ARM_HOPPER_SPEED = 0.015;
     public static double ARM_PIVOT_SPEED = 0.01;
     public static double INTAKE_SERVO_SPEED = 0.02;
-
-    public static Range TURRET_RANGE = new Range(-1000, 1000);
-    public static Range SLIDES_RANGE = new Range(0, 2300*0.377373212); // adjust for new motor
-    public static Range ARM_HOPPER_RANGE = new Range(0.01, 0.99);
-    public static Range ARM_PIVOT_RANGE = new Range(0.01, 0.99);
-
-    public static double TURRET_TOLERANCE = 0;
-    public static double SLIDES_TOLERANCE = 3;
-    public static double INTAKE_TOLERANCE = 50;
-
     public static double DUCKY_SPEED = 1.0;
 
-    public int auto_intake_orient_pos = 0;
-    public int intakeStartPos = (int) (145.1/8.0);
+    // pid variables
+    private PIDController turretController;
+    private PIDController slidesController;
+    private PIDController intakeController;
 
     public static PIDCoefficients TURRET_COEFFICIENTS = new PIDCoefficients(0.003, 0, 0);
     public static PIDCoefficients SLIDES_COEFFICIENTS = new PIDCoefficients(0.0025, 0, 0);
     public static PIDCoefficients INTAKE_COEFFICIENTS = new PIDCoefficients(0.005, 0, 0.0001);
 
-    //public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.06, 0.03, 0.12, 0.51, 0.95, 0.8, 0.8, 0.95, 0.85, 0.8);
-    //public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.62, 0.62, 0.68, 0.74, 0.92, 0.92, 0.92, 0.68, 0.64, 0.49);
-    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.06, 0.03, 0.12, 0.51, 0.95, 0.95, 0.95, 0.85, 0.8, 0.95, 0.95, 0.95, 0.85, 0.8);
-    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.62, 0.62, 0.68, 0.74, 0.95, 0.95, 0.92, 0.92, 0.92, 0.68, 0.68, 0.68, 0.64, 0.49);
+    public static double TURRET_TOLERANCE = 0;
+    public static double SLIDES_TOLERANCE = 3;
+    public static double INTAKE_TOLERANCE = 50;
 
-    // intake servo positions: down 0.01 up 0.99
+    // ranges
+    public static int TURRET_MIN = -1000;
+    public static int TURRET_MAX = 1000;
+    public static int SLIDES_MIN = 0;
+    public static int SLIDES_MAX = (int)(2300*0.377373212);
+    public static double ARM_HOPPER_MIN = 0.01;
+    public static double ARM_HOPPER_MAX = 0.99;
+    public static double ARM_PIVOT_MIN = 0.01;
+    public static double ARM_PIVOT_MAX = 0.99;
     public static double INTAKE_SERVO_DOWN = 0.01;
     public static double INTAKE_SERVO_UP = 0.99;
     public static double ODO_SERVO_DOWN = 0.01;
     public static double ODO_SERVO_UP = 0.99;
 
-    public static int TURRET_ALLIANCE = 650;
+    // macro positions
+    public static int TURRET_GENERAL = 0;
     public static int TURRET_SHARED = -800;
+    public static int TURRET_ALLIANCE = 650;
 
-    public static int SLIDES_ALLIANCE_HIGH = (int) (2200*0.377373212);
-    public static int SLIDES_ALLIANCE_MID = (int)(1649*0.377373212);
-    public static int SLIDES_ALLIANCE_LOW = (int) (1422*0.377373212);
+    public static int SLIDES_GENERAL = 0;
     public static int SLIDES_SHARED = 0;
+    public static int SLIDES_ALLIANCE_LOW = (int) (1422*0.377373212);
+    public static int SLIDES_ALLIANCE_MID = (int)(1649*0.377373212);
+    public static int SLIDES_ALLIANCE_HIGH = (int) (2200*0.377373212);
 
-    public static double FREIGHT1 = 2;
-    public static double FREIGHT2 = 0.5;
+    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.06, 0.03, 0.12, 0.51, 0.95, 0.95, 0.95, 0.85, 0.8, 0.95, 0.95, 0.95, 0.85, 0.8);
+    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.62, 0.62, 0.68, 0.74, 0.95, 0.95, 0.92, 0.92, 0.92, 0.68, 0.68, 0.68, 0.64, 0.49);
 
+    // macro timeouts
     public static double DEPOSIT1_ALMOST = 0.6;
     public static double DEPOSIT2_ARM = 1.0;
     public static double DEPOSIT3_EXTEND = 1.5;
@@ -94,22 +107,7 @@ public class Actuators {
     public static double RETRACT4_ALMOST = 1.2;//1.2
     public static double RETRACT5_DOWN = 0.4;
 
-    private PIDController turretController;
-    private PIDController slidesController;
-    private PIDController intakeController;
-
-    private DcMotor intake;
-    private DcMotor turret;
-    private DcMotor slides;
-    private Servo hopperServo;
-    private Servo pivotServo;
-    private CRServo leftDucky;
-    private CRServo rightDucky;
-    private Servo intakeServo;
-    private Servo odoServo;
-    private RevColorSensorV3 colorSensor;
-
-    // state machine variables
+    // old state machine variables
     public boolean pickingUpFreight;
     public boolean runningAlliance;
     public boolean runningShared;
@@ -120,7 +118,22 @@ public class Actuators {
     public boolean depositQueue;
     public boolean justFinishedAllianceMacro;
     public boolean justFinishedSharedMacro;
-    public boolean justFinishedAMacro;
+    public boolean justFinishedAMacro; // this one is still used in the new macros
+
+    // new state machine variables & macro timeouts
+    public boolean runningExtend;
+    public boolean runningRetract;
+    public boolean retractQueue;
+    public DepositPosition justFinishedPos = HIGH;
+
+    public static double EXTEND_ALMOST = 0.4;
+    public static double EXTEND_FULL = 1;
+    public static double EXTEND_TURRET_SLIDES = 0.8;
+    public static double RETRACT_WAIT_FOR_HOPPER = 0.2;
+    public static double RETRACT_SLIDES = 0.8;
+    public static double RETRACT_TURRET = 0.8;
+    public static double RETRACT_ALMOST = 1.2;
+    public static double RETRACT_DOWN = 0.4;
 
     public boolean runningExtend;
     public boolean runningRetract;
@@ -128,77 +141,78 @@ public class Actuators {
     private int state;
     private double time;
 
-    public static double HOPPER_DISTANCE_CUTOFF = 30;
+    // hardware
+    private DcMotor turret;
+    private DcMotor slides;
+    private DcMotor intake;
+    private Servo hopperServo;
+    private Servo pivotServo;
+    private CRServo leftDucky;
+    private CRServo rightDucky;
+    private Servo intakeServo;
+    private Servo odoServo;
+    private RevColorSensorV3 colorSensor;
 
     public Actuators(HardwareMap hardwareMap) {
-        this.intake = hardwareMap.get(DcMotor.class, INTAKE);
         this.turret = hardwareMap.get(DcMotor.class, TURRET);
         this.slides = hardwareMap.get(DcMotor.class, SLIDES);
+        this.intake = hardwareMap.get(DcMotor.class, INTAKE);
         this.hopperServo = hardwareMap.get(Servo.class, HOPPER_SERVO);
-        this.pivotServo = hardwareMap.get(Servo.class, SLIDES_SERVO);
+        this.pivotServo = hardwareMap.get(Servo.class, PIVOT_SERVO);
         this.leftDucky = hardwareMap.get(CRServo.class, LEFT_DUCKY);
         this.rightDucky = hardwareMap.get(CRServo.class, RIGHT_DUCKY);
         this.intakeServo = hardwareMap.get(Servo.class, INTAKE_SERVO);
         this.odoServo = hardwareMap.get(Servo.class, ODO_SERVO);
         this.colorSensor = hardwareMap.get(RevColorSensorV3.class, COLOR);
 
-        this.intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        this.intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        this.intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
         this.turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         this.slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        this.intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         this.turret.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         this.slides.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        this.intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         this.turret.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.slides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        this.intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         turretController = new PIDController(TURRET_COEFFICIENTS.kP, TURRET_COEFFICIENTS.kI, TURRET_COEFFICIENTS.kD);
         slidesController = new PIDController(SLIDES_COEFFICIENTS.kP, SLIDES_COEFFICIENTS.kI, SLIDES_COEFFICIENTS.kD);
         intakeController = new PIDController(INTAKE_COEFFICIENTS.kP, INTAKE_COEFFICIENTS.kI, INTAKE_COEFFICIENTS.kD);
     }
 
-    public void setState(int newState){
-        state = newState;
+    // turret
+    public int getTurret() {
+        return turret.getCurrentPosition();
     }
 
-    public double getHopperDistance() {
-        return colorSensor.getDistance(DistanceUnit.MM);
+    public void setTurret(int position) {
+        turretController.setSetPoint(position);
     }
 
-    public boolean hopperIsFull() {
-        return getHopperDistance() < HOPPER_DISTANCE_CUTOFF;
+    // slides
+    public int getSlides() {
+        return slides.getCurrentPosition();
     }
 
-    public void setOdoServo(double position) {
-        odoServo.setPosition(position);
+    public void setSlides(int position) {
+        position = Math.min(Math.max(position, SLIDES_MIN), SLIDES_MAX);// probably is unnecessary
+        slidesController.setSetPoint(position);
     }
 
-    public double getOdoServo() {
-        return odoServo.getPosition();
+    // intake
+    public int getIntakePosition() {
+        return intake.getCurrentPosition();
     }
 
-    public void setIntakeServo(double position) {
-        intakeServo.setPosition(position);
-    }
-
-    public double getIntakeServo() {
-        return intakeServo.getPosition();
-    }
-
-    public void setIntake(double power) {
-        this.intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        this.intake.setPower(power);
+    public void setIntakePower(double power) {
+        intake.setPower(power);
     }
 
     public void setIntakePosition(int position) {
         intakeController.setSetPoint(position);
         intake.setPower(intakeController.calculate(intake.getCurrentPosition()));
-
-    }
-
-    public int getIntakePosition() {
-        return this.intake.getCurrentPosition();
     }
 
     public boolean intakeIsReset() {
@@ -215,59 +229,46 @@ public class Actuators {
         auto_intake_orient_pos = pos;
     }
 
-    public void setTurret(int position) {
-        turretController.setSetPoint(position);
-    }
-
     public void orientIntakeInAuto() {
         int newPos = (int) (getIntakePosition() + auto_intake_orient_pos - (getIntakePosition() % (145.1)));
         setIntakePosition(newPos);
         resetIntake();
     }
 
-    public int getTurret() {
-        return this.turret.getCurrentPosition();
-    }
-
-    public void setSlides(int position) {
-        position = Math.min(Math.max(position, SLIDES_RANGE.lower), SLIDES_RANGE.upper);
-        slidesController.setSetPoint(position);
-//        this.slides.setTargetPosition(position);
-//        this.slides.setPower(SLIDES_POWER);
-    }
-
-    public int getSlides() {
-        return this.slides.getCurrentPosition();
-    }
-
+    // pid update for motor, slides, and intake (intake only sometimes)
     public void update() {
         turretController.setPID(TURRET_COEFFICIENTS.kP, TURRET_COEFFICIENTS.kI, TURRET_COEFFICIENTS.kD);
         slidesController.setPID(SLIDES_COEFFICIENTS.kP, SLIDES_COEFFICIENTS.kI, SLIDES_COEFFICIENTS.kD);
+        intakeController.setPID(INTAKE_COEFFICIENTS.kP, INTAKE_COEFFICIENTS.kI, INTAKE_COEFFICIENTS.kD);
+
         turretController.setTolerance(TURRET_TOLERANCE);
         slidesController.setTolerance(SLIDES_TOLERANCE);
-        this.turret.setPower(turretController.calculate(turret.getCurrentPosition()));
-        this.slides.setPower(slidesController.calculate(slides.getCurrentPosition()));
-
-        intakeController.setPID(INTAKE_COEFFICIENTS.kP, INTAKE_COEFFICIENTS.kI, INTAKE_COEFFICIENTS.kD);
         intakeController.setTolerance(INTAKE_TOLERANCE);
+
+        turret.setPower(turretController.calculate(turret.getCurrentPosition()));
+        slides.setPower(slidesController.calculate(slides.getCurrentPosition()));
+//        this.intake.setPower(intakeController.calculate(intake.getCurrentPosition()));
+    }
+
+    // arm hopper
+    public double getArmHopper() {
+        return hopperServo.getPosition();
     }
 
     public void setArmHopper(double position) {
-        this.hopperServo.setPosition(position);
+        hopperServo.setPosition(position);
     }
 
-    public double getArmHopper() {
-        return this.hopperServo.getPosition();
+    // arm pivot
+    public double getArmPivot() {
+        return pivotServo.getPosition();
     }
 
     public void setArmPivot(double position) {
-        this.pivotServo.setPosition(position);
+        pivotServo.setPosition(position);
     }
 
-    public double getArmPivot() {
-        return this.pivotServo.getPosition();
-    }
-
+    // duckies
     public void setDuckies(double power, Alliance alliance) {
         this.leftDucky.setPower(alliance == Alliance.RED ? -power : power);
         this.rightDucky.setPower(alliance == Alliance.RED ? -power : power);
@@ -281,12 +282,266 @@ public class Actuators {
         this.rightDucky.setPower(alliance == Alliance.RED ? -power : power);
     }
 
-    public void runningAlliance(double currentTime, Alliance alliance, BarcodeLocation barcodeLocation) {
-        //pass on arguments to the macro we are using
-        runningAlliance_OLD(currentTime, alliance, barcodeLocation);
-        //runningGeneralMacro(proper arguments for running alliance)
+    // intake servo
+    public double getIntakeServo() {
+        return intakeServo.getPosition();
     }
 
+    public void setIntakeServo(double position) {
+        intakeServo.setPosition(position);
+    }
+
+    // odometry
+    public double getOdoServo() {
+        return odoServo.getPosition();
+    }
+
+    public void setOdoServo(double position) {
+        odoServo.setPosition(position);
+    }
+
+    // color sensor
+    public double getHopperDistance() {
+        return colorSensor.getDistance(DistanceUnit.MM);
+    }
+
+    public boolean hopperIsFull() {
+        return getHopperDistance() < HOPPER_DISTANCE_CUTOFF;
+    }
+
+    // macros
+    public void setState(int newState) {
+        state = newState;
+    }
+
+    public void runningAlliance(double currentTime, Alliance alliance, BarcodeLocation barcodeLocation) {
+//        runningAlliance_OLD(currentTime, alliance, barcodeLocation);
+        runningExtend(currentTime, alliance, barcodeLocation == LEFT ? LOW : (barcodeLocation == MIDDLE ? MID : HIGH));
+    }
+
+    public void runningShared(double currentTime, Alliance alliance, BarcodeLocation barcodeLocation) {
+//        runningShared_OLD(currentTime, alliance, barcodeLocation);
+        runningExtend(currentTime, alliance, SHARED);
+    }
+
+    public void runningDeposit(double currentTime, Alliance alliance, BarcodeLocation barcodeLocation) {
+//        runningDeposit_OLD(currentTime, alliance, barcodeLocation);
+        runningRetract(currentTime, alliance, barcodeLocation == LEFT ? LOW : (barcodeLocation == MIDDLE ? MID : HIGH));
+    }
+
+    // NEW MACROS
+    public void runningExtend(double currentTime, Alliance alliance, DepositPosition depoPos) {
+        if (runningExtend) {
+            // steps
+            switch(state) {
+                // reset intake
+                case 0:
+                    setIntakePosition((int) (intakeStartPos + (getIntakePosition() - (getIntakePosition() % 145.1))));
+                    state++;
+                    break;
+                case 1:
+                    if (intakeController.atSetPoint()) {
+                        state++;
+                    }
+                    break;
+                // arm almost
+                case 2:
+                    setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
+                    time = currentTime;
+                    break;
+                case 3:
+                    if (time > currentTime + EXTEND_ALMOST) {
+                        state++;
+                    }
+                    break;
+                // arm full
+                case 4:
+                    if (depoPos == GENERAL) {
+                        setArmHopper(ARM_HOPPER_POSITION.getAlmostGeneral());
+                        setArmPivot(ARM_PIVOT_POSITION.getAlmostGeneral());
+                    } else if (depoPos == SHARED) {
+                        setArmHopper(ARM_HOPPER_POSITION.getAlmostShared());
+                        setArmPivot(ARM_PIVOT_POSITION.getAlmostShared());
+                    } else if (depoPos == LOW) {
+                        setArmPivot(ARM_HOPPER_POSITION.getAlmostLow());
+                        setArmPivot(ARM_PIVOT_POSITION.getAlmostLow());
+                    } else if (depoPos == MID) {
+                        setArmHopper(ARM_HOPPER_POSITION.getAlmostMid());
+                        setArmPivot(ARM_PIVOT_POSITION.getAlmostMid());
+                    } else if (depoPos == HIGH) {
+                        setArmHopper(ARM_HOPPER_POSITION.getAlmostHigh());
+                        setArmPivot(ARM_PIVOT_POSITION.getAlmostHigh());
+                    }
+                    time = currentTime;
+                    break;
+                case 5:
+                    if (time > currentTime + EXTEND_FULL) {
+                        state++;
+                    }
+                    break;
+                // turret and slides
+                case 6:
+                    if (depoPos == GENERAL && alliance == RED) {
+                        setTurret(TURRET_GENERAL);
+                    } else if (depoPos == GENERAL && alliance == BLUE) {
+                        setTurret(-TURRET_GENERAL);
+                    } else if (depoPos == SHARED && alliance == RED) {
+                        setTurret(TURRET_SHARED);
+                    } else if (depoPos == SHARED && alliance == BLUE) {
+                        setTurret(-TURRET_SHARED);
+                    } else if (alliance == RED) {
+                        setTurret(TURRET_ALLIANCE);
+                    } else if (alliance == BLUE) {
+                        setTurret(-TURRET_ALLIANCE);
+                    }
+                    if (depoPos == GENERAL) {
+                        setSlides(SLIDES_GENERAL);
+                    } else if (depoPos == SHARED) {
+                        setSlides(SLIDES_SHARED);
+                    } else if (depoPos == LOW) {
+                        setSlides(SLIDES_ALLIANCE_LOW);
+                    } else if (depoPos == MID) {
+                        setSlides(SLIDES_ALLIANCE_MID);
+                    } else if (depoPos == HIGH) {
+                        setSlides(SLIDES_ALLIANCE_HIGH);
+                    }
+                    time = currentTime;
+                    break;
+                case 7:
+                    if (time > currentTime + EXTEND_TURRET_SLIDES || (turretController.atSetPoint() && slidesController.atSetPoint())) {
+                        state++;
+                    }
+                    break;
+                // finish
+                case 8:
+                    runningExtend = false;
+                    justFinishedPos = depoPos;
+                    if (retractQueue) {
+                        retractQueue = false;
+                        runningRetract = true;
+                    } else {
+                        justFinishedAMacro = true;
+                    }
+                    state = 0;
+                    break;
+            }
+            resetIntake();
+        }
+    }
+
+    public void runningRetract(double currentTime, Alliance alliance, DepositPosition depoPos) {
+        if (runningRetract) {
+            switch (state) {
+                // deposit
+                case 0:
+                    // "memory" stuff
+                    if (justFinishedPos == GENERAL) {
+                        TURRET_GENERAL = alliance == RED ? (int) turretController.getSetPoint() : -(int) turretController.getSetPoint();
+                        SLIDES_GENERAL = (int) slidesController.getSetPoint();
+                    } else if (justFinishedPos == SHARED) {
+                        TURRET_SHARED = alliance == RED ? (int) turretController.getSetPoint() : -(int) turretController.getSetPoint();
+                        SLIDES_SHARED = (int) slidesController.getSetPoint();
+                    } else if (justFinishedPos == LOW) {
+                        TURRET_ALLIANCE = alliance == RED ? (int) turretController.getSetPoint() : -(int) turretController.getSetPoint();
+                        SLIDES_ALLIANCE_LOW = (int) slidesController.getSetPoint();
+                    } else if (justFinishedPos == MID) {
+                        TURRET_ALLIANCE = alliance == RED ? (int) turretController.getSetPoint() : -(int) turretController.getSetPoint();
+                        SLIDES_ALLIANCE_MID = (int) slidesController.getSetPoint();
+                    } else if (justFinishedPos == HIGH) {
+                        TURRET_ALLIANCE = alliance == RED ? (int) turretController.getSetPoint() : -(int) turretController.getSetPoint();
+                        SLIDES_ALLIANCE_HIGH = (int) slidesController.getSetPoint();
+                    }
+
+                    if (depoPos == GENERAL) {
+                        setArmHopper(ARM_HOPPER_POSITION.getGeneral());
+                        setArmPivot(ARM_PIVOT_POSITION.getGeneral());
+                    } else if (depoPos == SHARED) {
+                        setArmHopper(ARM_HOPPER_POSITION.getShared());
+                        setArmPivot(ARM_PIVOT_POSITION.getShared());
+                    } else if (depoPos == LOW) {
+                        setArmHopper(ARM_HOPPER_POSITION.getLow());
+                        setArmPivot(ARM_PIVOT_POSITION.getLow());
+                    } else if (depoPos == MID) {
+                        setArmHopper(ARM_HOPPER_POSITION.getMid());
+                        setArmPivot(ARM_PIVOT_POSITION.getMid());
+                    } else if (depoPos == HIGH) {
+                        setArmHopper(ARM_HOPPER_POSITION.getHigh());
+                        setArmPivot(ARM_PIVOT_POSITION.getHigh());
+                    }
+
+                    time = currentTime;
+                    state++;
+                    break;
+                case 1:
+                    if (!hopperIsFull()) {
+                        state++;
+                    }
+                    break;
+                // move hopper out of danger grabbing zone
+                case 2:
+                    setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
+                    time = currentTime;
+                    state++;
+                    break;
+                case 3:
+                    if (currentTime > time + RETRACT_WAIT_FOR_HOPPER) {
+                        state++;
+                    }
+                    break;
+                // return slides and turret
+                case 4:
+                    setSlides(0);
+                    time = currentTime;
+                    state++;
+                    break;
+                case 5:
+                    if (currentTime > time + RETRACT_SLIDES || slidesController.atSetPoint()) {
+                        state++;
+                    }
+                    break;
+                case 6:
+                    setTurret(0);
+                    time = currentTime;
+                    state++;
+                    break;
+                case 7:
+                    if (currentTime > time + RETRACT_TURRET || turretController.atSetPoint()) {
+                        state++;
+                    }
+                    break;
+                // return arm down
+                case 8:
+                    setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
+                    setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
+                    time = currentTime;
+                    state++;
+                    break;
+                case 9:
+                    if (currentTime > time + RETRACT_ALMOST) {
+                        state++;
+                    }
+                    break;
+                case 10:
+                    setArmPivot(ARM_PIVOT_POSITION.getDown());
+                    setArmHopper(ARM_HOPPER_POSITION.getDown());
+                    time = currentTime;
+                    state++;
+                    break;
+                case 11:
+                    if (currentTime > time + RETRACT_DOWN) {
+                        state++;
+                    }
+                    break;
+                case 12:
+                    runningRetract = false;
+                    justFinishedAMacro = true;
+                    state = 0;
+            }
+            resetIntake();
+        }
+    }
+
+    // OLD MACROS
     public void runningAlliance_OLD(double currentTime, Alliance alliance, BarcodeLocation barcodeLocation) {
         if (runningAlliance) {
             resetIntake(); // update intake PID
@@ -355,7 +610,7 @@ public class Actuators {
         }
     }
 
-    public void runningShared(double currentTime, Alliance alliance, BarcodeLocation barcodeLocation) {
+    public void runningShared_OLD(double currentTime, Alliance alliance, BarcodeLocation barcodeLocation) {
         if (runningShared) {
             resetIntake();
             switch (state) {
@@ -423,7 +678,7 @@ public class Actuators {
         }
     }
 
-    public void runningDeposit(double currentTime, Alliance alliance, BarcodeLocation barcodeLocation) {
+    public void runningDeposit_OLD(double currentTime, Alliance alliance, BarcodeLocation barcodeLocation) {
         if (runningDeposit) {
             resetIntake();
             switch (state) {
@@ -525,7 +780,6 @@ public class Actuators {
         }
     }
 
-
     public void runningArm(double currentTime) {
         if (runningArm) {
             resetIntake();
@@ -563,20 +817,27 @@ public class Actuators {
         }
     }
 
-
+    // telemetry
     public String getTelemetry() {
         return String.format(Locale.US, "" +
-                        "Intake:      pos %s pow %.2f\n" +
-                        "Turret:      pos %s pow %.2f err %.2f\n" +
-                        "Slides:      pos %s pow %.2f\n" +
-                        "HopperServo: pos %.2f\n" +
-                        "SlidesServo: pos %.2f\n" +
-                        "Duckies: left %.2f right %.2f\n" +
-                        "IntakeServo: pos %.2f\n" +
-                        "OdoServo: pos %.2f\n" +
-                        "Hopper: dist %.2f",
-                intake.getCurrentPosition(), intake.getPower(), turret.getCurrentPosition(), turret.getPower(), turretController.getPositionError(),
-                slides.getCurrentPosition(), slides.getPower(), hopperServo.getPosition(), pivotServo.getPosition(),
-                leftDucky.getPower(), rightDucky.getPower(), intakeServo.getPosition(), odoServo.getPosition(), getHopperDistance());
+            "Turret:      pos %s pow %.2f err %.2f\n" +
+            "Slides:      pos %s pow %.2f err %.2f\n" +
+            "Intake:      pos %s pow %.2f err %.2f\n" +
+            "HopperServo: pos %.2f\n" +
+            "PivotServo:  pos %.2f\n" +
+            "Duckies:     left %.2f right %.2f\n" +
+            "IntakeServo: pos %.2f\n" +
+            "OdoServo:    pos %.2f\n" +
+            "Hopper:      dist %.2f",
+            turret.getCurrentPosition(), turret.getPower(), turretController.getPositionError(),
+            slides.getCurrentPosition(), slides.getPower(), slidesController.getPositionError(),
+            intake.getCurrentPosition(), intake.getPower(), intakeController.getPositionError(),
+            hopperServo.getPosition(),
+            pivotServo.getPosition(),
+            leftDucky.getPower(), rightDucky.getPower(),
+            intakeServo.getPosition(),
+            odoServo.getPosition(),
+            colorSensor.getDistance(DistanceUnit.CM)
+        );
     }
 }
