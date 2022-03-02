@@ -115,7 +115,7 @@ public class AbstractTeleOp extends OpMode {
         driver2.update();
 
         // drive base
-        PoseStorage.currentPose = robot.drive.getPoseEstimate();
+//        PoseStorage.currentPose = robot.drive.getPoseEstimate();
         switch (currentMode) {
             case DRIVER_CONTROL:
                 // normal driver stuff
@@ -133,9 +133,23 @@ public class AbstractTeleOp extends OpMode {
 
                 // if x is pressed, go into automatic mode
                 if (driver1.getX().isJustPressed()) {
-                    Trajectory pathToScore = robot.drive.trajectoryBuilder(PoseStorage.currentPose)
-                            .splineTo(score1Pos, score1Heading)
-                            .splineTo(score2Pos, score2Heading)
+                    Trajectory pathToScore;
+                    Trajectory pathToScore2;
+
+                    // make a finite state machine here to chain the 2 trajectories!
+                    pathToScore = robot.drive.trajectoryBuilder(robot.drive.getPoseEstimate())
+                            .lineToSplineHeading(new Pose2d(score1Pos.getX(), score1Pos.getY(), score1Heading))
+//                            .lineToSplineHeading(new Pose2d(score2Pos.getX(), score2Pos.getY(), score2Heading))
+//                            .splineTo(score1Pos, score1Heading)
+//                            .splineTo(score2Pos, score2Heading)
+                            .addDisplacementMarker(() -> robot.drive.followTrajectoryAsync(pathToScore2))
+                            .build();
+
+                    pathToScore2 = robot.drive.trajectoryBuilder(pathToScore.end())
+//                            .lineToSplineHeading(new Pose2d(score1Pos.getX(), score1Pos.getY(), score1Heading))
+                            .lineToSplineHeading(new Pose2d(score2Pos.getX(), score2Pos.getY(), score2Heading))
+//                            .splineTo(score1Pos, score1Heading)
+//                            .splineTo(score2Pos, score2Heading)
                             .build();
 
                     robot.drive.followTrajectoryAsync(pathToScore);
@@ -158,45 +172,41 @@ public class AbstractTeleOp extends OpMode {
         robot.drive.update();
 
         // automation
-        if (!(robot.actuators.runningExtend || robot.actuators.runningRetract || robot.actuators.runningAlliance || robot.actuators.runningDeposit || robot.actuators.runningShared)) {
+        if (!(robot.actuators.runningExtend || robot.actuators.runningRetract)) {
             if (!driver2.getStart().isPressed() && driver2.getX().isJustPressed()) {
-                robot.actuators.runningAlliance = true;
                 // new:
                 robot.actuators.runningExtend = true;
                 extendTo = HIGH;
             } else if (!driver2.getStart().isPressed() && driver2.getB().isJustPressed()) {
-                robot.actuators.runningShared = true;
                 // new:
                 robot.actuators.runningExtend = true;
                 extendTo = SHARED;
             } else if (!driver2.getStart().isPressed() && driver2.getA().isJustPressed()) {
-                robot.actuators.runningDeposit = true;
                 // new:
                 robot.actuators.runningRetract = true;
                 extendFrom = extendTo;
             }
-        } else if ((robot.actuators.runningExtend || robot.actuators.runningAlliance || robot.actuators.runningShared) && !(robot.actuators.runningDeposit && robot.actuators.runningRetract)) {
+        } else if ((robot.actuators.runningExtend) && !(robot.actuators.runningRetract)) {
             if (!driver2.getStart().isPressed() && driver2.getA().isJustPressed()) {
-                robot.actuators.depositQueue = true;
                 // new:
                 robot.actuators.retractQueue = true;
             }
         }
 
         // macro or manual control
-//        if (robot.actuators.runningExtend) {
-//            robot.actuators.runningExtend(getRuntime(), alliance, extendTo);
-//        } else if (robot.actuators.runningRetract) {
-//            robot.actuators.runningRetract(getRuntime(), alliance, extendFrom);
-//        }
+        if (robot.actuators.runningExtend) {
+            robot.actuators.runningExtend(getRuntime(), alliance, extendTo);
+        } else if (robot.actuators.runningRetract) {
+            robot.actuators.runningRetract(getRuntime(), alliance, extendFrom);
+        }
 
-        if (robot.actuators.runningAlliance) {
-            robot.actuators.runningAlliance(getRuntime(), alliance, BarcodeLocation.RIGHT);
-        } else if (robot.actuators.runningShared) {
-            robot.actuators.runningShared(getRuntime(), alliance, BarcodeLocation.RIGHT);
-        } else if (robot.actuators.runningDeposit) {
-            robot.actuators.runningDeposit(getRuntime(), alliance, BarcodeLocation.RIGHT);
-        } else {
+//        if (robot.actuators.runningAlliance) {
+//            robot.actuators.runningAlliance(getRuntime(), alliance, BarcodeLocation.RIGHT);
+//        } else if (robot.actuators.runningShared) {
+//            robot.actuators.runningShared(getRuntime(), alliance, BarcodeLocation.RIGHT);
+//        } else if (robot.actuators.runningDeposit) {
+//            robot.actuators.runningDeposit(getRuntime(), alliance, BarcodeLocation.RIGHT);
+        else {
             if (robot.actuators.justFinishedAMacro) {
                 turretPosition = robot.actuators.getTurret();
                 slidesPosition = robot.actuators.getSlides();
@@ -256,16 +266,16 @@ public class AbstractTeleOp extends OpMode {
         // cancel macro button
         if(driver2.getLeftStickButton().isJustPressed() || driver2.getRightStickButton().isJustPressed()) {
             // old macro variables
-            robot.actuators.runningAlliance = false;
-            robot.actuators.runningDeposit = false;
-            robot.actuators.runningShared = false;
-            robot.actuators.sharedQueue = false;
-            robot.actuators.allianceQueue = false;
-            robot.actuators.justFinishedAllianceMacro = false;
-            robot.actuators.runningArm = false;
-            robot.actuators.pickingUpFreight = false;
-            robot.actuators.justFinishedSharedMacro = false;
-            robot.actuators.depositQueue = false;
+//            robot.actuators.runningAlliance = false;
+//            robot.actuators.runningDeposit = false;
+//            robot.actuators.runningShared = false;
+//            robot.actuators.sharedQueue = false;
+//            robot.actuators.allianceQueue = false;
+//            robot.actuators.justFinishedAllianceMacro = false;
+//            robot.actuators.runningArm = false;
+//            robot.actuators.pickingUpFreight = false;
+//            robot.actuators.justFinishedSharedMacro = false;
+//            robot.actuators.depositQueue = false;
 
             robot.actuators.justFinishedAMacro = true; // used in both
             robot.actuators.setState(0); // used in both
@@ -284,10 +294,10 @@ public class AbstractTeleOp extends OpMode {
         }
 
         // retractables
-        if (driver1.getX().isJustPressed()) {
+        if (driver1.getY().isJustPressed()) {
             intakeRetracted = !intakeRetracted;
         }
-        if (driver1.getA().isJustPressed()) {
+        if (!driver1.getBack().isPressed() && driver1.getA().isJustPressed()) {
             odoRetracted = !odoRetracted;
         }
 

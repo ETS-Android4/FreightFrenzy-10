@@ -84,7 +84,7 @@ public class Actuators {
     // macro positions
     public static int TURRET_GENERAL = 0;
     public static int TURRET_SHARED = -800;
-    public static int TURRET_ALLIANCE = 650;
+    public static int TURRET_ALLIANCE = 600;
 
     public static int SLIDES_GENERAL = 0;
     public static int SLIDES_SHARED = 0;
@@ -343,37 +343,51 @@ public class Actuators {
                     break;
                 // arm almost
                 case 2:
+//                    setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
                     setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
                     time = currentTime;
+                    state++;
                     break;
                 case 3:
-                    if (time > currentTime + EXTEND_ALMOST) {
+                    if (currentTime > time + EXTEND_ALMOST) {
                         state++;
+                    }
+                    if (currentTime > time + EXTEND_ALMOST*0.25) {
+                        setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
                     }
                     break;
                 // arm full
                 case 4:
                     if (depoPos == GENERAL) {
-                        setArmHopper(ARM_HOPPER_POSITION.getAlmostGeneral());
                         setArmPivot(ARM_PIVOT_POSITION.getAlmostGeneral());
                     } else if (depoPos == SHARED) {
-                        setArmHopper(ARM_HOPPER_POSITION.getAlmostShared());
                         setArmPivot(ARM_PIVOT_POSITION.getAlmostShared());
                     } else if (depoPos == LOW) {
-                        setArmPivot(ARM_HOPPER_POSITION.getAlmostLow());
                         setArmPivot(ARM_PIVOT_POSITION.getAlmostLow());
                     } else if (depoPos == MID) {
-                        setArmHopper(ARM_HOPPER_POSITION.getAlmostMid());
                         setArmPivot(ARM_PIVOT_POSITION.getAlmostMid());
                     } else if (depoPos == HIGH) {
-                        setArmHopper(ARM_HOPPER_POSITION.getAlmostHigh());
                         setArmPivot(ARM_PIVOT_POSITION.getAlmostHigh());
                     }
                     time = currentTime;
+                    state++;
                     break;
                 case 5:
-                    if (time > currentTime + EXTEND_FULL) {
+                    if (currentTime > time + EXTEND_FULL) {
                         state++;
+                    }
+                    if (currentTime > time + EXTEND_FULL/2.0) {
+                        if (depoPos == GENERAL) {
+                            setArmHopper(ARM_HOPPER_POSITION.getAlmostGeneral());
+                        } else if (depoPos == SHARED) {
+                            setArmHopper(ARM_HOPPER_POSITION.getAlmostShared());
+                        } else if (depoPos == LOW) {
+                            setArmHopper(ARM_HOPPER_POSITION.getAlmostLow());
+                        } else if (depoPos == MID) {
+                            setArmHopper(ARM_HOPPER_POSITION.getAlmostMid());
+                        } else if (depoPos == HIGH) {
+                            setArmHopper(ARM_HOPPER_POSITION.getAlmostHigh());
+                        }
                     }
                     break;
                 // turret and slides
@@ -403,15 +417,18 @@ public class Actuators {
                         setSlides(SLIDES_ALLIANCE_HIGH);
                     }
                     time = currentTime;
+                    state++;
                     break;
                 case 7:
-                    if (time > currentTime + EXTEND_TURRET_SLIDES || (turretController.atSetPoint() && slidesController.atSetPoint())) {
+                    if (currentTime > time + EXTEND_TURRET_SLIDES || (turretController.atSetPoint() && slidesController.atSetPoint())) {
                         state++;
                     }
                     break;
                 // finish
                 case 8:
                     runningExtend = false;
+                    runningAlliance = false;
+                    runningShared = false;
                     justFinishedPos = depoPos;
                     if (retractQueue) {
                         retractQueue = false;
@@ -422,7 +439,7 @@ public class Actuators {
                     state = 0;
                     break;
             }
-            resetIntake();
+//            resetIntake();
         }
     }
 
@@ -531,10 +548,11 @@ public class Actuators {
                     break;
                 case 12:
                     runningRetract = false;
+                    runningDeposit = false;
                     justFinishedAMacro = true;
                     state = 0;
             }
-            resetIntake();
+//            resetIntake();
         }
     }
 
