@@ -16,7 +16,6 @@ import org.firstinspires.ftc.teamcode.util.CameraPosition;
 import java.util.Locale;
 
 public class Robot {
-
     String telemetry;
     private Alliance alliance;
 
