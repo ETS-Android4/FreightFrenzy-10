@@ -19,6 +19,8 @@ import org.firstinspires.ftc.teamcode.util.CameraPosition;
 
 @Autonomous(name = "Red Warehouse", group = "Competition", preselectTeleOp = "Red TeleOp")
 public class RedWarehouse extends AbstractAuto {
+
+    //define the waypoints in this auto
     public static Pose2d START_POSE = new Pose2d(12, -63, Math.toRadians(0));
     public static Pose2d INTAKE = new Pose2d(36, -63, Math.toRadians(0));
     public static Pose2d CREEP = new Pose2d(40, -59, Math.toRadians(0));
@@ -30,7 +32,6 @@ public class RedWarehouse extends AbstractAuto {
     Trajectory score;
     Trajectory park;
 
-
     @Override
     public void setAlliance() {
         this.alliance = RED;
@@ -41,7 +42,7 @@ public class RedWarehouse extends AbstractAuto {
         this.cameraPosition = CameraPosition.LEFT;
     }
 
-
+    @Override //build the trajectories for this auto
     public void makeTrajectories() {
         robot.drive.setPoseEstimate(START_POSE);
 
@@ -60,35 +61,11 @@ public class RedWarehouse extends AbstractAuto {
         park = robot.drive.trajectoryBuilder(intake.end())
                 .lineToLinearHeading(PARK)
                 .build();
-
     }
 
-
-
-    @Override
+    @Override //setup the specific actions in order for this auto
     public void initializeSteps(BarcodeLocation location) {
         robot.drive.setPoseEstimate(START_POSE);
-
-        Trajectory intake = robot.drive.trajectoryBuilder(START_POSE)
-                .lineToLinearHeading(INTAKE)
-                .build();
-
-        Trajectory creep = robot.drive.trajectoryBuilder(intake.end())
-                .lineToLinearHeading(CREEP,
-                        SampleMecanumDrive.getVelocityConstraint(5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
-                )
-                .build();
-
-        Trajectory score = robot.drive.trajectoryBuilder(intake.end())
-                .lineToLinearHeading(SCORE)
-                .build();
-
-        Trajectory park = robot.drive.trajectoryBuilder(intake.end())
-                .lineToLinearHeading(PARK)
-                .build();
-
-        stopTargetingCamera();
 
         // set arm
         addArmPivot(0, ARM_PIVOT_POSITION.getDown());
@@ -107,8 +84,10 @@ public class RedWarehouse extends AbstractAuto {
         addCycle(1000, alliance, intake, score, creep);
         addCycle(1000, alliance, intake, score, creep);
 
+        //park
+        addTrajectory(1000, alliance, park);
 
-
+        //future cycle management idea
         /*while(getRuntime()<20){
             cycleBlockInAuto2(1000, intake, score, creep, alliance, RIGHT);
         }
@@ -125,58 +104,5 @@ public class RedWarehouse extends AbstractAuto {
         robot.actuators.setIntake(0);
         robot.drive.stopthetrajectory*/
 
-
-        // park
-        followTrajectory(park);
-
     }
 }
-
-
-
-
-
-
-
-//OLD CODE
-//        // 1 block
-//        addIntake(0, -INTAKE_SPEED);
-//        followTrajectory(intake1);
-//        addIntake(1, INTAKE_SPEED);
-//
-//        followTrajectory(score1);
-//        addIntake(STOP_TIME, 0);
-//        resetIntake(RESET_TIME);
-//        addAlliance(10000, alliance, RIGHT);
-//        addDeposit(10000, alliance, RIGHT);
-//
-//        // 2 block
-//        addIntake(0, -INTAKE_SPEED);
-//        followTrajectory(intake2);
-//        addIntake(0, INTAKE_SPEED);
-//        followTrajectory(score2);
-//        addIntake(STOP_TIME, 0);
-//        resetIntake(RESET_TIME);
-//        addAlliance(10000, alliance, RIGHT);
-//        addDeposit(10000, alliance, RIGHT);
-//
-//        // 3 block
-//        addIntake(0, -INTAKE_SPEED);
-//        followTrajectory(intake3);
-//        addIntake(0, INTAKE_SPEED);
-//        followTrajectory(score3);
-//        addIntake(STOP_TIME, 0);
-//        resetIntake(RESET_TIME);
-//        addAlliance(10000, alliance, RIGHT);
-//        addDeposit(10000, alliance, RIGHT);
-
-//        for (int i = 0; i < 10; i++) {
-//            addIntake(0, -INTAKE_SPEED);
-//            followTrajectory(intake1);
-//            addIntake(0, INTAKE_SPEED);
-//            followTrajectory(score1);
-//            addIntake(STOP_TIME, 0);
-//            resetIntake(RESET_TIME);
-//            addAlliance(10000, alliance, RIGHT);
-//            addDeposit(10000, alliance, RIGHT);
-//        }

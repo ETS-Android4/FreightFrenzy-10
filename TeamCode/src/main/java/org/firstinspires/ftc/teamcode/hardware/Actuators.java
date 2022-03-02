@@ -203,6 +203,10 @@ public class Actuators {
         return intake.getCurrentPosition();
     }
 
+    public void setIntake(double power){
+        setIntakePower(power);
+    }
+
     public void setIntakePower(double power) {
         intake.setPower(power);
     }
