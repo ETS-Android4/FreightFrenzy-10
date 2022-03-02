@@ -72,7 +72,7 @@ public class AbstractTeleOp extends OpMode {
 
         setAlliance();
 
-        robot.actuators.INTAKE_SERVO_START = 0;
+        //robot.actuators.INTAKE_SERVO_START = 0;
     }
 
     @Override
@@ -108,28 +108,28 @@ public class AbstractTeleOp extends OpMode {
         robot.drive.update();
 
         // automation
-        if (!(robot.actuators.runningExtend || robot.actuators.runningRetract)) {
+        if (!(robot.actuators.runningAlliance || robot.actuators.runningDeposit || robot.actuators.runningShared)) {
             if (!driver2.getStart().isPressed() && driver2.getX().isJustPressed()) {
-                robot.actuators.runningExtend = true;
-                extendTo = HIGH;
+                robot.actuators.runningAlliance = true;
+                //extendTo = HIGH;
             } else if (!driver2.getStart().isPressed() && driver2.getB().isJustPressed()) {
-                robot.actuators.runningExtend = true;
-                extendTo = SHARED;
+                robot.actuators.runningShared = true;
+                //extendTo = SHARED;
             } else if (!driver2.getStart().isPressed() && driver2.getA().isJustPressed()) {
-                robot.actuators.runningRetract = true;
-                extendFrom = extendTo;
+                robot.actuators.runningDeposit = true;
+                //extendFrom = extendTo;
             }
-        } else if (robot.actuators.runningExtend && !robot.actuators.runningRetract) {
+        } else if (robot.actuators.runningAlliance && !robot.actuators.runningDeposit) {
             if (!driver2.getStart().isPressed() && driver2.getA().isJustPressed()) {
-                robot.actuators.retractQueue = true;
+                robot.actuators.depositQueue = true;
             }
         }
 
-        if (robot.actuators.runningExtend) {
-            robot.actuators.runningExtend(getRuntime(), alliance, extendTo);
-        } else if (robot.actuators.runningRetract) {
-            robot.actuators.runningRetract(getRuntime(), alliance, extendFrom);
-        } else {
+        //if (robot.actuators.runningAlliance) {
+            //robot.actuators.runningExtend(getRuntime(), alliance, extendTo);
+        //} else if (robot.actuators.runningRetract) {
+        //    robot.actuators.runningRetract(getRuntime(), alliance, extendFrom);
+        //} else {
             if (robot.actuators.justFinishedAMacro) {
                 turretPosition = robot.actuators.getTurret();
                 slidesPosition = robot.actuators.getSlides();
@@ -165,7 +165,7 @@ public class AbstractTeleOp extends OpMode {
             robot.actuators.setArmHopper(armHopperPosition);
             robot.actuators.setArmPivot(armPivotPosition);
 
-        }
+        //}
         // intake
         if (driver2.getLeftBumper().isPressed()) {
             if (driver2.getRightTrigger().getValue() > 0.1) {
@@ -192,9 +192,16 @@ public class AbstractTeleOp extends OpMode {
 
         // cancel macro button
         if(driver2.getLeftStickButton().isJustPressed() || driver2.getRightStickButton().isJustPressed()) {
-            robot.actuators.runningRetract = false;
-            robot.actuators.runningExtend = false;
-            robot.actuators.retractQueue = false;
+            robot.actuators.runningAlliance = false;
+            robot.actuators.runningDeposit = false;
+            robot.actuators.runningShared = false;
+            robot.actuators.sharedQueue = false;
+            robot.actuators.allianceQueue = false;
+            robot.actuators.justFinishedAllianceMacro = false;
+            robot.actuators.runningArm = false;
+            robot.actuators.pickingUpFreight = false;
+            robot.actuators.justFinishedSharedMacro = false;
+            robot.actuators.depositQueue = false;
             robot.actuators.justFinishedAMacro = true;
             robot.actuators.setState(0);
         }

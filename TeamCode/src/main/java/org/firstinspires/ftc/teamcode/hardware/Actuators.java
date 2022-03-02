@@ -279,6 +279,12 @@ public class Actuators {
     }
 
     public void runningAlliance(double currentTime, Alliance alliance, BarcodeLocation barcodeLocation) {
+        //pass on arguments to the macro we are using
+        runningAlliance_OLD(currentTime, alliance, barcodeLocation);
+        //runningGeneralMacro(proper arguments for running alliance)
+    }
+
+    public void runningAlliance_OLD(double currentTime, Alliance alliance, BarcodeLocation barcodeLocation) {
         if (runningAlliance) {
             resetIntake(); // update intake PID
             switch (state) {
