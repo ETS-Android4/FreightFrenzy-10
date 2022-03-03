@@ -125,6 +125,7 @@ public class Actuators {
     public boolean runningExtend;
     public boolean runningRetract;
     public boolean retractQueue;
+    public boolean justCancledMacro = false;
     public DepositPosition justFinishedPos = HIGH;
 
     public static double EXTEND_ALMOST = 0.4;
@@ -454,22 +455,24 @@ public class Actuators {
             switch (state) {
                 // deposit
                 case 0:
-                    // "memory" stuff
-                    if (justFinishedPos == GENERAL) {
-                        TURRET_GENERAL = alliance == RED ? (int) turretController.getSetPoint() : -(int) turretController.getSetPoint();
-                        SLIDES_GENERAL = (int) slidesController.getSetPoint();
-                    } else if (justFinishedPos == SHARED) {
-                        TURRET_SHARED = alliance == RED ? (int) turretController.getSetPoint() : -(int) turretController.getSetPoint();
-                        SLIDES_SHARED = (int) slidesController.getSetPoint();
-                    } else if (justFinishedPos == LOW) {
-                        TURRET_ALLIANCE = alliance == RED ? (int) turretController.getSetPoint() : -(int) turretController.getSetPoint();
-                        SLIDES_ALLIANCE_LOW = (int) slidesController.getSetPoint();
-                    } else if (justFinishedPos == MID) {
-                        TURRET_ALLIANCE = alliance == RED ? (int) turretController.getSetPoint() : -(int) turretController.getSetPoint();
-                        SLIDES_ALLIANCE_MID = (int) slidesController.getSetPoint();
-                    } else if (justFinishedPos == HIGH) {
-                        TURRET_ALLIANCE = alliance == RED ? (int) turretController.getSetPoint() : -(int) turretController.getSetPoint();
-                        SLIDES_ALLIANCE_HIGH = (int) slidesController.getSetPoint();
+                    if(!justCancledMacro) {
+                        // "memory" stuff
+                        if (justFinishedPos == GENERAL) {
+                            TURRET_GENERAL = alliance == RED ? (int) turretController.getSetPoint() : -(int) turretController.getSetPoint();
+                            SLIDES_GENERAL = (int) slidesController.getSetPoint();
+                        } else if (justFinishedPos == SHARED) {
+                            TURRET_SHARED = alliance == RED ? (int) turretController.getSetPoint() : -(int) turretController.getSetPoint();
+                            SLIDES_SHARED = (int) slidesController.getSetPoint();
+                        } else if (justFinishedPos == LOW) {
+                            TURRET_ALLIANCE = alliance == RED ? (int) turretController.getSetPoint() : -(int) turretController.getSetPoint();
+                            SLIDES_ALLIANCE_LOW = (int) slidesController.getSetPoint();
+                        } else if (justFinishedPos == MID) {
+                            TURRET_ALLIANCE = alliance == RED ? (int) turretController.getSetPoint() : -(int) turretController.getSetPoint();
+                            SLIDES_ALLIANCE_MID = (int) slidesController.getSetPoint();
+                        } else if (justFinishedPos == HIGH) {
+                            TURRET_ALLIANCE = alliance == RED ? (int) turretController.getSetPoint() : -(int) turretController.getSetPoint();
+                            SLIDES_ALLIANCE_HIGH = (int) slidesController.getSetPoint();
+                        }
                     }
 
                     if (depoPos == GENERAL) {
@@ -488,6 +491,8 @@ public class Actuators {
                         setArmHopper(ARM_HOPPER_POSITION.getHigh());
                         setArmPivot(ARM_PIVOT_POSITION.getHigh());
                     }
+
+                    justCancledMacro = false;
 
                     time = currentTime;
                     state++;

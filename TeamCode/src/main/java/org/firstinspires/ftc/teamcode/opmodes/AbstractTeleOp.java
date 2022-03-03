@@ -330,7 +330,7 @@ public class AbstractTeleOp extends OpMode {
 //            robot.actuators.pickingUpFreight = false;
 //            robot.actuators.justFinishedSharedMacro = false;
 //            robot.actuators.depositQueue = false;
-
+            robot.actuators.justCancledMacro = true; //used to deactivate memory
             robot.actuators.justFinishedAMacro = true; // used in both
             robot.actuators.setState(0); // used in both
 
