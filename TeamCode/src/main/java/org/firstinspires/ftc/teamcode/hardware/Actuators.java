@@ -78,8 +78,8 @@ public class Actuators {
     public static double ARM_PIVOT_MAX = 0.99;
     public static double INTAKE_SERVO_DOWN = 0.01;
     public static double INTAKE_SERVO_UP = 0.99;
-    public static double ODO_SERVO_DOWN = 0.01;
-    public static double ODO_SERVO_UP = 0.99;
+    public static double ODO_SERVO_DOWN = 0.99;
+    public static double ODO_SERVO_UP = 0.01;
 
     // macro positions
     public static int TURRET_GENERAL = 0;
@@ -316,8 +316,8 @@ public class Actuators {
     }
 
     public void runningAlliance(double currentTime, Alliance alliance, BarcodeLocation barcodeLocation) {
-//        runningAlliance_OLD(currentTime, alliance, barcodeLocation);
-        runningExtend(currentTime, alliance, barcodeLocation == LEFT ? LOW : (barcodeLocation == MIDDLE ? MID : HIGH));
+        runningAlliance_OLD(currentTime, alliance, barcodeLocation);
+        //runningExtend(currentTime, alliance, barcodeLocation == LEFT ? LOW : (barcodeLocation == MIDDLE ? MID : HIGH));
     }
 
     public void runningShared(double currentTime, Alliance alliance, BarcodeLocation barcodeLocation) {
