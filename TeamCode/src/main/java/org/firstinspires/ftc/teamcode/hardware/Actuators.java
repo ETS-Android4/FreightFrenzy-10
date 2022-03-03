@@ -318,8 +318,8 @@ public class Actuators {
     }
 
     public void runningAlliance(double currentTime, Alliance alliance, BarcodeLocation barcodeLocation) {
-        runningAlliance_OLD(currentTime, alliance, barcodeLocation);
-        //runningExtend(currentTime, alliance, barcodeLocation == LEFT ? LOW : (barcodeLocation == MIDDLE ? MID : HIGH));
+        //runningAlliance_OLD(currentTime, alliance, barcodeLocation);
+        runningExtend(currentTime, alliance, barcodeLocation == LEFT ? LOW : (barcodeLocation == MIDDLE ? MID : HIGH));
     }
 
     public void runningShared(double currentTime, Alliance alliance, BarcodeLocation barcodeLocation) {
