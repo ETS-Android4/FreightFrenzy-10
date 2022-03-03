@@ -217,7 +217,7 @@ public class AbstractTeleOp extends OpMode {
                 }
 
                 // if x is pressed, we break out of the automatic following
-                if (driver1.getX().isJustPressed()) {
+                if (driver1.getLeftStickButton().isJustPressed() || driver1.getRightStickButton().isJustPressed() || driver2.getLeftStickButton().isJustPressed() || driver2.getRightStickButton().isJustPressed()) {
                     robot.drive.breakFollowing();
                     currentMode = Mode.DRIVER_CONTROL;
                 }
@@ -318,7 +318,7 @@ public class AbstractTeleOp extends OpMode {
         }
 
         // cancel macro button
-        if(driver2.getLeftStickButton().isJustPressed() || driver2.getRightStickButton().isJustPressed()) {
+        if(driver2.getLeftStickButton().isJustPressed() || driver2.getRightStickButton().isJustPressed() || driver1.getLeftStickButton().isJustPressed() || driver1.getRightStickButton().isJustPressed()) {
             // old macro variables
 //            robot.actuators.runningAlliance = false;
 //            robot.actuators.runningDeposit = false;
@@ -341,14 +341,14 @@ public class AbstractTeleOp extends OpMode {
         }
 
         // duckies
-        if (!driver2.getBack().isPressed()) {
-            robot.actuators.setDuckies(driver2.getY().isPressed() ? DUCKY_SPEED : 0, alliance);
+        if (!driver1.getBack().isPressed()) {
+            robot.actuators.setDuckies(driver1.getY().isPressed() ? DUCKY_SPEED : 0, alliance);
         } else {
             robot.actuators.setDuckies(0, alliance);
         }
 
         // retractables
-        if (driver1.getY().isJustPressed()) {
+        if (driver1.getB().isJustPressed()) {
             intakeRetracted = !intakeRetracted;
         }
         if (!driver1.getBack().isPressed() && driver1.getA().isJustPressed()) {

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
+import static androidx.core.math.MathUtils.clamp;
 import static org.firstinspires.ftc.teamcode.util.Alliance.BLUE;
 import static org.firstinspires.ftc.teamcode.util.Alliance.RED;
 import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.LEFT;
@@ -47,7 +48,7 @@ public class Actuators {
     public int intakeStartPos = (int) (145.1/8.0);
 
     // driver variables
-    public static int TURRET_SPEED = 15;
+    public static int TURRET_SPEED = 5;
     public static int SLIDES_SPEED = 50;
     public static double ARM_HOPPER_SPEED = 0.015;
     public static double ARM_PIVOT_SPEED = 0.01;
@@ -185,6 +186,7 @@ public class Actuators {
     }
 
     public void setTurret(int position) {
+        //position = clamp(position, TURRET_MIN, TURRET_MAX);
         turretController.setSetPoint(position);
     }
 
@@ -194,7 +196,7 @@ public class Actuators {
     }
 
     public void setSlides(int position) {
-        position = Math.min(Math.max(position, SLIDES_MIN), SLIDES_MAX);// probably is unnecessary
+        position = Math.min(Math.max(position, SLIDES_MIN), SLIDES_MAX);
         slidesController.setSetPoint(position);
     }
 
