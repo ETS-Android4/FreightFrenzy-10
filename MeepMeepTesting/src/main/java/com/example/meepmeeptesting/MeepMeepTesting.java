@@ -23,29 +23,63 @@ public class MeepMeepTesting {
                 .setColorScheme(new ColorSchemeRedDark())
                 .setConstraints(30, 30, Math.toRadians(60), Math.toRadians(60), 11)
                 .followTrajectorySequence(drive ->
-                        drive.trajectorySequenceBuilder(new Pose2d(12, -63, 0))
-                                .lineToSplineHeading(new Pose2d(36, -63, Math.toRadians(0)))
-                                .lineToSplineHeading(new Pose2d(50, -63, Math.toRadians(0)),
-                                        new MinVelocityConstraint(Arrays.asList(
-                                                new AngularVelocityConstraint(30),
-                                                new MecanumVelocityConstraint(10, 11)
-                                        )),
-                                        new ProfileAccelerationConstraint(30)
-                                )
-//                                .splineTo(new Vector2d(12, -63), Math.toRadians(0))
-                                .build()
+                                drive.trajectorySequenceBuilder(new Pose2d(12, -63, 0))
+                                        .splineToConstantHeading(new Vector2d(36, -63), Math.toRadians(0))
+                                        .splineToConstantHeading(new Vector2d(56, -63), Math.toRadians(0),
+                                                new MinVelocityConstraint(Arrays.asList(
+                                                        new AngularVelocityConstraint(30),
+                                                        new MecanumVelocityConstraint(10, 11)
+                                                )),
+                                                new ProfileAccelerationConstraint(30)
+                                        )
+//                                        .lineToSplineHeading(new Pose2d(36, -63, Math.toRadians(0)))
+//                                        .lineToSplineHeading(new Pose2d(50, -63, Math.toRadians(0)),
+//                                                new MinVelocityConstraint(Arrays.asList(
+//                                                        new AngularVelocityConstraint(30),
+//                                                        new MecanumVelocityConstraint(10, 11)
+//                                                )),
+//                                                new ProfileAccelerationConstraint(30)
+//                                        )
+//                                        .lineToSplineHeading(new Pose2d(12, -63, Math.toRadians(0)))
+                                        .build()
                 );
-
         RoadRunnerBotEntity blueWarehouseBot = new DefaultBotBuilder(meepMeep)
                 .setColorScheme(new ColorSchemeBlueDark())
                 .setConstraints(30, 30, Math.toRadians(60), Math.toRadians(60), 11)
                 .followTrajectorySequence(drive ->
                                 drive.trajectorySequenceBuilder(new Pose2d(50, 45, 0))
+                                        .lineToLinearHeading(new Pose2d(40, 63, Math.toRadians(0)))
+                                        .lineToLinearHeading(new Pose2d(12, 63, Math.toRadians(0)))
+                                        .build()
+                );
+
+        RoadRunnerBotEntity redDuckBot = new DefaultBotBuilder(meepMeep)
+                .setColorScheme(new ColorSchemeRedDark())
+                .setConstraints(30, 30, Math.toRadians(60), Math.toRadians(60), 11)
+                .followTrajectorySequence(drive ->
+                                drive.trajectorySequenceBuilder(new Pose2d(-36, -63, -180))
                                         .setReversed(true)
 //                                        .splineToConstantHeading(new Vector2d(40, 63), Math.toRadians(0))
-                                        .lineToLinearHeading(new Pose2d(40, 63, Math.toRadians(0)))
+                                        .lineToLinearHeading(new Pose2d(-60, -60, Math.toRadians(-135)))
+                                        .lineToLinearHeading(new Pose2d(-36, -60, Math.toRadians(-135)))//intake duck
+                                        .lineToLinearHeading(new Pose2d(-36, -63, Math.toRadians(-180)))//score duck
 //                                        .splineToConstantHeading(new Vector2d(12, 63), Math.toRadians(0))
-                                        .lineToLinearHeading(new Pose2d(12, 63, Math.toRadians(0)))
+                                        .lineToLinearHeading(new Pose2d(-63, -36, Math.toRadians(-180)))
+                                        .build()
+                );
+
+        RoadRunnerBotEntity blueDuckBot = new DefaultBotBuilder(meepMeep)
+                .setColorScheme(new ColorSchemeBlueDark())
+                .setConstraints(30, 30, Math.toRadians(60), Math.toRadians(60), 11)
+                .followTrajectorySequence(drive ->
+                                drive.trajectorySequenceBuilder(new Pose2d(-36, 63, 180))
+                                        .setReversed(true)
+//                                        .splineToConstantHeading(new Vector2d(40, 63), Math.toRadians(0))
+                                        .lineToLinearHeading(new Pose2d(-60, 60, Math.toRadians(135)))
+                                        .lineToLinearHeading(new Pose2d(-36, 60, Math.toRadians(135)))//intake duck
+                                        .lineToLinearHeading(new Pose2d(-36, 63, Math.toRadians(180)))//score duck
+//                                        .splineToConstantHeading(new Vector2d(12, 63), Math.toRadians(0))
+                                        .lineToLinearHeading(new Pose2d(-63, 36, Math.toRadians(180)))
                                         .build()
                 );
 
@@ -55,7 +89,9 @@ public class MeepMeepTesting {
 
                 // Add bot entities
                 .addEntity(redWarehouseBot)
-                .addEntity(blueWarehouseBot)
+//                .addEntity(blueWarehouseBot)
+//                .addEntity(redDuckBot)
+//                .addEntity(blueDuckBot)
                 .start();
     }
 }

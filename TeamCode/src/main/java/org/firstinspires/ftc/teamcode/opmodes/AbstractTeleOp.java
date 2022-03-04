@@ -60,7 +60,7 @@ public class AbstractTeleOp extends OpMode {
     Trajectory pathToScore;
     Trajectory pathToScore2;
 
-    public static double INTAKE_SPEED = 0.4;
+    public static double INTAKE_SPEED = 0.5;
     public static double INTAKE_SLOW_SPEED = 0.15;
 
     Alliance alliance;
@@ -104,18 +104,7 @@ public class AbstractTeleOp extends OpMode {
         robot.actuators.intakeStartPos = 0;
 
         // reset positions every teleop
-        Actuators.TURRET_GENERAL = 0;
-        Actuators.TURRET_SHARED = -800;
-        Actuators.TURRET_ALLIANCE = 600;
-
-        Actuators.SLIDES_GENERAL = 0;
-        Actuators.SLIDES_SHARED = 0;
-        Actuators.SLIDES_ALLIANCE_LOW = (int) (1422*0.377373212);
-        Actuators.SLIDES_ALLIANCE_MID = (int)(1649*0.377373212);
-        Actuators.SLIDES_ALLIANCE_HIGH = (int) (2200*0.377373212);
-
-        Actuators.ARM_PIVOT_POSITION = new ArmPosition(0.05, 0.05, 0.15, 0.51, 0.95, 0.95, 0.95, 0.85, 0.77, 0.95, 0.95, 0.95, 0.85, 0.77);
-        Actuators.ARM_HOPPER_POSITION = new ArmPosition(0.67, 0.67, 0.71, 0.74, 0.95, 0.95, 0.92, 0.92, 0.99, 0.68, 0.68, 0.68, 0.64, 0.58);
+        robot.actuators.clearMemory();
     }
 
     @Override
@@ -291,30 +280,27 @@ public class AbstractTeleOp extends OpMode {
             robot.actuators.setSlides(slidesPosition);
             robot.actuators.setArmHopper(armHopperPosition);
             robot.actuators.setArmPivot(armPivotPosition);
+
+            // intake
+            if (driver2.getRightBumper().isJustPressed()) {
+                int newPos = (int) (robot.actuators.getIntakePosition() - (robot.actuators.getIntakePosition() % (145.1)));
+                robot.actuators.setIntakePosition(newPos);
+            } else if (driver2.getRightBumper().isPressed()) {
+                robot.actuators.resetIntake();
+            } else {
+                if (driver2.getRightTrigger().getValue() > 0.1) {
+                    robot.actuators.setIntakePower(-driver2.getRightTrigger().getValue() * INTAKE_SPEED);
+                } else if (driver2.getLeftTrigger().getValue() > 0.1) {
+                    robot.actuators.setIntakePower(driver2.getLeftTrigger().getValue() * INTAKE_SPEED);
+                } else {
+                    robot.actuators.setIntakePower(0);
+                }
+            }
         }
 
-        // intake
-        if (driver2.getLeftBumper().isPressed()) {
-            if (driver2.getRightTrigger().getValue() > 0.1) {
-                robot.actuators.setIntakePower(-driver2.getRightTrigger().getValue() * INTAKE_SLOW_SPEED);
-            } else if (driver2.getLeftTrigger().getValue() > 0.1) {
-                robot.actuators.setIntakePower(driver2.getLeftTrigger().getValue() * INTAKE_SLOW_SPEED);
-            } else {
-                robot.actuators.setIntakePower(0);
-            }
-        } else if (driver2.getRightBumper().isJustPressed()) {
-            int newPos = (int) (robot.actuators.getIntakePosition() - (robot.actuators.getIntakePosition() % (145.1)));
-            robot.actuators.setIntakePosition(newPos);
-        } else if (driver2.getRightBumper().isPressed()) {
-            robot.actuators.resetIntake();
-        } else {
-            if (driver2.getRightTrigger().getValue() > 0.1) {
-                robot.actuators.setIntakePower(-driver2.getRightTrigger().getValue() * INTAKE_SPEED);
-            } else if (driver2.getLeftTrigger().getValue() > 0.1) {
-                robot.actuators.setIntakePower(driver2.getLeftTrigger().getValue() * INTAKE_SPEED);
-            } else {
-                robot.actuators.setIntakePower(0);
-            }
+        // reset memory
+        if (driver2.getLeftBumper().isJustPressed()) {
+            robot.actuators.clearMemory();
         }
 
         // cancel macro button
@@ -348,7 +334,7 @@ public class AbstractTeleOp extends OpMode {
         }
 
         // retractables
-        if (driver1.getB().isJustPressed()) {
+        if (!driver1.getBack().isPressed() && driver1.getB().isJustPressed()) {
             intakeRetracted = !intakeRetracted;
         }
         if (!driver1.getBack().isPressed() && driver1.getA().isJustPressed()) {

@@ -9,7 +9,12 @@ import static org.firstinspires.ftc.teamcode.util.Alliance.RED;
 import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.RIGHT;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
+import com.acmerobotics.roadrunner.trajectory.constraints.AngularVelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.MecanumVelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
+import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants;
@@ -17,18 +22,19 @@ import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.BarcodeLocation;
 import org.firstinspires.ftc.teamcode.util.CameraPosition;
 
+import java.util.Arrays;
+
 @Autonomous(name = "Red Warehouse", group = "Competition", preselectTeleOp = "Red TeleOp")
 public class RedWarehouse extends AbstractAuto {
 
     //define the waypoints in this auto
     public static Pose2d START_POSE = new Pose2d(12, -63, Math.toRadians(0));
     public static Pose2d INTAKE = new Pose2d(36, -63, Math.toRadians(0));
-    public static Pose2d CREEP = new Pose2d(40, -59, Math.toRadians(0));
+    public static Pose2d CREEP = new Pose2d(56, -63, Math.toRadians(0));
     public static Pose2d SCORE = new Pose2d(12, -63, Math.toRadians(0));
     public static Pose2d PARK = new Pose2d(36, -63, Math.toRadians(0));
 
     Trajectory intake;
-    Trajectory creep;
     Trajectory score;
     Trajectory park;
 
@@ -47,17 +53,15 @@ public class RedWarehouse extends AbstractAuto {
         robot.drive.setPoseEstimate(START_POSE);
 
         intake = robot.drive.trajectoryBuilder(START_POSE)
-                .lineToLinearHeading(INTAKE)
-                .build();
-        creep = robot.drive.trajectoryBuilder(intake.end())
-                .lineToLinearHeading(CREEP,
-                        SampleMecanumDrive.getVelocityConstraint(5, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                .splineToConstantHeading(new Vector2d(INTAKE.getX(), INTAKE.getY()), INTAKE.getHeading())
+                .splineToConstantHeading(new Vector2d(CREEP.getX(), CREEP.getY()), CREEP.getHeading(),
+                        SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
-        score = robot.drive.trajectoryBuilder(creep.end())
-                .lineToLinearHeading(SCORE)
-                .build();
+//        score = robot.drive.trajectoryBuilder(creep.end())
+//                .lineToLinearHeading(SCORE)
+//                .build();
         park = robot.drive.trajectoryBuilder(intake.end())
                 .lineToLinearHeading(PARK)
                 .build();
@@ -80,9 +84,9 @@ public class RedWarehouse extends AbstractAuto {
         addTrajectory(10000, alliance, intake); // go into the warehouse
 
         //cycle
-        addCycle(1000, alliance, intake, score, creep);
-        addCycle(1000, alliance, intake, score, creep);
-        addCycle(1000, alliance, intake, score, creep);
+//        addCycle(1000, alliance, intake, score, creep);
+//        addCycle(1000, alliance, intake, score, creep);
+//        addCycle(1000, alliance, intake, score, creep);
 
         //park
         addTrajectory(1000, alliance, park);

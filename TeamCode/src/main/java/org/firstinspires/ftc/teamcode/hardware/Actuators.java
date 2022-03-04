@@ -60,13 +60,13 @@ public class Actuators {
     private PIDController slidesController;
     private PIDController intakeController;
 
-    public static PIDCoefficients TURRET_COEFFICIENTS = new PIDCoefficients(0.003, 0, 0);
-    public static PIDCoefficients SLIDES_COEFFICIENTS = new PIDCoefficients(0.0025, 0, 0);
+    public static PIDCoefficients TURRET_COEFFICIENTS = new PIDCoefficients(0.002, 0, 0);
+    public static PIDCoefficients SLIDES_COEFFICIENTS = new PIDCoefficients(0.002, 0, 0);
     public static PIDCoefficients INTAKE_COEFFICIENTS = new PIDCoefficients(0.005, 0, 0.0001);
 
-    public static double TURRET_TOLERANCE = 0;
-    public static double SLIDES_TOLERANCE = 3;
-    public static double INTAKE_TOLERANCE = 50;
+    public static double TURRET_TOLERANCE = 5;
+    public static double SLIDES_TOLERANCE = 15;
+    public static double INTAKE_TOLERANCE = 30;
 
     // ranges
     public static int TURRET_MIN = -1000;
@@ -85,16 +85,16 @@ public class Actuators {
     // macro positions
     public static int TURRET_GENERAL = 0;
     public static int TURRET_SHARED = -800;
-    public static int TURRET_ALLIANCE = 600;
+    public static int TURRET_ALLIANCE = 764;
 
     public static int SLIDES_GENERAL = 0;
-    public static int SLIDES_SHARED = 0;
-    public static int SLIDES_ALLIANCE_LOW = (int) (1422*0.377373212);
-    public static int SLIDES_ALLIANCE_MID = (int)(1649*0.377373212);
-    public static int SLIDES_ALLIANCE_HIGH = (int) (2200*0.377373212);
+    public static int SLIDES_SHARED = 172;
+    public static int SLIDES_ALLIANCE_LOW = 712;
+    public static int SLIDES_ALLIANCE_MID = 712;
+    public static int SLIDES_ALLIANCE_HIGH = 712;
 
-    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.05, 0.05, 0.15, 0.51, 0.95, 0.95, 0.95, 0.85, 0.77, 0.95, 0.95, 0.95, 0.85, 0.77);
-    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.67, 0.67, 0.71, 0.74, 0.95, 0.95, 0.92, 0.92, 0.99, 0.68, 0.68, 0.68, 0.64, 0.58);
+    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.05, 0.05, 0.15, 0.51, 0.95, 0.85, 0.95, 0.85, 0.77, 0.95, 0.95, 0.95, 0.85, 0.77);
+    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.67, 0.67, 0.71, 0.74, 0.95, 0.91, 0.92, 0.92, 0.99, 0.68, 0.76, 0.68, 0.64, 0.58);
 
     // macro timeouts
     public static double DEPOSIT1_ALMOST = 0.6;
@@ -134,7 +134,9 @@ public class Actuators {
     public static double RETRACT_WAIT_FOR_HOPPER = 0.2;
     public static double RETRACT_SLIDES = 0.8;
     public static double RETRACT_TURRET = 0.8;
-    public static double RETRACT_ALMOST = 1.2;
+    public static double RETRACT_ALMOST_GENERAL = 0.9;
+    public static double RETRACT_ALMOST_SHARED = 0.9;
+    public static double RETRACT_ALMOST_ALLIANCE = 0.7;
     public static double RETRACT_DOWN = 0.4;
 
     private int state;
@@ -179,6 +181,21 @@ public class Actuators {
         turretController = new PIDController(TURRET_COEFFICIENTS.kP, TURRET_COEFFICIENTS.kI, TURRET_COEFFICIENTS.kD);
         slidesController = new PIDController(SLIDES_COEFFICIENTS.kP, SLIDES_COEFFICIENTS.kI, SLIDES_COEFFICIENTS.kD);
         intakeController = new PIDController(INTAKE_COEFFICIENTS.kP, INTAKE_COEFFICIENTS.kI, INTAKE_COEFFICIENTS.kD);
+    }
+
+    public void clearMemory() {
+        TURRET_GENERAL = 0;
+        TURRET_SHARED = -800;
+        TURRET_ALLIANCE = 764;
+
+        SLIDES_GENERAL = 0;
+        SLIDES_SHARED = 172;
+        SLIDES_ALLIANCE_LOW = 712;
+        SLIDES_ALLIANCE_MID = 712;
+        SLIDES_ALLIANCE_HIGH = 712;
+
+        ARM_PIVOT_POSITION = new ArmPosition(0.05, 0.05, 0.15, 0.51, 0.95, 0.85, 0.95, 0.85, 0.77, 0.95, 0.95, 0.95, 0.85, 0.77);
+        ARM_HOPPER_POSITION = new ArmPosition(0.67, 0.67, 0.71, 0.74, 0.95, 0.91, 0.92, 0.92, 0.99, 0.68, 0.76, 0.68, 0.64, 0.58);
     }
 
     // turret
@@ -340,7 +357,7 @@ public class Actuators {
             switch(state) {
                 // reset intake
                 case 0:
-//                    setIntakePosition((int) (intakeStartPos + (getIntakePosition() - (getIntakePosition() % 145.1))));
+                    setIntakePosition((int) (intakeStartPos + (getIntakePosition() - (getIntakePosition() % 145.1))));
                     state++;
                     break;
                 case 1:
@@ -506,14 +523,19 @@ public class Actuators {
                 case 2:
                     if (depoPos == GENERAL) {
                         setArmHopper(ARM_HOPPER_POSITION.getAlmostGeneral());
+                        setArmPivot(ARM_PIVOT_POSITION.getAlmostGeneral());
                     } else if (depoPos == SHARED) {
                         setArmHopper(ARM_HOPPER_POSITION.getAlmostShared());
+                        setArmPivot(ARM_PIVOT_POSITION.getAlmostShared());
                     } else if (depoPos == LOW) {
                         setArmHopper(ARM_HOPPER_POSITION.getAlmostLow());
+                        setArmPivot(ARM_PIVOT_POSITION.getAlmostLow());
                     } else if (depoPos == MID) {
                         setArmHopper(ARM_HOPPER_POSITION.getAlmostMid());
+                        setArmPivot(ARM_PIVOT_POSITION.getAlmostMid());
                     } else if (depoPos == HIGH) {
                         setArmHopper(ARM_HOPPER_POSITION.getAlmostHigh());
+                        setArmPivot(ARM_PIVOT_POSITION.getAlmostHigh());
                     }
                     time = currentTime;
                     state++;
@@ -552,9 +574,26 @@ public class Actuators {
                     state++;
                     break;
                 case 9:
-                    if (currentTime > time + RETRACT_ALMOST) {
-                        state++;
+                    switch(depoPos) {
+                        case GENERAL:
+                            if (currentTime > time + RETRACT_ALMOST_GENERAL) {
+                                state++;
+                            }
+                            break;
+                        case SHARED:
+                            if (currentTime > time + RETRACT_ALMOST_SHARED) {
+                                state++;
+                            }
+                            break;
+                        case LOW:
+                        case MID:
+                        case HIGH:
+                            if (currentTime > time + RETRACT_ALMOST_ALLIANCE) {
+                                state++;
+                            }
+                            break;
                     }
+
                     break;
                 case 10:
                     setArmPivot(ARM_PIVOT_POSITION.getDown());
