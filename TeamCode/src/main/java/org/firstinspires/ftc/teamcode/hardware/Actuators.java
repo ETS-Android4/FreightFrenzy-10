@@ -42,7 +42,7 @@ import java.util.Locale;
 @Config
 public class Actuators {
     // misc
-    public static double INTAKE_RESET_TIME = 1.5;
+    public static double INTAKE_RESET_TIME = 1;
     public static double HOPPER_DISTANCE_CUTOFF = 30;
     public int auto_intake_orient_pos = 0;
     public int intakeStartPos = (int) (145.1/8.0);
@@ -85,16 +85,16 @@ public class Actuators {
     // macro positions
     public static int TURRET_GENERAL = 0;
     public static int TURRET_SHARED = -800;
-    public static int TURRET_ALLIANCE = 764;
+    public static int TURRET_ALLIANCE = 637;//764
 
     public static int SLIDES_GENERAL = 0;
     public static int SLIDES_SHARED = 172;
     public static int SLIDES_ALLIANCE_LOW = 712;
     public static int SLIDES_ALLIANCE_MID = 712;
-    public static int SLIDES_ALLIANCE_HIGH = 712;
+    public static int SLIDES_ALLIANCE_HIGH = 780;//712
 
     public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.05, 0.05, 0.15, 0.51, 0.95, 0.85, 0.95, 0.85, 0.77, 0.95, 0.95, 0.95, 0.85, 0.77);
-    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.67, 0.67, 0.71, 0.74, 0.95, 0.91, 0.92, 0.92, 0.99, 0.68, 0.76, 0.68, 0.64, 0.58);
+    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.67, 0.67, 0.75, 0.74, 0.95, 0.91, 0.92, 0.92, 0.99, 0.68, 0.76, 0.68, 0.64, 0.58);
 
     // macro timeouts
     public static double DEPOSIT1_ALMOST = 0.6;
@@ -136,7 +136,7 @@ public class Actuators {
     public static double RETRACT_TURRET = 0.8;
     public static double RETRACT_ALMOST_GENERAL = 0.9;
     public static double RETRACT_ALMOST_SHARED = 0.9;
-    public static double RETRACT_ALMOST_ALLIANCE = 0.7;
+    public static double RETRACT_ALMOST_ALLIANCE = 0.9;
     public static double RETRACT_DOWN = 0.4;
 
     private int state;
@@ -192,10 +192,10 @@ public class Actuators {
         SLIDES_SHARED = 172;
         SLIDES_ALLIANCE_LOW = 712;
         SLIDES_ALLIANCE_MID = 712;
-        SLIDES_ALLIANCE_HIGH = 712;
+        SLIDES_ALLIANCE_HIGH = 780;
 
         ARM_PIVOT_POSITION = new ArmPosition(0.05, 0.05, 0.15, 0.51, 0.95, 0.85, 0.95, 0.85, 0.77, 0.95, 0.95, 0.95, 0.85, 0.77);
-        ARM_HOPPER_POSITION = new ArmPosition(0.67, 0.67, 0.71, 0.74, 0.95, 0.91, 0.92, 0.92, 0.99, 0.68, 0.76, 0.68, 0.64, 0.58);
+        ARM_HOPPER_POSITION = new ArmPosition(0.67, 0.67, 0.75, 0.74, 0.95, 0.91, 0.92, 0.92, 0.99, 0.68, 0.76, 0.68, 0.64, 0.58);
     }
 
     // turret
@@ -335,6 +335,10 @@ public class Actuators {
         state = newState;
     }
 
+    public int getState() {
+        return state;
+    }
+
     public void runningAlliance(double currentTime, Alliance alliance, BarcodeLocation barcodeLocation) {
         //runningAlliance_OLD(currentTime, alliance, barcodeLocation);
         runningExtend(currentTime, alliance, barcodeLocation == LEFT ? LOW : (barcodeLocation == MIDDLE ? MID : HIGH));
@@ -361,7 +365,9 @@ public class Actuators {
                     state++;
                     break;
                 case 1:
+                    resetIntake();
                     if (intakeController.atSetPoint()) {
+                        intake.setPower(0);
                         state++;
                     }
                     break;
@@ -574,39 +580,42 @@ public class Actuators {
                     state++;
                     break;
                 case 9:
-                    switch(depoPos) {
+                case 10:
+                    switch(depoPos) {//wait different times for different deposit positions
                         case GENERAL:
-                            if (currentTime > time + RETRACT_ALMOST_GENERAL) {
+                            if (currentTime > time + RETRACT_ALMOST_GENERAL/2.0) {
+                                time = currentTime;
                                 state++;
                             }
                             break;
                         case SHARED:
-                            if (currentTime > time + RETRACT_ALMOST_SHARED) {
+                            if (currentTime > time + RETRACT_ALMOST_SHARED/2.0) {
+                                time = currentTime;
                                 state++;
                             }
                             break;
                         case LOW:
                         case MID:
                         case HIGH:
-                            if (currentTime > time + RETRACT_ALMOST_ALLIANCE) {
+                            if (currentTime > time + RETRACT_ALMOST_ALLIANCE/2.0) {
+                                time = currentTime;
                                 state++;
                             }
                             break;
                     }
-
                     break;
-                case 10:
+                case 11:
                     setArmPivot(ARM_PIVOT_POSITION.getDown());
                     setArmHopper(ARM_HOPPER_POSITION.getDown());
                     time = currentTime;
                     state++;
                     break;
-                case 11:
+                case 12:
                     if (currentTime > time + RETRACT_DOWN) {
                         state++;
                     }
                     break;
-                case 12:
+                case 13:
                     runningRetract = false;
                     runningDeposit = false;
                     justFinishedAMacro = true;
