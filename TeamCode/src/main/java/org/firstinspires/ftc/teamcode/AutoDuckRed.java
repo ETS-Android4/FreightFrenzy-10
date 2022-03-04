@@ -156,9 +156,9 @@ public class AutoDuckRed extends LinearOpMode {
             LinearSPos = 110;
             noLinear = 1;
         } else if(teamElementLocation == Cvhelper.BarcodeLocation.MIDDLE){
-            LinearSPos = 101.8;
+            LinearSPos = 90;
         } else if(teamElementLocation == Cvhelper.BarcodeLocation.RIGHT){
-            LinearSPos = 93;
+            LinearSPos = 65;
         }
 
         //Finish Init
@@ -190,15 +190,13 @@ public class AutoDuckRed extends LinearOpMode {
         sleep(sleeptime/2);
 
         //Score
-        driveLinearSlide((110-LinearSPos)*noLinear, .75);
-        linearSlide.setPower(.01);
+        driveLinearSlide((110-LinearSPos)*noLinear, 1);
         intakeMotor.setPower(1.0);
         hopper.setPosition(1.0);
         sleep(400);
         intakeMotor.setPower(0);
         hopper.setPosition(0.5);
-        linearSlide.setPower(0);
-        driveLinearSlide((-107+LinearSPos)*noLinear, -.75);
+        driveLinearSlide((-108+LinearSPos)*noLinear, -1);
         linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //Line up with Duck Wheel
@@ -225,18 +223,16 @@ public class AutoDuckRed extends LinearOpMode {
         align(-49);
         hopper.setPosition(.5);
         intakeMotor.setPower(0);
-        driveInchesEnc(8.65, driveSpeed*1.5);
+        driveInchesEnc(8, driveSpeed*1.5);
 
         //Score again
-        driveLinearSlide((18)*noLinear, .75);
-        linearSlide.setPower(.01);
+        driveLinearSlide((45)*noLinear, 1);
         intakeMotor.setPower(1.0);
         hopper.setPosition(1.0);
         sleep(400);
         intakeMotor.setPower(0);
         hopper.setPosition(0.5);
-        linearSlide.setPower(0);
-        driveLinearSlide((-16.5)*noLinear, -.75);
+        driveLinearSlide((-44)*noLinear, -1);
         linearSlide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turnDumbEnc(4.1, -driveSpeed);
         driveInchesEnc(-12, -driveSpeed*2);

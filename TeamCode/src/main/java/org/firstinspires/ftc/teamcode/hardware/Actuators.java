@@ -167,12 +167,10 @@ public class Actuators {
         if(slideUp && currentPosition > Constants.LINEAR_SLIDE_MAX_POSITION) {
             this.linearSlidePower = -1;
             //New Stuff 5/5
-        } else if(slideDown && this.linearSlideMotor.getCurrentPosition() < 0 && this.linearSlideMotor.getCurrentPosition() > -400) { //&& currentPosition < Constants.LINEAR_SLIDE_DEADZONE
-            this.linearSlidePower = .3;
-        } else if(slideDown && this.linearSlideMotor.getCurrentPosition() < 50) { //&& currentPosition < Constants.LINEAR_SLIDE_DEADZONE
-            this.linearSlidePower = .7;
+        } else if(slideDown && this.linearSlideMotor.getCurrentPosition() < 25) { //&& currentPosition < Constants.LINEAR_SLIDE_DEADZONE
+            this.linearSlidePower = 1;
         } else if(currentPosition < -100 && currentPosition > Constants.LINEAR_SLIDE_MAX_POSITION){
-            this.linearSlidePower = -.01;
+            this.linearSlidePower = -.001;
         } else{
             this.linearSlidePower = 0;
         }
@@ -180,11 +178,7 @@ public class Actuators {
         //Middle Element
         if(gamepad.left_bumper){
             elementStick = .5;
-            if(this.linearSlidePower > 0){
-                this.linearSlidePower = .2;
-            } else if(this.linearSlidePower < -.01){
-                this.linearSlidePower = -.2;
-            }
+            this.linearSlidePower /= 2;
         }
 
         // Duck Wheel
