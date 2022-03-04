@@ -25,7 +25,7 @@ public abstract class AbstractAuto extends LinearOpMode {
     CameraPosition cameraPosition;
     public Robot robot;
 
-    private BarcodeLocation teamElementLocation;
+    private BarcodeLocation teamElementLocation = BarcodeLocation.RIGHT;
     private ArrayList<Step> steps;
     private double currentRuntime;
     private boolean stopWasNotRequested;
@@ -44,16 +44,22 @@ public abstract class AbstractAuto extends LinearOpMode {
         setAlliance();
         setCameraPosition();
 
-        robot = new Robot(hardwareMap, cameraPosition, alliance);
+        if (useCamera()) {
+            robot = new Robot(hardwareMap, cameraPosition, alliance);
 
-        robot.actuators.setArmPivot(ARM_PIVOT_POSITION.getDown());
-        robot.actuators.setArmHopper(ARM_HOPPER_POSITION.getDown());
+            robot.actuators.setArmPivot(ARM_PIVOT_POSITION.getDown());
+            robot.actuators.setArmHopper(ARM_HOPPER_POSITION.getDown());
 
-//        makeTrajectories();
+            while (robot.camera.getFrameCount() < 1) {
+                idle();
+            }
+        } else {
+            robot = new Robot(hardwareMap, alliance);
 
-        while (robot.camera.getFrameCount() < 1) {
-            idle();
+            robot.actuators.setArmPivot(ARM_PIVOT_POSITION.getDown());
+            robot.actuators.setArmHopper(ARM_HOPPER_POSITION.getDown());
         }
+
 
         // set up into box
 //        robot.actuators.setArmPivot(ARM_PIVOT_POSITION.almostDown);
@@ -64,7 +70,7 @@ public abstract class AbstractAuto extends LinearOpMode {
 //        robot.actuators.setArmHopper(ARM_HOPPER_POSITION.getUp());
 //        sleep(1000 * (long) DEPOSIT2_ARM);
 
-//        robot.actuators.setIntakeServo(INTAKE_SERVO_UP);
+        robot.actuators.setIntakeServo(INTAKE_SERVO_UP);
 //
 //        double time = getRuntime();
 //        while (getRuntime() < time + 2) {
@@ -81,17 +87,23 @@ public abstract class AbstractAuto extends LinearOpMode {
         while (!(isStarted() || isStopRequested())) {
 //            teamElementLocation = robot.camera.checkTeamElementLocationUsingAprilTags();
             robot.updateLights();
-            teamElementLocation = robot.camera.checkTeamElementLocation();
-            telemetry.addLine("Initialized");
-            telemetry.addLine(String.format(Locale.US, "Location: %s", teamElementLocation));
-            telemetry.addLine(String.format(Locale.US, "Size: %.4f", robot.camera.getTeamElement().getArea()));
+            if (useCamera()) {
+                teamElementLocation = robot.camera.checkTeamElementLocation();
+                telemetry.addLine("Initialized");
+                telemetry.addLine(String.format(Locale.US, "Location: %s", teamElementLocation));
+                telemetry.addLine(String.format(Locale.US, "Size: %.4f", robot.camera.getTeamElement().getArea()));
+            } else {
+                telemetry.addLine("Initialized");
+            }
             telemetry.update();
         }
         resetStartTime();
 
         // build the first step
         steps = new ArrayList<>();
-        stopTargetingCamera();
+        if (useCamera()) {
+            stopTargetingCamera();
+        }
         initializeSteps(teamElementLocation);
 
         int stepNumber = 0;
@@ -137,6 +149,7 @@ public abstract class AbstractAuto extends LinearOpMode {
     //methods to be implemented in the specific autos
     public abstract void setAlliance();
     public abstract void setCameraPosition();
+    public abstract boolean useCamera();
     public abstract void makeTrajectories();
 
     //other methods that do certain tasks
@@ -254,24 +267,26 @@ public abstract class AbstractAuto extends LinearOpMode {
                         break;
                     case 1:
                         if (robot.actuators.hopperIsFull()) {
-//                            robot.drive.breakFollowing();
-//                            Trajectory score = robot.drive.trajectoryBuilder(robot.drive.getPoseEstimate())
-//                                    .lineToLinearHeading(SCORE) // make this for both sides in the future!!!
-//                                    .build();
-//                            robot.drive.followTrajectory(score);
-                            robot.drive.breakFollowing();//maybe unneeded
-                            robot.drive.followTrajectoryAsync(trajectoryOut);
-                            robot.actuators.setIntake(0);
+                            robot.drive.breakFollowing();
+                            stepStartTime = currentRuntime;
                             stepCaseStep++;
                         }
                         break;
                     case 2:
+                        if (stepTime > 0.3) {
+                            robot.drive.followTrajectoryAsync(trajectoryOut);
+                            robot.actuators.setIntake(0);
+                            stepStartTime = currentRuntime;
+                            stepCaseStep++;
+                        }
+                        break;
+                    case 3:
                         if (stepTime > 0.2) {
                             robot.actuators.setIntakePosition((int) (robot.actuators.getIntakePosition() - (robot.actuators.getIntakePosition() % 145.1)));
                             stepCaseStep++;
                         }
                         break;
-                    case 3:
+                    case 4:
                         robot.actuators.resetIntake();
                         if (robot.actuators.intakeIsReset()) {
                             robot.actuators.setIntake(0);
@@ -279,13 +294,13 @@ public abstract class AbstractAuto extends LinearOpMode {
                             stepCaseStep++;
                         }
                         break;
-                    case 4:
+                    case 5:
                         if (!robot.drive.isBusy() && !robot.actuators.runningExtend) {
                             robot.actuators.runningRetract = true;
                             stepCaseStep++;
                         }
                         break;
-                    case 5:
+                    case 6:
                         if (robot.actuators.getState() >= 10) { // if the retract macro is almost done, start cycling again
                             stepCaseStep++;
                         }
@@ -309,7 +324,7 @@ public abstract class AbstractAuto extends LinearOpMode {
 
             @Override
             public boolean isFinished() {
-                return stepCaseStep == 6;
+                return stepCaseStep == 7;
             }
         });
     }

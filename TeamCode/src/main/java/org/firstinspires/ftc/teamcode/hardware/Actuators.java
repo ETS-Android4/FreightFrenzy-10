@@ -64,7 +64,7 @@ public class Actuators {
     public static PIDCoefficients SLIDES_COEFFICIENTS = new PIDCoefficients(0.002, 0, 0);
     public static PIDCoefficients INTAKE_COEFFICIENTS = new PIDCoefficients(0.005, 0, 0.0001);
 
-    public static double TURRET_TOLERANCE = 5;
+    public static double TURRET_TOLERANCE = 10;
     public static double SLIDES_TOLERANCE = 15;
     public static double INTAKE_TOLERANCE = 30;
 
@@ -78,7 +78,7 @@ public class Actuators {
     public static double ARM_PIVOT_MIN = 0.01;
     public static double ARM_PIVOT_MAX = 0.99;
     public static double INTAKE_SERVO_DOWN = 0.01;
-    public static double INTAKE_SERVO_UP = 0.99;
+    public static double INTAKE_SERVO_UP = 0.85;
     public static double ODO_SERVO_DOWN = 0.99;
     public static double ODO_SERVO_UP = 0.01;
 
@@ -89,16 +89,16 @@ public class Actuators {
 
     public static int SLIDES_GENERAL = 0;
     public static int SLIDES_SHARED = 172;
-    public static int SLIDES_ALLIANCE_LOW = 712;
-    public static int SLIDES_ALLIANCE_MID = 712;
+    public static int SLIDES_ALLIANCE_LOW = 691;
+    public static int SLIDES_ALLIANCE_MID = 635;
     public static int SLIDES_ALLIANCE_HIGH = 780;//712
 
-    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.05, 0.05, 0.15, 0.51, 0.95, 0.85, 0.95, 0.85, 0.77, 0.95, 0.95, 0.95, 0.85, 0.77);
-    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.67, 0.67, 0.75, 0.74, 0.95, 0.91, 0.92, 0.92, 0.99, 0.68, 0.76, 0.68, 0.64, 0.58);
+    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.05, 0.05, 0.15, 0.51, 0.95, 0.75, 0.73, 0.86, 0.77, 0.95, 0.93, 0.99, 0.86, 0.77);
+    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.67, 0.67, 0.75, 0.74, 0.95, 0.88, 0.9, 0.93, 0.99, 0.68, 0.64, 0.87, 0.70, 0.58);
 
     // macro timeouts
     public static double DEPOSIT1_ALMOST = 0.6;
-    public static double DEPOSIT2_ARM = 1.0;
+    public static double DEPOSIT2_ARM = 0.6;
     public static double DEPOSIT3_EXTEND = 1.5;
     public static double DEPOSIT4 = 10;
 
@@ -132,8 +132,8 @@ public class Actuators {
     public static double EXTEND_FULL = 1;
     public static double EXTEND_TURRET_SLIDES = 0.8;
     public static double RETRACT_WAIT_FOR_HOPPER = 0.2;
-    public static double RETRACT_SLIDES = 0.8;
-    public static double RETRACT_TURRET = 0.8;
+    public static double RETRACT_SLIDES = 0.7;
+    public static double RETRACT_TURRET = 0.4;
     public static double RETRACT_ALMOST_GENERAL = 0.9;
     public static double RETRACT_ALMOST_SHARED = 0.9;
     public static double RETRACT_ALMOST_ALLIANCE = 0.9;
@@ -580,16 +580,15 @@ public class Actuators {
                     state++;
                     break;
                 case 9:
-                case 10:
                     switch(depoPos) {//wait different times for different deposit positions
                         case GENERAL:
-                            if (currentTime > time + RETRACT_ALMOST_GENERAL/2.0) {
+                            if (currentTime > time + RETRACT_ALMOST_GENERAL*.4) {
                                 time = currentTime;
                                 state++;
                             }
                             break;
                         case SHARED:
-                            if (currentTime > time + RETRACT_ALMOST_SHARED/2.0) {
+                            if (currentTime > time + RETRACT_ALMOST_SHARED*.4) {
                                 time = currentTime;
                                 state++;
                             }
@@ -597,7 +596,31 @@ public class Actuators {
                         case LOW:
                         case MID:
                         case HIGH:
-                            if (currentTime > time + RETRACT_ALMOST_ALLIANCE/2.0) {
+                            if (currentTime > time + RETRACT_ALMOST_ALLIANCE*.4) {
+                                time = currentTime;
+                                state++;
+                            }
+                            break;
+                    }
+                    break;
+                case 10:
+                    switch(depoPos) {//wait different times for different deposit positions
+                        case GENERAL:
+                            if (currentTime > time + RETRACT_ALMOST_GENERAL*.6) {
+                                time = currentTime;
+                                state++;
+                            }
+                            break;
+                        case SHARED:
+                            if (currentTime > time + RETRACT_ALMOST_SHARED*.6) {
+                                time = currentTime;
+                                state++;
+                            }
+                            break;
+                        case LOW:
+                        case MID:
+                        case HIGH:
+                            if (currentTime > time + RETRACT_ALMOST_ALLIANCE*.6) {
                                 time = currentTime;
                                 state++;
                             }

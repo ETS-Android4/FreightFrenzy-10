@@ -6,6 +6,8 @@ import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_RESET_TIM
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SERVO_DOWN;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SERVO_SPEED;
 import static org.firstinspires.ftc.teamcode.util.Alliance.RED;
+import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.LEFT;
+import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.MIDDLE;
 import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.RIGHT;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -32,7 +34,7 @@ public class RedWarehouse extends AbstractAuto {
     public static Pose2d INTAKE = new Pose2d(36, -63, Math.toRadians(0));
     public static Pose2d CREEP = new Pose2d(56, -63, Math.toRadians(0));
     public static Pose2d SCORE = new Pose2d(12, -63, Math.toRadians(0));
-    public static Pose2d PARK = new Pose2d(36, -63, Math.toRadians(0));
+    public static Pose2d PARK = new Pose2d(42, -63, Math.toRadians(0));
 
     Trajectory intake;
     Trajectory score;
@@ -46,6 +48,11 @@ public class RedWarehouse extends AbstractAuto {
     @Override
     public void setCameraPosition() {
         this.cameraPosition = CameraPosition.LEFT;
+    }
+
+    @Override
+    public boolean useCamera() {
+        return true;
     }
 
     @Override //build the trajectories for this auto
@@ -72,37 +79,30 @@ public class RedWarehouse extends AbstractAuto {
         // set arm
         addArmPivot(0, ARM_PIVOT_POSITION.getDown());
         addArmHopper(0, ARM_HOPPER_POSITION.getDown());
-        addIntakeServo(0.5, INTAKE_SERVO_DOWN);
+        addIntakeServo(0.25, INTAKE_SERVO_DOWN);
         resetIntake(INTAKE_RESET_TIME);
 
         // score preloaded
         addAlliance(10000, alliance, location);
         addDeposit(10000, alliance, location);
 
-        // auto cycle
-        cycleBlockInAuto(1000, intake, score, alliance, location);
-        cycleBlockInAuto(1000, intake, score, alliance, location);
-        cycleBlockInAuto(1000, intake, score, alliance, location);
+//        testing
+//        addDelay(3);
+//
+//        addAlliance(10000, alliance, MIDDLE);
+//        addDeposit(10000, alliance, MIDDLE);
+//
+//        addDelay(3);
+//
+//        addAlliance(10000, alliance, MIDDLE);
+//        addDeposit(10000, alliance, MIDDLE);
+
+//         auto cycle
+        cycleBlockInAuto(1000, intake, score, alliance, RIGHT);
+        cycleBlockInAuto(1000, intake, score, alliance, RIGHT);
+        cycleBlockInAuto(1000, intake, score, alliance, RIGHT);
 
         //park
         addTrajectory(1000, alliance, park);
-
-        //future cycle management idea
-        /*while(getRuntime()<20){
-            cycleBlockInAuto2(1000, intake, score, creep, alliance, RIGHT);
-        }
-        while(getRuntime()<24){
-            if(robot.actuators.hopperIsFull()){
-                cycleBlockInAuto2(1000, intake, score, creep, alliance, RIGHT);
-            }
-        }
-        robot.actuators.setIntake(-INTAKE_SERVO_SPEED/2);
-        robot.drive.followTrajectory(creep);
-        while(getRuntime()<29.8){
-            robot.drive.update();
-        }
-        robot.actuators.setIntake(0);
-        robot.drive.stopthetrajectory*/
-
     }
 }
