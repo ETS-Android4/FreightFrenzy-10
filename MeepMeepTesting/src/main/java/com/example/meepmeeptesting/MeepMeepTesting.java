@@ -58,13 +58,15 @@ public class MeepMeepTesting {
                 .setConstraints(30, 30, Math.toRadians(60), Math.toRadians(60), 11)
                 .followTrajectorySequence(drive ->
                                 drive.trajectorySequenceBuilder(new Pose2d(-36, -63, -180))
-                                        .setReversed(true)
-//                                        .splineToConstantHeading(new Vector2d(40, 63), Math.toRadians(0))
-                                        .lineToLinearHeading(new Pose2d(-60, -60, Math.toRadians(-135)))
-                                        .lineToLinearHeading(new Pose2d(-36, -60, Math.toRadians(-135)))//intake duck
+//                                        .setReversed(true)
+//                                        .splineTo(new Vector2d(-58, -58), Math.toRadians(-135))
+                                        .lineToLinearHeading(new Pose2d(-63, -57, Math.toRadians(-135)))//spin
+                                        .lineToLinearHeading(new Pose2d(-63, -48, Math.toRadians(-135)))
+                                        .lineToLinearHeading(new Pose2d(-40, -48, Math.toRadians(-135)))
+                                        .lineToLinearHeading(new Pose2d(-59, -59, Math.toRadians(-135)))
                                         .lineToLinearHeading(new Pose2d(-36, -63, Math.toRadians(-180)))//score duck
 //                                        .splineToConstantHeading(new Vector2d(12, 63), Math.toRadians(0))
-                                        .lineToLinearHeading(new Pose2d(-63, -36, Math.toRadians(-180)))
+                                        .lineToLinearHeading(new Pose2d(-60, -36, Math.toRadians(-180)))
                                         .build()
                 );
 
@@ -88,9 +90,9 @@ public class MeepMeepTesting {
                 .setBackgroundAlpha(0.95f)
 
                 // Add bot entities
-                .addEntity(redWarehouseBot)
+//                .addEntity(redWarehouseBot)
 //                .addEntity(blueWarehouseBot)
-//                .addEntity(redDuckBot)
+                .addEntity(redDuckBot)
 //                .addEntity(blueDuckBot)
                 .start();
     }

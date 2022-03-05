@@ -557,6 +557,7 @@ public abstract class AbstractAuto extends LinearOpMode {
 
             @Override
             public void end() {
+                robot.actuators.setDuckies(0, alliance);
             }
 
             @Override

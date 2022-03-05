@@ -61,7 +61,7 @@ public class AbstractTeleOp extends OpMode {
     Trajectory pathToScore;
     Trajectory pathToScore2;
 
-    public static double INTAKE_SPEED = 0.5;
+    public static double INTAKE_SPEED = 1;
     public static double INTAKE_SLOW_SPEED = 0.15;
 
     Alliance alliance;
@@ -234,7 +234,7 @@ public class AbstractTeleOp extends OpMode {
                 } else {
                     armPivotPosition = ARM_PIVOT_POSITION.getGeneral();
                     armHopperPosition = ARM_HOPPER_POSITION.getGeneral();
-                    slidesPosition = 100;
+                    slidesPosition = 348;
                     robot.actuators.capPickedUp = false;
                 }
             }

@@ -53,7 +53,7 @@ public class BlueWarehouse extends AbstractAuto {
 
     @Override
     public boolean useCamera() {
-        return false;
+        return true;
     }
 
     @Override //build the trajectories for this auto
