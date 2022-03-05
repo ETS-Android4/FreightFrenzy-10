@@ -213,6 +213,10 @@ public class Actuators {
         turretController.setSetPoint(position);
     }
 
+    public void resetTurret(){
+        turretController.reset();
+    };
+
     // slides
     public int getSlides() {
         return slides.getCurrentPosition();

@@ -310,7 +310,8 @@ public class AbstractTeleOp extends OpMode {
         // reset memory
         if (driver2.getLeftBumper().isJustPressed()) {
             robot.actuators.clearMemory();
-            //reset turret pos
+            //reset turret pos so that the current value becomes the zero point
+            robot.actuators.resetTurret();
             turretPosition = 0;
         }
 
