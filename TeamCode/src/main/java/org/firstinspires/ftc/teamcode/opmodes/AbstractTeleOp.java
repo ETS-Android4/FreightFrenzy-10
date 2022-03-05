@@ -310,6 +310,7 @@ public class AbstractTeleOp extends OpMode {
         // reset memory
         if (driver2.getLeftBumper().isJustPressed()) {
             robot.actuators.clearMemory();
+            turretPosition = 0;
         }
 
         // cancel macro button
