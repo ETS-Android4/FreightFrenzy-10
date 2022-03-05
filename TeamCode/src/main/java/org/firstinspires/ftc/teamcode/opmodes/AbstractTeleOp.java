@@ -61,7 +61,7 @@ public class AbstractTeleOp extends OpMode {
     Trajectory pathToScore;
     Trajectory pathToScore2;
 
-    public static double INTAKE_SPEED = 1;
+    public static double INTAKE_SPEED = 0.8;
     public static double INTAKE_SLOW_SPEED = 0.15;
 
     Alliance alliance;
@@ -130,9 +130,9 @@ public class AbstractTeleOp extends OpMode {
                 // normal driver stuff
                 double x, y, z;
                 if (driver1.getLeftBumper().isPressed()) {
-                    x = driver1.getLeftStick().getY();
-                    y = -driver1.getLeftStick().getX();
-                    z = -driver1.getRightStick().getX();
+                    x = driver1.getLeftStick().getY() * DRIVE_SPEED/2;
+                    y = -driver1.getLeftStick().getX() * DRIVE_SPEED/2;
+                    z = -driver1.getRightStick().getX() * DRIVE_SPEED/2;
                 } else {
                     x = driver1.getLeftStick().getY() * DRIVE_SPEED;
                     y = -driver1.getLeftStick().getX() * DRIVE_SPEED;

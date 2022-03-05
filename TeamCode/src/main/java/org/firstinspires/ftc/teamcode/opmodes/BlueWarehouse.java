@@ -34,8 +34,8 @@ public class BlueWarehouse extends AbstractAuto {
     public static Pose2d START_POSE = new Pose2d(12, 63, Math.toRadians(0));
     public static Pose2d INTAKE = new Pose2d(36, 63, Math.toRadians(0));
     public static Pose2d CREEP = new Pose2d(56, 63, Math.toRadians(0));
-    public static Pose2d SCORE = new Pose2d(12, 63, Math.toRadians(0));
-    public static Pose2d PARK = new Pose2d(42, 63, Math.toRadians(0));
+    public static Pose2d SCORE = new Pose2d(12, 64, Math.toRadians(0));
+    public static Pose2d PARK = new Pose2d(40, 63, Math.toRadians(0));
 
     Trajectory intake;
     Trajectory score;
@@ -67,7 +67,7 @@ public class BlueWarehouse extends AbstractAuto {
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
-        score = robot.drive.trajectoryBuilder(new Pose2d(40, 63, Math.toRadians(0)))
+        score = robot.drive.trajectoryBuilder(new Pose2d(40, 64, Math.toRadians(0)))
                 .lineToLinearHeading(SCORE)
                 .build();
         park = robot.drive.trajectoryBuilder(score.end())
