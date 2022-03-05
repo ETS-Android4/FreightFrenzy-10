@@ -23,6 +23,7 @@ import static org.firstinspires.ftc.teamcode.hardware.Actuators.TURRET_SPEED;
 import static org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive.DRIVE_SPEED;
 import static org.firstinspires.ftc.teamcode.util.Alliance.BLUE;
 import static org.firstinspires.ftc.teamcode.util.Alliance.RED;
+import static org.firstinspires.ftc.teamcode.util.DepositPosition.GENERAL;
 import static org.firstinspires.ftc.teamcode.util.DepositPosition.HIGH;
 import static org.firstinspires.ftc.teamcode.util.DepositPosition.SHARED;
 
@@ -74,9 +75,6 @@ public class AbstractTeleOp extends OpMode {
     private int slidesPosition = 0;
     private double armHopperPosition = ARM_HOPPER_POSITION.getInit();
     private double armPivotPosition = ARM_PIVOT_POSITION.getInit();
-
-    public boolean odoRetracted;
-    public boolean intakeRetracted;
 
     public DepositPosition extendTo = HIGH;
     public DepositPosition extendFrom = HIGH;
@@ -228,6 +226,17 @@ public class AbstractTeleOp extends OpMode {
                 // new:
                 robot.actuators.runningRetract = true;
                 extendFrom = extendTo;
+            } else if (driver2.getY().isJustPressed()) {
+                if (!robot.actuators.capPickedUp) {
+                    robot.actuators.runningExtend = true;
+                    extendTo = GENERAL;
+                    robot.actuators.capPickedUp = true;
+                } else {
+                    armPivotPosition = ARM_PIVOT_POSITION.getGeneral();
+                    armHopperPosition = ARM_HOPPER_POSITION.getGeneral();
+                    slidesPosition = 100;
+                    robot.actuators.capPickedUp = false;
+                }
             }
         } else if ((robot.actuators.runningExtend) && !(robot.actuators.runningRetract)) {
             if (!driver2.getStart().isPressed() && driver2.getA().isJustPressed()) {
@@ -335,14 +344,14 @@ public class AbstractTeleOp extends OpMode {
 
         // retractables
         if (!driver1.getBack().isPressed() && driver1.getB().isJustPressed()) {
-            intakeRetracted = !intakeRetracted;
+            robot.actuators.intakeRetracted = !robot.actuators.intakeRetracted;
         }
         if (!driver1.getBack().isPressed() && driver1.getA().isJustPressed()) {
-            odoRetracted = !odoRetracted;
+            robot.actuators.odoRetracted = !robot.actuators.odoRetracted;
         }
 
-        robot.actuators.setIntakeServo(intakeRetracted ? INTAKE_SERVO_UP : INTAKE_SERVO_DOWN);
-        robot.actuators.setOdoServo(odoRetracted ? ODO_SERVO_UP : ODO_SERVO_DOWN);
+        robot.actuators.setIntakeServo(robot.actuators.intakeRetracted ? INTAKE_SERVO_UP : INTAKE_SERVO_DOWN);
+        robot.actuators.setOdoServo(robot.actuators.odoRetracted ? ODO_SERVO_UP : ODO_SERVO_DOWN);
 
         // switch alliance button
         if (driver1.getBack().isJustPressed()) {

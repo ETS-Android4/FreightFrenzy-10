@@ -83,28 +83,28 @@ public class BlueWarehouse extends AbstractAuto {
         addIntakeServo(0.25, INTAKE_SERVO_DOWN);
         resetIntake(INTAKE_RESET_TIME);
 
-        // score preloaded
-        addAlliance(10000, RED, LEFT);
-        addDeposit(10000, RED, LEFT);
-
-        addDelay(3);
-
-        addAlliance(10000, RED, LEFT);
-        addDeposit(10000, RED, LEFT);
-
-        addDelay(3);
-
-        addAlliance(10000, RED, LEFT);
-        addDeposit(10000, RED, LEFT);
-
 //        // score preloaded
-//        addAlliance(10000, alliance, location);
-//        addDeposit(10000, alliance, location);
+//        addAlliance(10000, RED, LEFT);
+//        addDeposit(10000, RED, LEFT);
 //
-//        // auto cycle
-//        cycleBlockInAuto(1000, intake, score, alliance, location);
-//        cycleBlockInAuto(1000, intake, score, alliance, location);
-//        cycleBlockInAuto(1000, intake, score, alliance, location);
+//        addDelay(3);
+//
+//        addAlliance(10000, RED, LEFT);
+//        addDeposit(10000, RED, LEFT);
+//
+//        addDelay(3);
+//
+//        addAlliance(10000, RED, LEFT);
+//        addDeposit(10000, RED, LEFT);
+
+        // score preloaded
+        addAlliance(10000, alliance, location);
+        addDeposit(10000, alliance, location);
+
+        // auto cycle
+        cycleBlockInAuto(1000, intake, score, alliance, RIGHT);
+        cycleBlockInAuto(1000, intake, score, alliance, RIGHT);
+        cycleBlockInAuto(1000, intake, score, alliance, RIGHT);
 
         //park
         addTrajectory(1000, alliance, park);
