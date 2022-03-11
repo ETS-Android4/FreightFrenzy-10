@@ -86,11 +86,16 @@ public class Actuators {
     public static double ODO_SERVO_UP = 0.01;
 
     // macro positions
-    // IF YOU EDIT THESE MACRO POSITIONS, COPY THEM TO THE CLEARMEMORY FUNCTION LINE 189!!!!
     public static int TURRET_CAP = 0;
     public static int TURRET_SHARED = -800;
     public static int TURRET_ALLIANCE = 637;//764
 
+    //macro positions for the clear memory function on line 189
+    public static int TURRET_CAP_ORIGINAL = TURRET_CAP;
+    public static int TURRET_SHARED_ORIGINAL = TURRET_SHARED;
+    public static int TURRET_ALLIANCE_ORIGINAL = TURRET_ALLIANCE;
+
+    // IF YOU EDIT THESE MACRO POSITIONS, COPY THEM TO THE CLEARMEMORY FUNCTION LINE 189!!!!
     public static int SLIDES_CAP = 140;
     public static int SLIDES_SHARED = 172;
     public static int SLIDES_ALLIANCE_LOW = 691;
@@ -131,6 +136,7 @@ public class Actuators {
     public boolean justCancledMacro = false;
     public DepositPosition justFinishedPos = HIGH;
 
+
     public static double EXTEND_ALMOST = 0.4;
     public static double EXTEND_FULL = 1;
     public static double EXTEND_TURRET_SLIDES = 0.8;
@@ -157,6 +163,7 @@ public class Actuators {
     private Servo odoServo;
     private RevColorSensorV3 colorSensor;
 
+    //define the robot hardware
     public Actuators(HardwareMap hardwareMap) {
         this.turret = hardwareMap.get(DcMotor.class, TURRET);
         this.slides = hardwareMap.get(DcMotor.class, SLIDES);
@@ -186,10 +193,11 @@ public class Actuators {
         intakeController = new PIDController(INTAKE_COEFFICIENTS.kP, INTAKE_COEFFICIENTS.kI, INTAKE_COEFFICIENTS.kD);
     }
 
+    //reset all memory to the original positions
     public void clearMemory() {
-        TURRET_CAP = 0;
-        TURRET_SHARED = -800;
-        TURRET_ALLIANCE = 637;//764
+        TURRET_CAP = TURRET_CAP_ORIGINAL;
+        TURRET_SHARED = TURRET_SHARED_ORIGINAL;
+        TURRET_ALLIANCE = TURRET_ALLIANCE_ORIGINAL;
 
 
 
@@ -348,6 +356,7 @@ public class Actuators {
         return state;
     }
 
+    //backward compatability routers to handle calls to the old macro functions
     public void runningAlliance(double currentTime, Alliance alliance, BarcodeLocation barcodeLocation) {
         //runningAlliance_OLD(currentTime, alliance, barcodeLocation);
         runningExtend(currentTime, alliance, barcodeLocation == LEFT ? LOW : (barcodeLocation == MIDDLE ? MID : HIGH));
@@ -675,6 +684,67 @@ public class Actuators {
         }
     }
 
+    public void runningArm(double currentTime) {
+        if (runningArm) {
+            resetIntake();
+            switch (state) {
+                case 0:
+                    time = currentTime;
+                    setIntakePosition((int) (intakeStartPos + (getIntakePosition() - (getIntakePosition() % 145.1))));
+                    setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
+                    setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
+                    state++;
+                    break;
+                case 1:
+                    if (currentTime > time + 1) {
+                        state++;
+                    }
+                    break;
+                case 2:
+                    time = currentTime;
+                    setArmPivot(ARM_PIVOT_POSITION.getAlmostHigh());
+                    state++;
+                    break;
+                case 3:
+                    if (currentTime > time + 1.1) {
+                        state++;
+                    }
+                    if (currentTime > time + 0.4) {
+                        setArmHopper(ARM_HOPPER_POSITION.getAlmostHigh());
+                    }
+                    break;
+                case 4:
+                    runningArm = false;
+                    justFinishedAMacro = true;
+                    state = 0;
+            }
+        }
+    }
+
+    // telemetry
+    public String getTelemetry() {
+        return String.format(Locale.US, "" +
+                        "Turret:      pos %s pow %.2f err %.2f\n" +
+                        "Slides:      pos %s pow %.2f err %.2f\n" +
+                        "Intake:      pos %s pow %.2f err %.2f\n" +
+                        "HopperServo: pos %.2f\n" +
+                        "PivotServo:  pos %.2f\n" +
+                        "Duckies:     left %.2f right %.2f\n" +
+                        "IntakeServo: pos %.2f\n" +
+                        "OdoServo:    pos %.2f\n" +
+                        "Hopper:      dist %.2f",
+                turret.getCurrentPosition(), turret.getPower(), turretController.getPositionError(),
+                slides.getCurrentPosition(), slides.getPower(), slidesController.getPositionError(),
+                intake.getCurrentPosition(), intake.getPower(), intakeController.getPositionError(),
+                hopperServo.getPosition(),
+                pivotServo.getPosition(),
+                leftDucky.getPower(), rightDucky.getPower(),
+                intakeServo.getPosition(),
+                odoServo.getPosition(),
+                colorSensor.getDistance(DistanceUnit.CM)
+        );
+    }
+
     // OLD MACROS
     public void runningAlliance_OLD(double currentTime, Alliance alliance, BarcodeLocation barcodeLocation) {
         if (runningAlliance) {
@@ -743,7 +813,6 @@ public class Actuators {
             }
         }
     }
-
     public void runningShared_OLD(double currentTime, Alliance alliance, BarcodeLocation barcodeLocation) {
         if (runningShared) {
             resetIntake();
@@ -811,7 +880,6 @@ public class Actuators {
             }
         }
     }
-
     public void runningDeposit_OLD(double currentTime, Alliance alliance, BarcodeLocation barcodeLocation) {
         if (runningDeposit) {
             resetIntake();
@@ -912,66 +980,5 @@ public class Actuators {
                     state = 0;
             }
         }
-    }
-
-    public void runningArm(double currentTime) {
-        if (runningArm) {
-            resetIntake();
-            switch (state) {
-                case 0:
-                    time = currentTime;
-                    setIntakePosition((int) (intakeStartPos + (getIntakePosition() - (getIntakePosition() % 145.1))));
-                    setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
-                    setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
-                    state++;
-                    break;
-                case 1:
-                    if (currentTime > time + 1) {
-                        state++;
-                    }
-                    break;
-                case 2:
-                    time = currentTime;
-                    setArmPivot(ARM_PIVOT_POSITION.getAlmostHigh());
-                    state++;
-                    break;
-                case 3:
-                    if (currentTime > time + 1.1) {
-                        state++;
-                    }
-                    if (currentTime > time + 0.4) {
-                        setArmHopper(ARM_HOPPER_POSITION.getAlmostHigh());
-                    }
-                    break;
-                case 4:
-                    runningArm = false;
-                    justFinishedAMacro = true;
-                    state = 0;
-            }
-        }
-    }
-
-    // telemetry
-    public String getTelemetry() {
-        return String.format(Locale.US, "" +
-            "Turret:      pos %s pow %.2f err %.2f\n" +
-            "Slides:      pos %s pow %.2f err %.2f\n" +
-            "Intake:      pos %s pow %.2f err %.2f\n" +
-            "HopperServo: pos %.2f\n" +
-            "PivotServo:  pos %.2f\n" +
-            "Duckies:     left %.2f right %.2f\n" +
-            "IntakeServo: pos %.2f\n" +
-            "OdoServo:    pos %.2f\n" +
-            "Hopper:      dist %.2f",
-            turret.getCurrentPosition(), turret.getPower(), turretController.getPositionError(),
-            slides.getCurrentPosition(), slides.getPower(), slidesController.getPositionError(),
-            intake.getCurrentPosition(), intake.getPower(), intakeController.getPositionError(),
-            hopperServo.getPosition(),
-            pivotServo.getPosition(),
-            leftDucky.getPower(), rightDucky.getPower(),
-            intakeServo.getPosition(),
-            odoServo.getPosition(),
-            colorSensor.getDistance(DistanceUnit.CM)
-        );
     }
 }
