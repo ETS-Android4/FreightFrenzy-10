@@ -383,17 +383,17 @@ public class Actuators {
                 // arm almost
                 case 2:
 //                    setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
-                    setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
-                    time = currentTime;
+                    //setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
+                    //time = currentTime;
                     state++;
                     break;
                 case 3:
-                    if (currentTime > time + EXTEND_ALMOST) {
+                    //if (currentTime > time + EXTEND_ALMOST) {
                         state++;
-                    }
-                    if (currentTime > time + EXTEND_ALMOST*0.25) {
-                        setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
-                    }
+                    //}
+                    //if (currentTime > time + EXTEND_ALMOST*0.25) {
+                    //    setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
+                    //}
                     break;
                 // arm full
                 case 4:
@@ -601,9 +601,9 @@ public class Actuators {
                     break;
                 // return arm down
                 case 8:
-                    setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
-                    setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
-                    time = currentTime;
+                    //setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
+                    //setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
+                    //time = currentTime;
                     state++;
                     break;
                 case 9:
