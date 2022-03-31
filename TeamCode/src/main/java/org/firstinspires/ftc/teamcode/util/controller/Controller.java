@@ -146,4 +146,24 @@ public class Controller {
     public Trigger getRightTrigger() {
         return rightTrigger;
     }
+
+    public void rumble() {
+        gamepad.rumble(Gamepad.RUMBLE_DURATION_CONTINUOUS);
+    }
+
+    public void rumble(int milliseconds) {
+        gamepad.rumble(milliseconds);
+    }
+
+    public void rumbleBlips(int blips) {
+        gamepad.rumbleBlips(blips);
+    }
+
+    public void stopRumble() {
+        gamepad.stopRumble();
+    }
+
+    public boolean isRumbling() {
+        return gamepad.isRumbling();
+    }
 }

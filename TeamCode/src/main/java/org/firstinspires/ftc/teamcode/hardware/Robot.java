@@ -28,7 +28,7 @@ public class Robot {
     public Robot(HardwareMap hardwareMap, CameraPosition cameraPosition, Alliance alliance) {
         drive = new SampleMecanumDrive(hardwareMap);
         actuators = new Actuators(hardwareMap);
-        lights = new Lights(hardwareMap);
+//        lights = new Lights(hardwareMap);
         camera = new Camera(hardwareMap, cameraPosition);
         camera.initBarcodeWebcam();
         this.alliance = alliance;
@@ -37,33 +37,33 @@ public class Robot {
     public Robot(HardwareMap hardwareMap, Alliance alliance) {
         drive = new SampleMecanumDrive(hardwareMap);
         actuators = new Actuators(hardwareMap);
-        lights = new Lights(hardwareMap);
+//        lights = new Lights(hardwareMap);
         this.alliance = alliance;
     }
 
     public void updateLights() {
-        if (alliance == Alliance.RED) {
-            if (actuators.runningExtend || actuators.runningRetract) {
-                lights.setPattern(REDSCORING);
-            } else if (actuators.hopperIsFull()) {
-                lights.setPattern(REDFULL);
-            } else {
-                lights.setPattern(RED);
-            }
-        } else if (alliance == Alliance.BLUE) {
-            if (actuators.runningExtend || actuators.runningRetract) {
-                lights.setPattern(BLUESCORING);
-            } else if (actuators.hopperIsFull()) {
-                lights.setPattern(BLUEFULL);
-            } else {
-                lights.setPattern(BLUE);
-            }
-        }
+//        if (alliance == Alliance.RED) {
+//            if (actuators.runningExtend || actuators.runningRetract) {
+//                lights.setPattern(REDSCORING);
+//            } else if (actuators.hopperIsFull()) {
+//                lights.setPattern(REDFULL);
+//            } else {
+//                lights.setPattern(RED);
+//            }
+//        } else if (alliance == Alliance.BLUE) {
+//            if (actuators.runningExtend || actuators.runningRetract) {
+//                lights.setPattern(BLUESCORING);
+//            } else if (actuators.hopperIsFull()) {
+//                lights.setPattern(BLUEFULL);
+//            } else {
+//                lights.setPattern(BLUE);
+//            }
+//        }
     }
 
     public String getTelemetry() {
-//        telemetry = String.format(Locale.US, "%s", actuators.getTelemetry());
-        telemetry = String.format(Locale.US, "%s\n%s", actuators.getTelemetry(), lights.getTelemetry());
+        telemetry = String.format(Locale.US, "%s", actuators.getTelemetry());
+//        telemetry = String.format(Locale.US, "%s\n%s", actuators.getTelemetry(), lights.getTelemetry());
         return telemetry;
     }
 }

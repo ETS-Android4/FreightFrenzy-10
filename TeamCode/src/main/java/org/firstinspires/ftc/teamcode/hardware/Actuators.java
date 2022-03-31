@@ -51,7 +51,7 @@ public class Actuators {
     public static int TURRET_SPEED = 5;
     public static int SLIDES_SPEED = 50;
     public static double ARM_HOPPER_SPEED = 0.015;
-    public static double ARM_PIVOT_SPEED = 0.01;
+    public static double ARM_PIVOT_SPEED = 0.005;
     public static double INTAKE_SERVO_SPEED = 0.02;
     public static double DUCKY_SPEED = 1.0;
 
@@ -96,8 +96,11 @@ public class Actuators {
     public static int SLIDES_ALLIANCE_LOW = 691;
     public static int SLIDES_ALLIANCE_MID = 635;
     public static int SLIDES_ALLIANCE_HIGH = 780;//712
-    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.05, 0.05, 0.15, 0.51, 0.99, 0.94, 0.73, 0.86, 0.77, 0.65, 0.94, 0.99, 0.86, 0.77);
-    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.67, 0.67, 0.75, 0.74, 0.63, 0.96, 0.9, 0.93, 0.99, 0.45, 0.64, 0.87, 0.70, 0.58);
+//    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.05, 0.05, 0.15, 0.51, 0.99, 0.94, 0.73, 0.86, 0.77, 0.65, 0.94, 0.99, 0.86, 0.77);
+//    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.67, 0.67, 0.75, 0.74, 0.63, 0.96, 0.9, 0.93, 0.99, 0.45, 0.64, 0.87, 0.70, 0.58);
+    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.9, 0.9, 0.9, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3);
+    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.55, 0.55, 0.55, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.72, 0.72, 0.72, 0.72, 0.72);
+
 
     // macro timeouts
     public static double DEPOSIT1_ALMOST = 0.4;
@@ -140,7 +143,7 @@ public class Actuators {
     public static double RETRACT_ALMOST_GENERAL = 0.9;
     public static double RETRACT_ALMOST_SHARED = 0.9;
     public static double RETRACT_ALMOST_ALLIANCE = 0.9;
-    public static double RETRACT_DOWN = 0.4;
+    public static double RETRACT_DOWN = 1.2;//0.4
 
     private int state;
     private double time;
@@ -199,8 +202,11 @@ public class Actuators {
         SLIDES_ALLIANCE_MID = 635;
         SLIDES_ALLIANCE_HIGH = 780;//712
 
-        ARM_PIVOT_POSITION = new ArmPosition(0.05, 0.05, 0.15, 0.51, 0.99, 0.94, 0.73, 0.86, 0.77, 0.65, 0.94, 0.99, 0.86, 0.77);
-        ARM_HOPPER_POSITION = new ArmPosition(0.67, 0.67, 0.75, 0.74, 0.63, 0.96, 0.9, 0.93, 0.99, 0.45, 0.64, 0.87, 0.70, 0.58);
+        ARM_PIVOT_POSITION = new ArmPosition(0.9, 0.9, 0.9, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3);
+        ARM_HOPPER_POSITION = new ArmPosition(0.55, 0.55, 0.55, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.72, 0.72, 0.72, 0.72, 0.72);
+
+//        ARM_PIVOT_POSITION = new ArmPosition(0.05, 0.05, 0.15, 0.51, 0.99, 0.94, 0.73, 0.86, 0.77, 0.65, 0.94, 0.99, 0.86, 0.77);
+//        ARM_HOPPER_POSITION = new ArmPosition(0.67, 0.67, 0.75, 0.74, 0.63, 0.96, 0.9, 0.93, 0.99, 0.45, 0.64, 0.87, 0.70, 0.58);
     }
 
     // turret
@@ -383,9 +389,10 @@ public class Actuators {
                 // arm almost
                 case 2:
 //                    setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
-                    setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
-                    time = currentTime;
-                    state++;
+//                    setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
+//                    time = currentTime;
+//                    state++;
+                    state = 4;
                     break;
                 case 3:
                     if (currentTime > time + EXTEND_ALMOST) {
@@ -601,10 +608,12 @@ public class Actuators {
                     break;
                 // return arm down
                 case 8:
-                    setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
-                    setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
+//                    setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
+//                    setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
+                    setArmPivot(ARM_PIVOT_POSITION.getDown());
+                    setArmHopper(ARM_HOPPER_POSITION.getDown());
                     time = currentTime;
-                    state++;
+                    state = 12;
                     break;
                 case 9:
                     switch(depoPos) {//wait different times for different deposit positions
