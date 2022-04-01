@@ -28,7 +28,7 @@ public abstract class AbstractAuto extends LinearOpMode {
     private BarcodeLocation teamElementLocation = BarcodeLocation.RIGHT;
     private ArrayList<Step> steps;
     private double currentRuntime;
-    private boolean stopWasNotRequested;
+
 
     public BarcodeLocation getTeamElementLocation() {
         return teamElementLocation;

@@ -341,11 +341,7 @@ public class AbstractTeleOp extends OpMode {
         }
 
         // duckies
-        if (!driver1.getBack().isPressed()) {
-            robot.actuators.setDuckies(driver1.getY().isPressed() ? DUCKY_SPEED : 0, alliance);
-        } else {
-            robot.actuators.setDuckies(0, alliance);
-        }
+        robot.actuators.setDuckies( driver1.getY().isPressed() ? DUCKY_SPEED : 0 , alliance);
 
         // retractables
         if (!driver1.getBack().isPressed() && driver1.getB().isJustPressed()) {

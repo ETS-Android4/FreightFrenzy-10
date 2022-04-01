@@ -255,7 +255,7 @@ public class Actuators {
         intake.setPower(intakeController.calculate(intake.getCurrentPosition()));
     }
 
-    // pid update for motor, slides, and intake (intake only sometimes)
+    // pid update for motor and slides
     public void update() {
         turretController.setPID(TURRET_COEFFICIENTS.kP, TURRET_COEFFICIENTS.kI, TURRET_COEFFICIENTS.kD);
         slidesController.setPID(SLIDES_COEFFICIENTS.kP, SLIDES_COEFFICIENTS.kI, SLIDES_COEFFICIENTS.kD);
