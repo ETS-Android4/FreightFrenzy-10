@@ -290,20 +290,22 @@ public class AbstractTeleOp extends OpMode {
             robot.actuators.setArmHopper(armHopperPosition);
             robot.actuators.setArmPivot(armPivotPosition);
 
-            // intake
-            if (driver2.getRightBumper().isJustPressed()) {
-                int newPos = (int) (robot.actuators.getIntakePosition() - (robot.actuators.getIntakePosition() % (145.1)));
-                robot.actuators.setIntakePosition(newPos);
-            } else if (driver2.getRightBumper().isPressed()) {
-                robot.actuators.resetIntake();
+
+        }
+
+        // intake
+        if (driver2.getRightBumper().isJustPressed()) {
+            int newPos = (int) (robot.actuators.getIntakePosition() - (robot.actuators.getIntakePosition() % (145.1)));
+            robot.actuators.setIntakePosition(newPos);
+        } else if (driver2.getRightBumper().isPressed()) {
+            robot.actuators.resetIntake();
+        } else {
+            if (driver2.getRightTrigger().getValue() > 0.1) {
+                robot.actuators.setIntakePower(-driver2.getRightTrigger().getValue() * INTAKE_SPEED);
+            } else if (driver2.getLeftTrigger().getValue() > 0.1) {
+                robot.actuators.setIntakePower(driver2.getLeftTrigger().getValue() * INTAKE_SPEED);
             } else {
-                if (driver2.getRightTrigger().getValue() > 0.1) {
-                    robot.actuators.setIntakePower(-driver2.getRightTrigger().getValue() * INTAKE_SPEED);
-                } else if (driver2.getLeftTrigger().getValue() > 0.1) {
-                    robot.actuators.setIntakePower(driver2.getLeftTrigger().getValue() * INTAKE_SPEED);
-                } else {
-                    robot.actuators.setIntakePower(0);
-                }
+                robot.actuators.setIntakePower(0);
             }
         }
 

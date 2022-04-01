@@ -44,7 +44,6 @@ public class Actuators {
     // misc
     public static double INTAKE_RESET_TIME = 1;
     public static double HOPPER_DISTANCE_CUTOFF = 30;
-    public int auto_intake_orient_pos = 0;
     public int intakeStartPos = (int) (145.1/8.0);
 
     // driver variables
@@ -63,7 +62,7 @@ public class Actuators {
     private PIDController slidesController;
     private PIDController intakeController;
 
-    public static PIDCoefficients TURRET_COEFFICIENTS = new PIDCoefficients(0.002, 0, 0);
+    public static PIDCoefficients TURRET_COEFFICIENTS = new PIDCoefficients(0.0015, 0, 0);
     public static PIDCoefficients SLIDES_COEFFICIENTS = new PIDCoefficients(0.002, 0, 0);
     public static PIDCoefficients INTAKE_COEFFICIENTS = new PIDCoefficients(0.005, 0, 0.0001);
 
@@ -98,7 +97,7 @@ public class Actuators {
     public static int SLIDES_ALLIANCE_HIGH = 780;//712
 //    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.05, 0.05, 0.15, 0.51, 0.99, 0.94, 0.73, 0.86, 0.77, 0.65, 0.94, 0.99, 0.86, 0.77);
 //    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.67, 0.67, 0.75, 0.74, 0.63, 0.96, 0.9, 0.93, 0.99, 0.45, 0.64, 0.87, 0.70, 0.58);
-    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.9, 0.9, 0.9, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3);
+    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.9, 0.9, 0.9, 0.24, 0.24, 0.24, 0.24, 0.24, 0.24, 0.24, 0.24, 0.24, 0.24, 0.24);
     public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.55, 0.55, 0.55, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.72, 0.72, 0.72, 0.72, 0.72);
 
 
@@ -135,8 +134,8 @@ public class Actuators {
     public DepositPosition justFinishedPos = HIGH;
 
     public static double EXTEND_ALMOST = 0.4;
-    public static double EXTEND_FULL = 1;
-    public static double EXTEND_TURRET_SLIDES = 0.8;
+    public static double EXTEND_FULL = 0.8;
+    public static double EXTEND_TURRET_SLIDES = 0.7;
     public static double RETRACT_WAIT_FOR_HOPPER = 0.2;
     public static double RETRACT_SLIDES = 0.7;
     public static double RETRACT_TURRET = 0.4;
@@ -194,19 +193,14 @@ public class Actuators {
         TURRET_SHARED = -800;
         TURRET_ALLIANCE = 637;//764
 
-
-
         SLIDES_CAP = 140;
         SLIDES_SHARED = 172;
         SLIDES_ALLIANCE_LOW = 691;
         SLIDES_ALLIANCE_MID = 635;
         SLIDES_ALLIANCE_HIGH = 780;//712
 
-        ARM_PIVOT_POSITION = new ArmPosition(0.9, 0.9, 0.9, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3, 0.3);
+        ARM_PIVOT_POSITION = new ArmPosition(0.9, 0.9, 0.9, 0.24, 0.24, 0.24, 0.24, 0.24, 0.24, 0.24, 0.24, 0.24, 0.24, 0.24);
         ARM_HOPPER_POSITION = new ArmPosition(0.55, 0.55, 0.55, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.72, 0.72, 0.72, 0.72, 0.72);
-
-//        ARM_PIVOT_POSITION = new ArmPosition(0.05, 0.05, 0.15, 0.51, 0.99, 0.94, 0.73, 0.86, 0.77, 0.65, 0.94, 0.99, 0.86, 0.77);
-//        ARM_HOPPER_POSITION = new ArmPosition(0.67, 0.67, 0.75, 0.74, 0.63, 0.96, 0.9, 0.93, 0.99, 0.45, 0.64, 0.87, 0.70, 0.58);
     }
 
     // turret
@@ -259,16 +253,6 @@ public class Actuators {
         intakeController.setPID(INTAKE_COEFFICIENTS.kP, INTAKE_COEFFICIENTS.kI, INTAKE_COEFFICIENTS.kD);
         intakeController.setTolerance(INTAKE_TOLERANCE);
         intake.setPower(intakeController.calculate(intake.getCurrentPosition()));
-    }
-
-    public void setIntakeVerticalPositionInAuto(int pos) {
-        auto_intake_orient_pos = pos;
-    }
-
-    public void orientIntakeInAuto() {
-        int newPos = (int) (getIntakePosition() + auto_intake_orient_pos - (getIntakePosition() % (145.1)));
-        setIntakePosition(newPos);
-        resetIntake();
     }
 
     // pid update for motor, slides, and intake (intake only sometimes)
@@ -377,33 +361,20 @@ public class Actuators {
                 // reset intake
                 case 0:
                     setIntakePosition((int) (intakeStartPos + (getIntakePosition() - (getIntakePosition() % 145.1))));
+                    time = currentTime;
                     state++;
                     break;
                 case 1:
                     resetIntake();
                     if (intakeController.atSetPoint()) {
                         intake.setPower(0);
+                        this.intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);//allow hopper to push intake out of the way
+                        time = currentTime;
                         state++;
-                    }
-                    break;
-                // arm almost
-                case 2:
-//                    setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
-//                    setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
-//                    time = currentTime;
-//                    state++;
-                    state = 4;
-                    break;
-                case 3:
-                    if (currentTime > time + EXTEND_ALMOST) {
-                        state++;
-                    }
-                    if (currentTime > time + EXTEND_ALMOST*0.25) {
-                        setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
                     }
                     break;
                 // arm full
-                case 4:
+                case 2:
                     if (depoPos == GENERAL) {
                         setArmPivot(ARM_PIVOT_POSITION.getAlmostGeneral());
                     } else if (depoPos == SHARED) {
@@ -418,13 +389,11 @@ public class Actuators {
                     time = currentTime;
                     state++;
                     break;
-                case 5:
+                // hopper full
+                case 3:
                     if (depoPos == SHARED && currentTime > time + 0.5) {
                         intakeRetracted = true;
                         setIntakeServo(INTAKE_SERVO_UP);
-                    }
-                    if (currentTime > time + EXTEND_FULL) {
-                        state++;
                     }
                     if (currentTime > time + EXTEND_FULL/2.0) {
                         if (depoPos == GENERAL) {
@@ -438,6 +407,10 @@ public class Actuators {
                         } else if (depoPos == HIGH) {
                             setArmHopper(ARM_HOPPER_POSITION.getAlmostHigh());
                         }
+                    }
+                    if (currentTime > time + EXTEND_FULL) {
+                        time = currentTime;
+                        state++;
                     }
                     break;
                 // turret and slides
@@ -471,6 +444,7 @@ public class Actuators {
                     break;
                 case 7:
                     if (currentTime > time + EXTEND_TURRET_SLIDES || (turretController.atSetPoint() && slidesController.atSetPoint())) {
+                        time = currentTime;
                         state++;
                     }
                     break;
@@ -489,7 +463,6 @@ public class Actuators {
                     state = 0;
                     break;
             }
-//            resetIntake();
         }
     }
 
