@@ -71,7 +71,7 @@ public class Actuators {
     public static double INTAKE_TOLERANCE = 30;
 
     // ranges
-    public static int TURRET_MIN = -1000;
+    public static int TURRET_MIN = -1100;
     public static int TURRET_MAX = 1000;
     public static int SLIDES_MIN = 0;
     public static int SLIDES_MAX = (int)(2300*0.377373212);
@@ -88,7 +88,7 @@ public class Actuators {
     // IF YOU EDIT THESE MACRO POSITIONS, COPY THEM TO THE CLEARMEMORY FUNCTION LINE 189!!!!
     public static int TURRET_CAP = 0;
     public static int TURRET_SHARED = -800;
-    public static int TURRET_ALLIANCE = 637;//764
+    public static int TURRET_ALLIANCE = 680;//764
 
     public static int SLIDES_CAP = 140;
     public static int SLIDES_SHARED = 172;
@@ -181,7 +181,7 @@ public class Actuators {
 
         this.turret.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         this.slides.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        this.intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        this.intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
         turretController = new PIDController(TURRET_COEFFICIENTS.kP, TURRET_COEFFICIENTS.kI, TURRET_COEFFICIENTS.kD);
         slidesController = new PIDController(SLIDES_COEFFICIENTS.kP, SLIDES_COEFFICIENTS.kI, SLIDES_COEFFICIENTS.kD);
@@ -359,22 +359,22 @@ public class Actuators {
             // steps
             switch(state) {
                 // reset intake
-                case 0:
-                    setIntakePosition((int) (intakeStartPos + (getIntakePosition() - (getIntakePosition() % 145.1))));
-                    time = currentTime;
-                    state++;
-                    break;
-                case 1:
-                    resetIntake();
-                    if (intakeController.atSetPoint()) {
-                        intake.setPower(0);
-                        this.intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);//allow hopper to push intake out of the way
-                        time = currentTime;
-                        state++;
-                    }
-                    break;
+//                case 0:
+//                    setIntakePosition((int) (intakeStartPos + (getIntakePosition() - (getIntakePosition() % 145.1))));
+//                    time = currentTime;
+//                    state++;
+//                    break;
+//                case 1:
+//                    resetIntake();
+//                    if (intakeController.atSetPoint()) {
+//                        intake.setPower(0);
+//                        this.intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);//allow hopper to push intake out of the way
+//                        time = currentTime;
+//                        state++;
+//                    }
+//                    break;
                 // arm full
-                case 2:
+                case 0:
                     if (depoPos == GENERAL) {
                         setArmPivot(ARM_PIVOT_POSITION.getAlmostGeneral());
                     } else if (depoPos == SHARED) {
@@ -390,11 +390,13 @@ public class Actuators {
                     state++;
                     break;
                 // hopper full
-                case 3:
+                case 1:
+                    // optional retract intake for shared hub
                     if (depoPos == SHARED && currentTime > time + 0.5) {
                         intakeRetracted = true;
                         setIntakeServo(INTAKE_SERVO_UP);
                     }
+
                     if (currentTime > time + EXTEND_FULL/2.0) {
                         if (depoPos == GENERAL) {
                             setArmHopper(ARM_HOPPER_POSITION.getAlmostGeneral());
@@ -414,7 +416,7 @@ public class Actuators {
                     }
                     break;
                 // turret and slides
-                case 6:
+                case 2:
                     if (depoPos == GENERAL && alliance == RED) {
                         setTurret(TURRET_CAP);
                     } else if (depoPos == GENERAL && alliance == BLUE) {
@@ -442,14 +444,14 @@ public class Actuators {
                     time = currentTime;
                     state++;
                     break;
-                case 7:
+                case 3:
                     if (currentTime > time + EXTEND_TURRET_SLIDES || (turretController.atSetPoint() && slidesController.atSetPoint())) {
                         time = currentTime;
                         state++;
                     }
                     break;
                 // finish
-                case 8:
+                case 4:
                     runningExtend = false;
                     runningAlliance = false;
                     runningShared = false;
@@ -525,6 +527,7 @@ public class Actuators {
                     time = currentTime;
                     state++;
                     break;
+                // wait for freight to fall out
                 case 1:
                     if (!hopperIsFull()) {
                         intakeRetracted = false;
@@ -581,79 +584,23 @@ public class Actuators {
                     break;
                 // return arm down
                 case 8:
-//                    setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
-//                    setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
-                    setArmPivot(ARM_PIVOT_POSITION.getDown());
-                    setArmHopper(ARM_HOPPER_POSITION.getDown());
-                    time = currentTime;
-                    state = 12;
-                    break;
-                case 9:
-                    switch(depoPos) {//wait different times for different deposit positions
-                        case GENERAL:
-                            if (currentTime > time + RETRACT_ALMOST_GENERAL*.4) {
-                                time = currentTime;
-                                state++;
-                            }
-                            break;
-                        case SHARED:
-                            if (currentTime > time + RETRACT_ALMOST_SHARED*.4) {
-                                time = currentTime;
-                                state++;
-                            }
-                            break;
-                        case LOW:
-                        case MID:
-                        case HIGH:
-                            if (currentTime > time + RETRACT_ALMOST_ALLIANCE*.4) {
-                                time = currentTime;
-                                state++;
-                            }
-                            break;
-                    }
-                    break;
-                case 10:
-                    switch(depoPos) {//wait different times for different deposit positions
-                        case GENERAL:
-                            if (currentTime > time + RETRACT_ALMOST_GENERAL*.6) {
-                                time = currentTime;
-                                state++;
-                            }
-                            break;
-                        case SHARED:
-                            if (currentTime > time + RETRACT_ALMOST_SHARED*.6) {
-                                time = currentTime;
-                                state++;
-                            }
-                            break;
-                        case LOW:
-                        case MID:
-                        case HIGH:
-                            if (currentTime > time + RETRACT_ALMOST_ALLIANCE*.6) {
-                                time = currentTime;
-                                state++;
-                            }
-                            break;
-                    }
-                    break;
-                case 11:
                     setArmPivot(ARM_PIVOT_POSITION.getDown());
                     setArmHopper(ARM_HOPPER_POSITION.getDown());
                     time = currentTime;
                     state++;
                     break;
-                case 12:
+                case 9:
                     if (currentTime > time + RETRACT_DOWN) {
+//                        this.intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);//hopper cannot be pushed anymore
                         state++;
                     }
                     break;
-                case 13:
+                case 10:
                     runningRetract = false;
                     runningDeposit = false;
                     justFinishedAMacro = true;
                     state = 0;
             }
-//            resetIntake();
         }
     }
 
