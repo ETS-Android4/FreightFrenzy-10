@@ -61,7 +61,7 @@ import static org.firstinspires.ftc.teamcode.util.Constants.WHEEL_FRONT_RIGHT;
 public class SampleMecanumDrive extends MecanumDrive {
     public static double DRIVE_SPEED = 1;
 
-    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(6, 1, 0);
+    public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(8, 1, 0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(6, 1, 0);
 
     public static double LATERAL_MULTIPLIER = 1;
