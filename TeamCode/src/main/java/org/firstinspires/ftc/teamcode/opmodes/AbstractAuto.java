@@ -80,7 +80,7 @@ public abstract class AbstractAuto extends LinearOpMode {
             robot.actuators.setTurret(TURRET_ALLIANCE);
         } else {
             robot.actuators.setSlides(SLIDES_GENERAL);
-            robot.actuators.setTurret(TURRET_ALLIANCE);
+            robot.actuators.setTurret(-TURRET_ALLIANCE);
         }
         double time = getRuntime();
         do {
@@ -620,6 +620,9 @@ public abstract class AbstractAuto extends LinearOpMode {
 //                        if (robot.actuators.getState() >= 2) {
 //                            robot.actuators.setIntake(INTAKE_SPEED);
 //                        }
+                        if (robot.actuators.getState() >= 4) {
+                            robot.actuators.setIntakeServo(INTAKE_SERVO_UP);
+                        }
 
                         if (!robot.drive.isBusy() && !robot.actuators.runningExtend) {
                             // stop intake
