@@ -43,7 +43,7 @@ import java.util.Locale;
 public class Actuators {
     // misc
     public static double INTAKE_RESET_TIME = 1;
-    public static double HOPPER_DISTANCE_CUTOFF = 30;
+    public static double HOPPER_DISTANCE_CUTOFF = 25;
     public int intakeStartPos = (int) (145.1/8.0);
 
     // driver variables
@@ -72,34 +72,19 @@ public class Actuators {
 
     // ranges
     public static int TURRET_MIN = -1100;
-    public static int TURRET_MAX = 1000;
+    public static int TURRET_MAX = 1100;
     public static int SLIDES_MIN = 0;
     public static int SLIDES_MAX = (int)(2300*0.377373212);
     public static double ARM_HOPPER_MIN = 0.01;
     public static double ARM_HOPPER_MAX = 0.99;
     public static double ARM_PIVOT_MIN = 0.01;
     public static double ARM_PIVOT_MAX = 0.99;
-    public static double INTAKE_SERVO_DOWN = 0.01;
-    public static double INTAKE_SERVO_UP = 0.85;
+//    public static double INTAKE_SERVO_DOWN = 0.01;
+//    public static double INTAKE_SERVO_UP = 0.85;
+    public static double INTAKE_SERVO_DOWN = 0.99;
+    public static double INTAKE_SERVO_UP = 0.35;
     public static double ODO_SERVO_DOWN = 0.99;
     public static double ODO_SERVO_UP = 0.01;
-
-    // macro positions
-    // IF YOU EDIT THESE MACRO POSITIONS, COPY THEM TO THE CLEARMEMORY FUNCTION LINE 189!!!!
-    public static int TURRET_CAP = 0;
-    public static int TURRET_SHARED = -800;
-    public static int TURRET_ALLIANCE = 680;//764
-
-    public static int SLIDES_CAP = 140;
-    public static int SLIDES_SHARED = 172;
-    public static int SLIDES_ALLIANCE_LOW = 691;
-    public static int SLIDES_ALLIANCE_MID = 635;
-    public static int SLIDES_ALLIANCE_HIGH = 780;//712
-//    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.05, 0.05, 0.15, 0.51, 0.99, 0.94, 0.73, 0.86, 0.77, 0.65, 0.94, 0.99, 0.86, 0.77);
-//    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.67, 0.67, 0.75, 0.74, 0.63, 0.96, 0.9, 0.93, 0.99, 0.45, 0.64, 0.87, 0.70, 0.58);
-    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.9, 0.9, 0.9, 0.24, 0.24, 0.24, 0.24, 0.24, 0.24, 0.24, 0.24, 0.24, 0.24, 0.24);
-    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.55, 0.55, 0.55, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.72, 0.72, 0.72, 0.72, 0.72);
-
 
     // macro timeouts
     public static double DEPOSIT1_ALMOST = 0.4;
@@ -135,7 +120,7 @@ public class Actuators {
 
     public static double EXTEND_ALMOST = 0.4;
     public static double EXTEND_FULL = 0.8;
-    public static double EXTEND_TURRET_SLIDES = 0.7;
+    public static double EXTEND_TURRET_SLIDES = 0.5;
     public static double RETRACT_WAIT_FOR_HOPPER = 0.2;
     public static double RETRACT_SLIDES = 0.7;
     public static double RETRACT_TURRET = 0.4;
@@ -158,6 +143,37 @@ public class Actuators {
     private Servo intakeServo;
     private Servo odoServo;
     private RevColorSensorV3 colorSensor;
+
+    // macro positions
+    // IF YOU EDIT THESE MACRO POSITIONS, COPY THEM TO THE CLEARMEMORY FUNCTION LINE 189!!!!
+    public static int TURRET_CAP = 0;
+    public static int TURRET_SHARED = -1000;
+    public static int TURRET_ALLIANCE = 680;
+
+    public static int SLIDES_CAP = 140;
+    public static int SLIDES_GENERAL = 150;
+    public static int SLIDES_SHARED = 30;
+    public static int SLIDES_ALLIANCE_LOW = 691;
+    public static int SLIDES_ALLIANCE_MID = 635;
+    public static int SLIDES_ALLIANCE_HIGH = 780;
+
+    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.9, 0.9, 0.9, 0.48, 0.48, 0.09, 0.01, 0.1, 0.24, 0.8, 0.09, 0.01, 0.1, 0.24);
+    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.55, 0.55, 0.55, 0.4, 0.55, 0.2, 0.24, 0.2, 0.25, 0.99, 0.66, 0.48, 0.48, 0.72);
+
+    public void clearMemory() {
+        TURRET_CAP = 0;
+        TURRET_SHARED = -1000;
+        TURRET_ALLIANCE = 680;
+
+        SLIDES_CAP = 140;
+        SLIDES_SHARED = 30;
+        SLIDES_ALLIANCE_LOW = 691;
+        SLIDES_ALLIANCE_MID = 635;
+        SLIDES_ALLIANCE_HIGH = 780;
+
+        ARM_PIVOT_POSITION = new ArmPosition(0.9, 0.9, 0.9, 0.48, 0.48, 0.09, 0.01, 0.1, 0.24, 0.8, 0.09, 0.01, 0.1, 0.24);
+        ARM_HOPPER_POSITION = new ArmPosition(0.55, 0.55, 0.55, 0.4, 0.55, 0.2, 0.24, 0.2, 0.25, 0.99, 0.66, 0.48, 0.48, 0.72);
+    }
 
     public Actuators(HardwareMap hardwareMap) {
         this.turret = hardwareMap.get(DcMotor.class, TURRET);
@@ -186,21 +202,6 @@ public class Actuators {
         turretController = new PIDController(TURRET_COEFFICIENTS.kP, TURRET_COEFFICIENTS.kI, TURRET_COEFFICIENTS.kD);
         slidesController = new PIDController(SLIDES_COEFFICIENTS.kP, SLIDES_COEFFICIENTS.kI, SLIDES_COEFFICIENTS.kD);
         intakeController = new PIDController(INTAKE_COEFFICIENTS.kP, INTAKE_COEFFICIENTS.kI, INTAKE_COEFFICIENTS.kD);
-    }
-
-    public void clearMemory() {
-        TURRET_CAP = 0;
-        TURRET_SHARED = -800;
-        TURRET_ALLIANCE = 637;//764
-
-        SLIDES_CAP = 140;
-        SLIDES_SHARED = 172;
-        SLIDES_ALLIANCE_LOW = 691;
-        SLIDES_ALLIANCE_MID = 635;
-        SLIDES_ALLIANCE_HIGH = 780;//712
-
-        ARM_PIVOT_POSITION = new ArmPosition(0.9, 0.9, 0.9, 0.24, 0.24, 0.24, 0.24, 0.24, 0.24, 0.24, 0.24, 0.24, 0.24, 0.24);
-        ARM_HOPPER_POSITION = new ArmPosition(0.55, 0.55, 0.55, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.72, 0.72, 0.72, 0.72, 0.72);
     }
 
     // turret
@@ -391,32 +392,35 @@ public class Actuators {
                     break;
                 // hopper full
                 case 1:
+                    if (currentTime > time + EXTEND_FULL/2.0) {
+                        time = currentTime;
+                        state++;
+                    }
+                    break;
+                case 2:
                     // optional retract intake for shared hub
-                    if (depoPos == SHARED && currentTime > time + 0.5) {
+                    if (depoPos == SHARED && currentTime > time + 0.1) {
                         intakeRetracted = true;
                         setIntakeServo(INTAKE_SERVO_UP);
                     }
-
-                    if (currentTime > time + EXTEND_FULL/2.0) {
-                        if (depoPos == GENERAL) {
-                            setArmHopper(ARM_HOPPER_POSITION.getAlmostGeneral());
-                        } else if (depoPos == SHARED) {
-                            setArmHopper(ARM_HOPPER_POSITION.getAlmostShared());
-                        } else if (depoPos == LOW) {
-                            setArmHopper(ARM_HOPPER_POSITION.getAlmostLow());
-                        } else if (depoPos == MID) {
-                            setArmHopper(ARM_HOPPER_POSITION.getAlmostMid());
-                        } else if (depoPos == HIGH) {
-                            setArmHopper(ARM_HOPPER_POSITION.getAlmostHigh());
-                        }
+                    if (depoPos == GENERAL) {
+                        setArmHopper(ARM_HOPPER_POSITION.getAlmostGeneral());
+                    } else if (depoPos == SHARED) {
+                        setArmHopper(ARM_HOPPER_POSITION.getAlmostShared());
+                    } else if (depoPos == LOW) {
+                        setArmHopper(ARM_HOPPER_POSITION.getAlmostLow());
+                    } else if (depoPos == MID) {
+                        setArmHopper(ARM_HOPPER_POSITION.getAlmostMid());
+                    } else if (depoPos == HIGH) {
+                        setArmHopper(ARM_HOPPER_POSITION.getAlmostHigh());
                     }
-                    if (currentTime > time + EXTEND_FULL) {
+                    if (currentTime > time + EXTEND_FULL/2.0) {
                         time = currentTime;
                         state++;
                     }
                     break;
                 // turret and slides
-                case 2:
+                case 3:
                     if (depoPos == GENERAL && alliance == RED) {
                         setTurret(TURRET_CAP);
                     } else if (depoPos == GENERAL && alliance == BLUE) {
@@ -444,14 +448,14 @@ public class Actuators {
                     time = currentTime;
                     state++;
                     break;
-                case 3:
+                case 4:
                     if (currentTime > time + EXTEND_TURRET_SLIDES || (turretController.atSetPoint() && slidesController.atSetPoint())) {
                         time = currentTime;
                         state++;
                     }
                     break;
                 // finish
-                case 4:
+                case 5:
                     runningExtend = false;
                     runningAlliance = false;
                     runningShared = false;
@@ -503,7 +507,7 @@ public class Actuators {
                         }
                     }
 
-                    if (depoPos == GENERAL) {
+                    if (depoPos == GENERAL) { // this is meant to be used for capping, so it doesn't need to drop off
                         state = 4;
                         break;
                     }
@@ -541,14 +545,18 @@ public class Actuators {
                         setArmHopper(ARM_HOPPER_POSITION.getAlmostGeneral());
                         setArmPivot(ARM_PIVOT_POSITION.getAlmostGeneral());
                     } else if (depoPos == SHARED) {
-//                        setArmHopper(ARM_HOPPER_POSITION.getAlmostShared());//wiring gets in the way so no
-//                        setArmPivot(ARM_PIVOT_POSITION.getAlmostShared());
+                        setArmHopper(ARM_HOPPER_POSITION.getUp());
+                        setArmPivot(ARM_PIVOT_POSITION.getUp());
                     } else if (depoPos == LOW) {
-                        setArmHopper(ARM_HOPPER_POSITION.getAlmostLow());
-                        setArmPivot(ARM_PIVOT_POSITION.getAlmostLow());
+//                        setArmHopper(ARM_HOPPER_POSITION.getAlmostLow());
+//                        setArmPivot(ARM_PIVOT_POSITION.getAlmostLow());
+                        setArmHopper(ARM_HOPPER_POSITION.getAlmostHigh());//the low and mid return to high to clear the chassis
+                        setArmPivot(ARM_PIVOT_POSITION.getAlmostHigh());
                     } else if (depoPos == MID) {
-                        setArmHopper(ARM_HOPPER_POSITION.getAlmostMid());
-                        setArmPivot(ARM_PIVOT_POSITION.getAlmostMid());
+//                        setArmHopper(ARM_HOPPER_POSITION.getAlmostMid());
+//                        setArmPivot(ARM_PIVOT_POSITION.getAlmostMid());
+                        setArmHopper(ARM_HOPPER_POSITION.getAlmostHigh());
+                        setArmPivot(ARM_PIVOT_POSITION.getAlmostHigh());
                     } else if (depoPos == HIGH) {
                         setArmHopper(ARM_HOPPER_POSITION.getAlmostHigh());
                         setArmPivot(ARM_PIVOT_POSITION.getAlmostHigh());
@@ -563,7 +571,7 @@ public class Actuators {
                     break;
                 // return slides and turret
                 case 4:
-                    setSlides(0);
+                    setSlides(30);
                     time = currentTime;
                     state++;
                     break;
@@ -584,6 +592,7 @@ public class Actuators {
                     break;
                 // return arm down
                 case 8:
+                    setSlides(0);
                     setArmPivot(ARM_PIVOT_POSITION.getDown());
                     setArmHopper(ARM_HOPPER_POSITION.getDown());
                     time = currentTime;

@@ -43,19 +43,17 @@ public class Robot {
 
     public void updateLights() {
         if (alliance == Alliance.RED) {
-//            if (actuators.runningExtend || actuators.runningRetract) {
-//                lights.setPattern(REDSCORING);
-//            } else
-            if (actuators.hopperIsFull()) {
+            if (actuators.runningExtend || actuators.runningRetract) {
+                lights.setPattern(REDSCORING);
+            } else if (actuators.hopperIsFull()) {
                 lights.setPattern(REDFULL);
             } else {
                 lights.setPattern(RED);
             }
         } else if (alliance == Alliance.BLUE) {
-//            if (actuators.runningExtend || actuators.runningRetract) {
-//                lights.setPattern(BLUESCORING);
-//            } else
-            if (actuators.hopperIsFull()) {
+            if (actuators.runningExtend || actuators.runningRetract) {
+                lights.setPattern(BLUESCORING);
+            } else if (actuators.hopperIsFull()) {
                 lights.setPattern(BLUEFULL);
             } else {
                 lights.setPattern(BLUE);

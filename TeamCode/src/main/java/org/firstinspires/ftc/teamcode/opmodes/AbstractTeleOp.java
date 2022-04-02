@@ -338,6 +338,8 @@ public class AbstractTeleOp extends OpMode {
             robot.actuators.runningRetract = false;
             robot.actuators.runningExtend = false;
             robot.actuators.retractQueue = false;
+
+            robot.actuators.clearMemory();
         }
 
         // duckies
