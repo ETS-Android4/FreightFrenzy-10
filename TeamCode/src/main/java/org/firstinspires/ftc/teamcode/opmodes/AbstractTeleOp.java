@@ -103,6 +103,8 @@ public class AbstractTeleOp extends OpMode {
 
         // reset positions every teleop
         robot.actuators.clearMemory();
+
+        robot.actuators.odoRetracted = false;
     }
 
     @Override
@@ -122,6 +124,8 @@ public class AbstractTeleOp extends OpMode {
         robot.updateLights();
         driver1.update();
         driver2.update();
+
+//        robot.actuators.odoRetracted=false;
 
         // drive base
 //        PoseStorage.currentPose = robot.drive.getPoseEstimate();
@@ -343,7 +347,7 @@ public class AbstractTeleOp extends OpMode {
         }
 
         // duckies
-        robot.actuators.setDuckies( driver1.getY().isPressed() ? DUCKY_SPEED : 0 , alliance);
+        robot.actuators.setDuckies(driver1.getY().isPressed() ? DUCKY_SPEED : 0 , alliance);
 
         // retractables
         if (!driver1.getBack().isPressed() && driver1.getB().isJustPressed()) {

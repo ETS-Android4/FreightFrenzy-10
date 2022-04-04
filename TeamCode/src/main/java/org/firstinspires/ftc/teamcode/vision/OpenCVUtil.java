@@ -18,7 +18,7 @@ import java.util.List;
 // CV Helper Functions
 @Config
 public class OpenCVUtil {
-    public static Color YELLOW_LOWER = new Color(70, 60, 60);
+    public static Color YELLOW_LOWER = new Color(60, 60, 60);
     public static Color YELLOW_UPPER = new Color(110, 300, 200);
 
     public static int LEFT_BOUNDARY = -25;

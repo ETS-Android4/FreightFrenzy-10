@@ -74,7 +74,7 @@ public class Actuators {
     public static int TURRET_MIN = -1100;
     public static int TURRET_MAX = 1100;
     public static int SLIDES_MIN = 0;
-    public static int SLIDES_MAX = (int)(2300*0.377373212);
+    public static int SLIDES_MAX = (870);
     public static double ARM_HOPPER_MIN = 0.01;
     public static double ARM_HOPPER_MAX = 0.99;
     public static double ARM_PIVOT_MIN = 0.01;
@@ -120,7 +120,7 @@ public class Actuators {
 
     public static double EXTEND_ALMOST = 0.4;
     public static double EXTEND_FULL = 0.8;
-    public static double EXTEND_TURRET_SLIDES = 0.5;
+    public static double EXTEND_TURRET_SLIDES = 1;
     public static double RETRACT_WAIT_FOR_HOPPER = 0.2;
     public static double RETRACT_SLIDES = 0.7;
     public static double RETRACT_TURRET = 0.4;
@@ -156,6 +156,9 @@ public class Actuators {
     public static int SLIDES_ALLIANCE_LOW = 691;
     public static int SLIDES_ALLIANCE_MID = 635;
     public static int SLIDES_ALLIANCE_HIGH = 780;
+
+
+
 
     public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.9, 0.9, 0.9, 0.48, 0.48, 0.09, 0.01, 0.1, 0.24, 0.8, 0.09, 0.01, 0.1, 0.24);
     public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.55, 0.55, 0.55, 0.4, 0.55, 0.2, 0.24, 0.2, 0.25, 0.99, 0.66, 0.48, 0.48, 0.72);
