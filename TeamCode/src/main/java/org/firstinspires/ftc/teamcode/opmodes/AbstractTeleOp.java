@@ -173,19 +173,20 @@ public class AbstractTeleOp extends OpMode {
                         state++;
                         break;
                     case 1:
-                        if (!robot.drive.isBusy() && robot.actuators.intakeIsReset()) {
+                        robot.actuators.resetIntake(); //call intake pid, might not be nessesary
+                        if (robot.actuators.intakeIsReset()) {
                             state++;
                         }
                         break;
                     case 2:
-                        robot.drive.followTrajectoryAsync(pathToScore2);
+                        //robot.drive.followTrajectoryAsync(pathToScore2);
                         // start macro
                         extendTo = HIGH;
                         robot.actuators.runningExtend = true;
                         state++;
                         break;
                     case 3:
-                        if (!robot.actuators.runningExtend) {
+                        if (!robot.actuators.runningExtend && !robot.drive.isBusy()) {
 //                            robot.drive.setPoseEstimate(PoseStorage.currentPose);//maybe get rid of this
                             state++;
                         }
