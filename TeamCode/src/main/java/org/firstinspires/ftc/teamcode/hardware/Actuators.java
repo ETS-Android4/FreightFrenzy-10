@@ -119,11 +119,11 @@ public class Actuators {
     public DepositPosition justFinishedPos = HIGH;
 
     public static double EXTEND_ALMOST = 0.4;
-    public static double EXTEND_FULL = 0.8;
-    public static double EXTEND_TURRET_SLIDES = 2;
+    public static double EXTEND_FULL = 0.7;
+    public static double EXTEND_TURRET_SLIDES = 0.7;
     public static double RETRACT_WAIT_FOR_HOPPER = 0.2;
-    public static double RETRACT_SLIDES = 0.7;
-    public static double RETRACT_TURRET = 0.4;
+    public static double RETRACT_SLIDES = 0.5;
+    public static double RETRACT_TURRET = 0.35;
     public static double RETRACT_ALMOST_GENERAL = 0.9;
     public static double RETRACT_ALMOST_SHARED = 0.9;
     public static double RETRACT_ALMOST_ALLIANCE = 0.9;
