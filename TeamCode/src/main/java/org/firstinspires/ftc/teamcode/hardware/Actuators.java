@@ -120,7 +120,7 @@ public class Actuators {
 
     public static double EXTEND_ALMOST = 0.4;
     public static double EXTEND_FULL = 0.8;
-    public static double EXTEND_TURRET_SLIDES = 1;
+    public static double EXTEND_TURRET_SLIDES = 2;
     public static double RETRACT_WAIT_FOR_HOPPER = 0.2;
     public static double RETRACT_SLIDES = 0.7;
     public static double RETRACT_TURRET = 0.4;
