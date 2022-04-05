@@ -44,8 +44,8 @@ import org.firstinspires.ftc.teamcode.util.controller.Controller;
 @Config
 public class AbstractTeleOp extends OpMode {
 
-    public static int speed_for_driving_macro_in_teleop_WALL_ALIGHNMENT = (int) (20*1.20);
-    public static int speed_for_driving_macro_in_teleop_EXIT_WAREHOUSE = (int) (20*1.20);
+    public static int speed_for_driving_macro_in_teleop_WALL_ALIGHNMENT = (int) (20*1.40);
+    public static int speed_for_driving_macro_in_teleop_EXIT_WAREHOUSE = (int) (20*1.80);
 
     enum Mode {
         DRIVER_CONTROL,
