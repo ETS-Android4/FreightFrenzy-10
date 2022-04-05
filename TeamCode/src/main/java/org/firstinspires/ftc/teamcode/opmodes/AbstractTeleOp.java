@@ -151,18 +151,9 @@ public class AbstractTeleOp extends OpMode {
 
                     // make a finite state machine here to chain the 2 trajectories!
                     pathToScore = robot.drive.trajectoryBuilder(robot.drive.getPoseEstimate())
-                            .lineToSplineHeading(new Pose2d(score1Pos.getX(), score1Pos.getY(), score1Heading),
+                            .splineToSplineHeading(new Pose2d(score1Pos.getX(), score1Pos.getY(), score1Heading), Math.toRadians(0),
                                     SampleMecanumDrive.getVelocityConstraint(speed_for_driving_macro_in_teleop_WALL_ALIGHNMENT, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                                    SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
-                            )
-//                            .lineToSplineHeading(new Pose2d(score2Pos.getX(), score2Pos.getY(), score2Heading))
-//                            .splineTo(score1Pos, score1Heading)
-//                            .splineTo(score2Pos, score2Heading)
-                            //.addDisplacementMarker(() -> robot.drive.followTrajectoryAsync(pathToScore2))
-                            .build();
-
-                    pathToScore2 = robot.drive.trajectoryBuilder(pathToScore.end())
-//                            .lineToSplineHeading(new Pose2d(score1Pos.getX(), score1Pos.getY(), score1Heading))
+                                    SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                             .lineToSplineHeading(new Pose2d(score2Pos.getX(), score2Pos.getY(), score2Heading),
                                     SampleMecanumDrive.getVelocityConstraint(speed_for_driving_macro_in_teleop_EXIT_WAREHOUSE, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                                     SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
