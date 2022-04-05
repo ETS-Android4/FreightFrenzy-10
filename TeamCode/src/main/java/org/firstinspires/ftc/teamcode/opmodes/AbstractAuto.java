@@ -70,6 +70,11 @@ public abstract class AbstractAuto extends LinearOpMode {
             robot.actuators.setArmHopper(ARM_HOPPER_POSITION.getDown());
         }
 
+        robot.actuators.odoRetracted = false;
+
+        sleep(800); //wait
+
+        makeTrajectories();
 
         // set up into box
         robot.actuators.setArmPivot(ARM_PIVOT_POSITION.getAlmostGeneral());
@@ -91,7 +96,7 @@ public abstract class AbstractAuto extends LinearOpMode {
         sleep(800);
         robot.actuators.setIntakeServo(INTAKE_SERVO_UP);
 
-        makeTrajectories();
+
 
         // wait for start
         while (!(isStarted() || isStopRequested())) {

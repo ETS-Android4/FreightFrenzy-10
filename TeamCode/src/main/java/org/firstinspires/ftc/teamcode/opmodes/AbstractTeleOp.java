@@ -33,18 +33,20 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.hardware.Actuators;
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.Alliance;
-import org.firstinspires.ftc.teamcode.util.ArmPosition;
-import org.firstinspires.ftc.teamcode.util.BarcodeLocation;
 import org.firstinspires.ftc.teamcode.util.DepositPosition;
 import org.firstinspires.ftc.teamcode.util.controller.Controller;
 
+
 @Config
 public class AbstractTeleOp extends OpMode {
+
+    public static int speed_for_driving_macro_in_teleop_WALL_ALIGHNMENT = (int) (20*1.20);
+    public static int speed_for_driving_macro_in_teleop_EXIT_WAREHOUSE = (int) (20*1.20);
+
     enum Mode {
         DRIVER_CONTROL,
         AUTOMATIC_CONTROL
@@ -150,7 +152,7 @@ public class AbstractTeleOp extends OpMode {
                     // make a finite state machine here to chain the 2 trajectories!
                     pathToScore = robot.drive.trajectoryBuilder(robot.drive.getPoseEstimate())
                             .lineToSplineHeading(new Pose2d(score1Pos.getX(), score1Pos.getY(), score1Heading),
-                                    SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                                    SampleMecanumDrive.getVelocityConstraint(speed_for_driving_macro_in_teleop_WALL_ALIGHNMENT, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                                     SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                             )
 //                            .lineToSplineHeading(new Pose2d(score2Pos.getX(), score2Pos.getY(), score2Heading))
@@ -162,7 +164,7 @@ public class AbstractTeleOp extends OpMode {
                     pathToScore2 = robot.drive.trajectoryBuilder(pathToScore.end())
 //                            .lineToSplineHeading(new Pose2d(score1Pos.getX(), score1Pos.getY(), score1Heading))
                             .lineToSplineHeading(new Pose2d(score2Pos.getX(), score2Pos.getY(), score2Heading),
-                                    SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                                    SampleMecanumDrive.getVelocityConstraint(speed_for_driving_macro_in_teleop_EXIT_WAREHOUSE, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                                     SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                             )
 //                            .splineTo(score1Pos, score1Heading)
@@ -187,8 +189,8 @@ public class AbstractTeleOp extends OpMode {
                     case 2:
                         robot.drive.followTrajectoryAsync(pathToScore2);
                         // start macro
-                        robot.actuators.runningExtend = true;
                         extendTo = HIGH;
+                        robot.actuators.runningExtend = true;
                         state++;
                         break;
                     case 3:
@@ -220,16 +222,16 @@ public class AbstractTeleOp extends OpMode {
         if (!(robot.actuators.runningExtend || robot.actuators.runningRetract)) {
             if (!driver2.getStart().isPressed() && driver2.getX().isJustPressed()) {
                 // new:
-                robot.actuators.runningExtend = true;
                 extendTo = HIGH;
+                robot.actuators.runningExtend = true;
             } else if (!driver2.getStart().isPressed() && driver2.getB().isJustPressed()) {
                 // new:
-                robot.actuators.runningExtend = true;
                 extendTo = SHARED;
+                robot.actuators.runningExtend = true;
             } else if (!driver2.getStart().isPressed() && driver2.getA().isJustPressed()) {
                 // new:
-                robot.actuators.runningRetract = true;
                 extendFrom = extendTo;
+                robot.actuators.runningRetract = true;
             } else if (driver2.getY().isJustPressed()) {
                 if (!robot.actuators.capPickedUp) {
                     robot.actuators.runningExtend = true;
