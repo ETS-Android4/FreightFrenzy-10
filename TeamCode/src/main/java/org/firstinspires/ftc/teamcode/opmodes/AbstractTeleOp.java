@@ -44,8 +44,8 @@ import org.firstinspires.ftc.teamcode.util.controller.Controller;
 @Config
 public class AbstractTeleOp extends OpMode {
 
-    public static int speed_for_driving_macro_in_teleop_WALL_ALIGHNMENT = (int) (20*1.40);
-    public static int speed_for_driving_macro_in_teleop_EXIT_WAREHOUSE = (int) (20*1.80);
+    public static int speed_for_driving_macro_in_teleop_WALL_ALIGHNMENT = (int) (20*1);
+    public static int speed_for_driving_macro_in_teleop_EXIT_WAREHOUSE = (int) (20*1);
 
     enum Mode {
         DRIVER_CONTROL,
@@ -56,9 +56,9 @@ public class AbstractTeleOp extends OpMode {
 
     public int state = 0;
 
-    Vector2d score1Pos = new Vector2d(40, 63);
+    Vector2d score1Pos = new Vector2d(37, 66);
     double score1Heading = Math.toRadians(0);
-    Vector2d score2Pos = new Vector2d(12, 63);
+    Vector2d score2Pos = new Vector2d(12, 66);
     double score2Heading = Math.toRadians(0);
     Trajectory pathToScore;
     Trajectory pathToScore2;
@@ -119,6 +119,8 @@ public class AbstractTeleOp extends OpMode {
         robot.updateLights();
         telemetry.addLine(("Initialized: " + alliance + " alliance selected."));
         telemetry.update();
+        robot.actuators.odoRetracted=false;
+        robot.actuators.setOdoServo(0.01);
     }
 
     @Override
@@ -151,10 +153,14 @@ public class AbstractTeleOp extends OpMode {
 
                     // make a finite state machine here to chain the 2 trajectories!
                     pathToScore = robot.drive.trajectoryBuilder(robot.drive.getPoseEstimate())
-                            .splineToSplineHeading(new Pose2d(score1Pos.getX(), score1Pos.getY(), score1Heading), Math.toRadians(0),
+                            .lineToSplineHeading(new Pose2d(score1Pos.getX(), score1Pos.getY(), score1Heading),
                                     SampleMecanumDrive.getVelocityConstraint(speed_for_driving_macro_in_teleop_WALL_ALIGHNMENT, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-                                    SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                            .lineToSplineHeading(new Pose2d(score2Pos.getX(), score2Pos.getY(), score2Heading),
+                                    SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                            )
+                            .build();
+
+                    pathToScore2 = robot.drive.trajectoryBuilder(new Pose2d(score1Pos.getX(), score1Pos.getY(), score1Heading))//robot.drive.getPoseEstimate())
+                            .lineToSplineHeading(new Pose2d(score2Pos.getX(), score2Pos.getY(), score2Heading), //Math.toRadians(180),
                                     SampleMecanumDrive.getVelocityConstraint(speed_for_driving_macro_in_teleop_EXIT_WAREHOUSE, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                                     SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                             )
@@ -174,18 +180,23 @@ public class AbstractTeleOp extends OpMode {
                         break;
                     case 1:
                         robot.actuators.resetIntake(); //call intake pid, might not be nessesary
-                        if (robot.actuators.intakeIsReset()) {
+                        if (robot.actuators.intakeIsReset() && !robot.drive.isBusy()) {
+                            robot.drive.followTrajectoryAsync(pathToScore2);
                             state++;
                         }
                         break;
                     case 2:
-                        //robot.drive.followTrajectoryAsync(pathToScore2);
                         // start macro
+                        if(!robot.drive.isBusy()){
+                            state++;
+                        }
+
+                    case 3:
                         extendTo = HIGH;
                         robot.actuators.runningExtend = true;
                         state++;
                         break;
-                    case 3:
+                    case 4:
                         if (!robot.actuators.runningExtend && !robot.drive.isBusy()) {
 //                            robot.drive.setPoseEstimate(PoseStorage.currentPose);//maybe get rid of this
                             state++;
@@ -196,7 +207,7 @@ public class AbstractTeleOp extends OpMode {
 
 
                 // if drive finishes its task, cede control to the driver
-                if (state == 4) {
+                if (state == 5) {
                     currentMode = Mode.DRIVER_CONTROL;
                     state = 0;
                 }
