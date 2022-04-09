@@ -32,6 +32,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants;
@@ -42,6 +43,7 @@ import org.firstinspires.ftc.teamcode.util.controller.Controller;
 
 
 @Config
+@TeleOp
 public class RumbleTest extends OpMode {
 
     Alliance alliance;
@@ -49,7 +51,6 @@ public class RumbleTest extends OpMode {
     private Controller driver1;
     private Controller driver2;
 
-    private Robot robot;
 
     @Override
     public void init() {
@@ -58,19 +59,12 @@ public class RumbleTest extends OpMode {
 
         driver1 = new Controller(gamepad1);
         driver2 = new Controller(gamepad2);
-
-        robot.actuators.odoRetracted = false;
-
-        robot.lights.setPattern(98);
     }
 
     @Override
     public void init_loop() {
-        robot.updateLights();
         telemetry.addLine(("Initialized: " + alliance + " alliance selected."));
         telemetry.update();
-        robot.actuators.odoRetracted=false;
-        robot.actuators.setOdoServo(0.01);
     }
 
     @Override
@@ -95,14 +89,5 @@ public class RumbleTest extends OpMode {
             driver1.rumbleBlips(1000);
         }else{driver2.stopRumble();}
 
-
-
-
-        robot.actuators.update();
-
-        // telemetry
-        telemetry.addLine("Rumble mode");
-        telemetry.addLine(robot.getTelemetry());
-        telemetry.update();
     }
 }

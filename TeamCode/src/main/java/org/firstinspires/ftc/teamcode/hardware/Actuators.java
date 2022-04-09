@@ -62,12 +62,12 @@ public class Actuators {
     private PIDController slidesController;
     private PIDController intakeController;
 
-    public static PIDCoefficients TURRET_COEFFICIENTS = new PIDCoefficients(0.0015, 0, 0);
+    public static PIDCoefficients TURRET_COEFFICIENTS = new PIDCoefficients(0.0012, 0, 0);
     public static PIDCoefficients SLIDES_COEFFICIENTS = new PIDCoefficients(0.002, 0, 0);
     public static PIDCoefficients INTAKE_COEFFICIENTS = new PIDCoefficients(0.005, 0, 0.0001);
 
-    public static double TURRET_TOLERANCE = 10;
-    public static double SLIDES_TOLERANCE = 15;
+    public static double TURRET_TOLERANCE = 30;
+    public static double SLIDES_TOLERANCE = 30;
     public static double INTAKE_TOLERANCE = 30;
 
     public static boolean INTAKE_PID_MODE = false;
@@ -101,11 +101,12 @@ public class Actuators {
     public DepositPosition justFinishedPos = HIGH;
 
     public static double EXTEND_ARM = 0.7;
-    public static double EXTEND_TURRET_SLIDES = 3;
+    public static double EXTEND_TURRET = 0.4;
+    public static double EXTEND_SLIDES = 0.4;
     public static double RETRACT_WAIT_FOR_HOPPER = 0.2;
-    public static double RETRACT_SLIDES = 0.5;
-    public static double RETRACT_TURRET = 0.5;
-    public static double RETRACT_DOWN = 1.2;
+    public static double RETRACT_SLIDES = 0.4;
+    public static double RETRACT_TURRET = 0.4;
+    public static double RETRACT_DOWN = 1;
 
     private int state;
     private double time;
@@ -329,7 +330,6 @@ public class Actuators {
     // NEW MACROS
     public void runningExtend(double currentTime, Alliance alliance, DepositPosition depoPos) {
         if (runningExtend) {
-            // steps
             switch(state) {
                 // reset intake
 //                case 0:
@@ -348,8 +348,6 @@ public class Actuators {
 //                    break;
                 // arm full
                 case 0:
-                    //if(!hopperIsFull()){state=5;} //if we dont actually have a block, don't bother to extend
-
                     if (depoPos == GENERAL) {
                         setArmPivot(ARM_PIVOT_POSITION.getAlmostGeneral());
                     } else if (depoPos == SHARED) {
@@ -372,8 +370,7 @@ public class Actuators {
                     }
                     break;
                 case 2:
-                    // optional retract intake for shared hub
-                    if (depoPos == SHARED && currentTime > time + 0.1) {
+                    if (currentTime > time + 0.3) {
                         intakeRetracted = true;
                         setIntakeServo(INTAKE_SERVO_UP);
                     }
@@ -408,28 +405,34 @@ public class Actuators {
                     } else if (alliance == BLUE) {
                         setTurret(-TURRET_ALLIANCE);
                     }
-                    if (depoPos == GENERAL) {
-                        setSlides(SLIDES_CAP);
-                    } else if (depoPos == SHARED) {
-                        setSlides(SLIDES_SHARED);
-                    } else if (depoPos == LOW) {
-                        setSlides(SLIDES_ALLIANCE_LOW);
-                    } else if (depoPos == MID) {
-                        setSlides(SLIDES_ALLIANCE_MID);
-                    } else if (depoPos == HIGH) {
-                        setSlides(SLIDES_ALLIANCE_HIGH);
-                    }
                     time = currentTime;
                     state++;
                     break;
                 case 4:
-                    if (currentTime > time + EXTEND_TURRET_SLIDES || (turretController.atSetPoint() && slidesController.atSetPoint())) {
+                    if (currentTime > time + EXTEND_TURRET || turretController.atSetPoint()) {
+                        if (depoPos == GENERAL) {
+                            setSlides(SLIDES_CAP);
+                        } else if (depoPos == SHARED) {
+                            setSlides(SLIDES_SHARED);
+                        } else if (depoPos == LOW) {
+                            setSlides(SLIDES_ALLIANCE_LOW);
+                        } else if (depoPos == MID) {
+                            setSlides(SLIDES_ALLIANCE_MID);
+                        } else if (depoPos == HIGH) {
+                            setSlides(SLIDES_ALLIANCE_HIGH);
+                        }
+                        time = currentTime;
+                        state++;
+                    }
+                    break;
+                case 5:
+                    if (currentTime > time + EXTEND_SLIDES || slidesController.atSetPoint()) {
                         time = currentTime;
                         state++;
                     }
                     break;
                 // finish
-                case 5:
+                case 6:
                     runningExtend = false;
                     runningAlliance = false;
                     runningShared = false;
@@ -560,7 +563,7 @@ public class Actuators {
                     state++;
                     break;
                 case 7:
-                    if (currentTime > time + RETRACT_TURRET || turretController.atSetPoint()) {
+                    if (turretController.atSetPoint()) { //currentTime > time + RETRACT_TURRET ||
                         state++;
                     }
                     break;

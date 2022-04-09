@@ -22,9 +22,9 @@ import org.firstinspires.ftc.teamcode.util.CameraPosition;
 public class RedDuck extends AbstractAuto {
 
     //define the waypoints in this auto
-    public static Pose2d START_POSE = new Pose2d(-36, -63, Math.toRadians(-180));
-    public static Pose2d DUCK_SPIN = new Pose2d(-60, -55, Math.toRadians(-180));
-    public static Pose2d DUCK_TRANSITION = new Pose2d(-55, -57, Math.toRadians(-45));
+    public static Pose2d START_POSE = new Pose2d(-34.6875, -65.75, Math.toRadians(-180));
+    public static Pose2d DUCK_SPIN = new Pose2d(-53.6875, -59.75, Math.toRadians(-180));
+    public static Pose2d DUCK_TRANSITION = new Pose2d(-48, -54, Math.toRadians(-90));
     public static Pose2d DUCK_PICKUP = new Pose2d(-40, -57, Math.toRadians(-45));
     public static Pose2d DUCK_SCORE = new Pose2d(-36, -63, Math.toRadians(-180));
     public static Pose2d PARK = new Pose2d(-60, -36, Math.toRadians(-180));
@@ -37,7 +37,7 @@ public class RedDuck extends AbstractAuto {
 
     @Override
     public void setAlliance() {
-        this.alliance = RED;
+        this.alliance = BLUE;
     }
 
     @Override
@@ -55,13 +55,14 @@ public class RedDuck extends AbstractAuto {
         robot.drive.setPoseEstimate(START_POSE);
 
         spin = robot.drive.trajectoryBuilder(START_POSE)
-                .lineToLinearHeading(DUCK_SPIN)
-                .build();
+                .lineToLinearHeading(DUCK_SPIN,
+                        SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
+                        .build();
         transition = robot.drive.trajectoryBuilder(spin.end())
-                .lineToLinearHeading(DUCK_TRANSITION
-//                        SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
-//                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
-                )
+                .lineToLinearHeading(DUCK_TRANSITION,
+                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                 .build();
 
         pickup = robot.drive.trajectoryBuilder(transition.end())
@@ -92,26 +93,16 @@ public class RedDuck extends AbstractAuto {
 
     @Override //setup the specific actions in order for this auto
     public void initializeSteps(BarcodeLocation location) {
-        // set arm
-        addArmPivot(0, ARM_PIVOT_POSITION.getDown());
-        addArmHopper(0, ARM_HOPPER_POSITION.getDown());
-        addIntakeServo(0.25, INTAKE_SERVO_DOWN);
-        resetIntake(INTAKE_RESET_TIME);
-
-        // score preloaded
-        addAlliance(10000, BLUE, location);
-        addDeposit(10000, BLUE, location);
-
-        // move
+        scorePreloadInAuto(1000, alliance, location);
         followTrajectory(spin);
-        addDuckSpinner(4, 1);
-        addIntake(0, -INTAKE_SPEED);
+        addDuckSpinner(5, 0.8);
+//        addIntake(0, -INTAKE_SPEED);
         followTrajectory(transition);
-        followTrajectory(pickup);
-        followTrajectory(score);
-        addIntake(0, 0);
-        addAlliance(10000, BLUE, RIGHT);
-        addDeposit(10000, BLUE, RIGHT);
-        followTrajectory(park);
+//        followTrajectory(pickup);
+//        followTrajectory(score);
+//        addIntake(0, 0);
+//        addAlliance(10000, BLUE, RIGHT);
+//        addDeposit(10000, BLUE, RIGHT);
+//        followTrajectory(park);
     }
 }

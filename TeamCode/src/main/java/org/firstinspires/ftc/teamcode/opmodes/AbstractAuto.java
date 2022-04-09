@@ -6,6 +6,7 @@ import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SERVO_UP;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.SLIDES_GENERAL;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.TURRET_ALLIANCE;
 import static org.firstinspires.ftc.teamcode.opmodes.AbstractTeleOp.INTAKE_SPEED;
+import static org.firstinspires.ftc.teamcode.util.Alliance.BLUE;
 import static org.firstinspires.ftc.teamcode.util.Alliance.RED;
 
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
@@ -385,7 +386,7 @@ public abstract class AbstractAuto extends LinearOpMode {
         steps.add(new Step("Setting duck power to " + duckPower, timeout) {
             @Override
             public void start() {
-                robot.actuators.setDuckies(duckPower, alliance);
+                robot.actuators.setDuckies(duckPower, alliance == RED ? BLUE : RED);
             }
 
             @Override
@@ -553,33 +554,32 @@ public abstract class AbstractAuto extends LinearOpMode {
                             stepCaseStep++;
                         }
                         break;
-                    // wait for block, set intake to reverse, and drive out
+                    // wait for block and drive out
                     case 2:
                         if (robot.actuators.hopperIsFull()) {
                             robot.drive.breakFollowing();
-                            robot.drive.followTrajectoryAsync(trajectoryOut);
-                            robot.actuators.setIntakePower(INTAKE_SPEED);
                             stepStartTime = currentRuntime;
                             stepCaseStep++;
                         }
                         break;
-                    // after a bit, stop intake and extend
+                    // after a bit, stop intake and extend while going out
                     case 3:
-                        if (stepTime > 0.3) {
+                        if (stepTime > 0.15) {
                             robot.actuators.setIntakePower(0);
+                            robot.drive.followTrajectoryAsync(trajectoryOut);
                             robot.actuators.runningExtend = true;
                             stepCaseStep++;
                         }
                         break;
                     // while going out, bring up the intake, and retract when done extending
                     case 4:
-                        // intake retract and set intake
-                        if (robot.actuators.getState() >= 4) {
-                            robot.actuators.setIntakeServo(INTAKE_SERVO_UP);
-                        }
+//                        // intake retract and set intake
+//                        if (robot.actuators.getState() >= 4) {
+//                            robot.actuators.setIntakeServo(INTAKE_SERVO_UP);
+//                        }
 
                         // start retract when done extending
-                        if (!robot.drive.isBusy() && !robot.actuators.runningExtend) {
+                        if (!robot.actuators.runningExtend) {//!robot.drive.isBusy() &&
                             robot.actuators.runningRetract = true;
                             stepCaseStep++;
                         }

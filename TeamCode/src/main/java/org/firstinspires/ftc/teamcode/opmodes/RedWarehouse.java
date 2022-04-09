@@ -19,11 +19,11 @@ import org.firstinspires.ftc.teamcode.util.CameraPosition;
 public class RedWarehouse extends AbstractAuto {
 
     //define the waypoints in this auto
-    public static Pose2d START_POSE = new Pose2d(12, -63, Math.toRadians(0));
-    public static Pose2d INTAKE = new Pose2d(36, -63.5, Math.toRadians(0));
-    public static Pose2d CREEP = new Pose2d(56, -63.5, Math.toRadians(0));
-    public static Pose2d SCORE = new Pose2d(12, -63.5, Math.toRadians(0));
-    public static Pose2d PARK = new Pose2d(40, -63.5, Math.toRadians(0));
+    public static Pose2d START_POSE = new Pose2d(10.6875, -65.75, Math.toRadians(0));
+    public static Pose2d INTAKE = new Pose2d(35, -66.25, Math.toRadians(0));
+    public static Pose2d CREEP = new Pose2d(52, -66.25, Math.toRadians(0));
+    public static Pose2d SCORE = new Pose2d(10.6875, -66.25, Math.toRadians(0));
+    public static Pose2d PARK = new Pose2d(39, -66.25, Math.toRadians(0));
 
     Trajectory intake;
     Trajectory score;
@@ -50,15 +50,15 @@ public class RedWarehouse extends AbstractAuto {
 
         intake = robot.drive.trajectoryBuilder(START_POSE)
                 .splineToConstantHeading(new Vector2d(INTAKE.getX(), INTAKE.getY()), INTAKE.getHeading(),
-                        SampleMecanumDrive.getVelocityConstraint(25, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .splineToConstantHeading(new Vector2d(CREEP.getX(), CREEP.getY()), CREEP.getHeading(),
-                        SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getVelocityConstraint(12, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
                 .build();
-        score = robot.drive.trajectoryBuilder(new Pose2d(42, -63.5, Math.toRadians(0)))
+        score = robot.drive.trajectoryBuilder(new Pose2d(41, -66.25, Math.toRadians(0)))
                 .lineToLinearHeading(SCORE,
                         SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)

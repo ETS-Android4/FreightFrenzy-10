@@ -52,7 +52,7 @@ public class AbstractTeleOp extends OpMode {
 
     public int state = 0;
 
-    public static double INTAKE_SPEED = 1;
+    public static double INTAKE_SPEED = 0.75;
     public static double INTAKE_SLOW_SPEED = 0.15;
 
     Alliance alliance;
