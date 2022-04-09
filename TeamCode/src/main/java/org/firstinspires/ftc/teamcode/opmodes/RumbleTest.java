@@ -32,6 +32,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants;
@@ -42,6 +43,7 @@ import org.firstinspires.ftc.teamcode.util.controller.Controller;
 
 
 @Config
+@TeleOp(name = "Rumble Test", group = "Competition")
 public class RumbleTest extends OpMode {
 
     Alliance alliance;
@@ -49,7 +51,7 @@ public class RumbleTest extends OpMode {
     private Controller driver1;
     private Controller driver2;
 
-    private Robot robot;
+    //private Robot robot;
 
     @Override
     public void init() {
@@ -59,19 +61,21 @@ public class RumbleTest extends OpMode {
         driver1 = new Controller(gamepad1);
         driver2 = new Controller(gamepad2);
 
-        robot.actuators.odoRetracted = false;
+        //robot.actuators.odoRetracted = false;
 
-        robot.lights.setPattern(98);
+        //robot.lights.setPattern(98);
     }
 
     @Override
     public void init_loop() {
-        robot.updateLights();
+        //robot.updateLights();
         telemetry.addLine(("Initialized: " + alliance + " alliance selected."));
         telemetry.update();
-        robot.actuators.odoRetracted=false;
-        robot.actuators.setOdoServo(0.01);
+        //robot.actuators.odoRetracted=false;
+        //robot.actuators.setOdoServo(0.01);
     }
+
+    boolean flag = true;
 
     @Override
     public void loop() {
@@ -79,30 +83,36 @@ public class RumbleTest extends OpMode {
         driver1.update();
         driver2.update();
 
-        if(driver1.getA().isPressed()){
-            driver1.rumble(1000);
-        }else{driver1.stopRumble();}
+        if(flag){
+        driver1.rumble();
+        driver2.rumble();
+        flag = false;
+        }
 
-        if(driver2.getA().isPressed()){
-        driver2.rumble(1000);
-        }else{driver2.stopRumble();}
+//        if(driver1.getA().isJustPressed()){
+//            driver1.rumble(1000);
+//        }else{driver1.stopRumble();}
+//
+//        if(driver2.getA().isPressed()){
+//        driver2.rumble(1000);
+//        }else{driver2.stopRumble();}
+//
+//        if(driver1.getB().isPressed()){
+//            driver1.rumbleBlips(1000);
+//        }else{driver1.stopRumble();}
+//
+//        if(driver2.getB().isPressed()){
+//            driver1.rumbleBlips(1000);
+//        }else{driver2.stopRumble();}
+//
+//
 
-        if(driver1.getB().isPressed()){
-            driver1.rumbleBlips(1000);
-        }else{driver1.stopRumble();}
 
-        if(driver2.getB().isPressed()){
-            driver1.rumbleBlips(1000);
-        }else{driver2.stopRumble();}
-
-
-
-
-        robot.actuators.update();
+        //robot.actuators.update();
 
         // telemetry
-        telemetry.addLine("Rumble mode");
-        telemetry.addLine(robot.getTelemetry());
+        telemetry.addLine("Rumble mode: " + driver1.isRumbling());
+        //telemetry.addLine(robot.getTelemetry());
         telemetry.update();
     }
 }
