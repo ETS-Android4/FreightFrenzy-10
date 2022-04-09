@@ -31,7 +31,7 @@ public class MeepMeepTesting {
                                                         new MecanumVelocityConstraint(30, 11)
                                                 )),
                                                 new ProfileAccelerationConstraint(30))
-                                        .splineToLinearHeading(new Pose2d(12, -63, Math.toRadians(0)), Math.toRadians(0),
+                                        .splineToLinearHeading(new Pose2d(12, -63, Math.toRadians(0)), Math.toRadians(180),
                                                 new MinVelocityConstraint(Arrays.asList(
                                                         new AngularVelocityConstraint(30),
                                                         new MecanumVelocityConstraint(30, 11)
@@ -44,19 +44,21 @@ public class MeepMeepTesting {
 //                                                )),
 //                                                new ProfileAccelerationConstraint(30)
 //                                        )
+                                        .setReversed(false)
+
                                         .splineToLinearHeading(new Pose2d(36, -63, Math.toRadians(0)), Math.toRadians(0),
                                                 new MinVelocityConstraint(Arrays.asList(
                                                         new AngularVelocityConstraint(30),
                                                         new MecanumVelocityConstraint(30, 11)
                                                 )),
                                                 new ProfileAccelerationConstraint(30))
-                                        .splineToLinearHeading(new Pose2d(12, -63, Math.toRadians(0)), Math.toRadians(0),
+                                        .splineToLinearHeading(new Pose2d(42, -58, Math.toRadians(20)), Math.toRadians(0),
                                                 new MinVelocityConstraint(Arrays.asList(
                                                         new AngularVelocityConstraint(30),
                                                         new MecanumVelocityConstraint(30, 11)
                                                 )),
                                                 new ProfileAccelerationConstraint(30))
-                                        .lineToLinearHeading(new Pose2d(40, -63, 0))
+//                                        .lineToLinearHeading(new Pose2d(40, -63, 0))
                                         .build()
                 );
 

@@ -70,6 +70,8 @@ public class Actuators {
     public static double SLIDES_TOLERANCE = 15;
     public static double INTAKE_TOLERANCE = 30;
 
+    public static boolean INTAKE_PID_MODE = false;
+
     // ranges
     public static int TURRET_MIN = -1100;
     public static int TURRET_MAX = 1100;
@@ -79,36 +81,16 @@ public class Actuators {
     public static double ARM_HOPPER_MAX = 0.99;
     public static double ARM_PIVOT_MIN = 0.01;
     public static double ARM_PIVOT_MAX = 0.99;
-//    public static double INTAKE_SERVO_DOWN = 0.01;
-//    public static double INTAKE_SERVO_UP = 0.85;
     public static double INTAKE_SERVO_DOWN = 0.99;
     public static double INTAKE_SERVO_UP = 0.35;
     public static double ODO_SERVO_DOWN = 0.99;
     public static double ODO_SERVO_UP = 0.01;
 
-    // macro timeouts
-    public static double DEPOSIT1_ALMOST = 0.4;
-    public static double DEPOSIT2_ARM = 0.6;
-    public static double DEPOSIT3_EXTEND = 1.5;
-
-    public static double RETRACT1_SCORE = 0.4;
-    public static double RETRACT2_RETRACT = 0.7;//.8
-    public static double RETRACT3_TURRET = 0.6;
-    public static double RETRACT4_ALMOST = 1.2;//1.2
-    public static double RETRACT5_DOWN = 0.4;
-
     // old state machine variables
-    public boolean pickingUpFreight;
     public boolean runningAlliance;
     public boolean runningShared;
-    public boolean runningArm;
     public boolean runningDeposit;
-    public boolean allianceQueue;
-    public boolean sharedQueue;
-    public boolean depositQueue;
-    public boolean justFinishedAllianceMacro;
-    public boolean justFinishedSharedMacro;
-    public boolean justFinishedAMacro; // this one is still used in the new macros
+    public boolean justFinishedAMacro;
 
     // new state machine variables & macro timeouts
     public boolean capPickedUp;
@@ -118,16 +100,12 @@ public class Actuators {
     public boolean justCancledMacro = false;
     public DepositPosition justFinishedPos = HIGH;
 
-    public static double EXTEND_ALMOST = 0.4;
     public static double EXTEND_ARM = 0.7;
     public static double EXTEND_TURRET_SLIDES = 3;
     public static double RETRACT_WAIT_FOR_HOPPER = 0.2;
     public static double RETRACT_SLIDES = 0.5;
-    public static double RETRACT_TURRET = 0.35;
-    public static double RETRACT_ALMOST_GENERAL = 0.9;
-    public static double RETRACT_ALMOST_SHARED = 0.9;
-    public static double RETRACT_ALMOST_ALLIANCE = 0.9;
-    public static double RETRACT_DOWN = 1.2;//0.4
+    public static double RETRACT_TURRET = 0.5;
+    public static double RETRACT_DOWN = 1.2;
 
     private int state;
     private double time;
@@ -234,27 +212,18 @@ public class Actuators {
         return intake.getCurrentPosition();
     }
 
-    public void setIntake(double power){
-        setIntakePower(power);
-    }
-
     public void setIntakePower(double power) {
         intake.setPower(power);
+        INTAKE_PID_MODE = false;
     }
 
     public void setIntakePosition(int position) {
         intakeController.setSetPoint(position);
-        intake.setPower(intakeController.calculate(intake.getCurrentPosition()));
+        INTAKE_PID_MODE = true;
     }
 
     public boolean intakeIsReset() {
         return intakeController.atSetPoint();
-    }
-
-    public void resetIntake() {
-        intakeController.setPID(INTAKE_COEFFICIENTS.kP, INTAKE_COEFFICIENTS.kI, INTAKE_COEFFICIENTS.kD);
-        intakeController.setTolerance(INTAKE_TOLERANCE);
-        intake.setPower(intakeController.calculate(intake.getCurrentPosition()));
     }
 
     // pid update for motor and slides
@@ -269,7 +238,9 @@ public class Actuators {
 
         turret.setPower(turretController.calculate(turret.getCurrentPosition()));
         slides.setPower(slidesController.calculate(slides.getCurrentPosition()));
-//        this.intake.setPower(intakeController.calculate(intake.getCurrentPosition()));
+        if (INTAKE_PID_MODE) {
+            this.intake.setPower(intakeController.calculate(intake.getCurrentPosition()));
+        }
     }
 
     // arm hopper
@@ -610,282 +581,6 @@ public class Actuators {
                 case 10:
                     runningRetract = false;
                     runningDeposit = false;
-                    justFinishedAMacro = true;
-                    state = 0;
-            }
-        }
-    }
-
-    // OLD MACROS
-    public void runningAlliance_OLD(double currentTime, Alliance alliance, BarcodeLocation barcodeLocation) {
-        if (runningAlliance) {
-            resetIntake(); // update intake PID
-            switch (state) {
-                case 0:
-                    time = currentTime;
-                    setIntakePosition((int) (intakeStartPos + (getIntakePosition() - (getIntakePosition() % 145.1))));
-                    setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
-                    state++;
-                    break;
-                case 1:
-                    if (currentTime > time + DEPOSIT1_ALMOST) {
-                        state++;
-                    }
-                    if (currentTime > time + DEPOSIT1_ALMOST*0.25) {
-                        setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
-                    }
-                    break;
-                case 2:
-                    time = currentTime;
-                    if (barcodeLocation == LEFT) {
-                        setArmPivot(ARM_PIVOT_POSITION.getAlmostLow());
-                    } else if (barcodeLocation == MIDDLE) {
-                        setArmPivot(ARM_PIVOT_POSITION.getAlmostMid());
-                    } else {
-                        setArmPivot(ARM_PIVOT_POSITION.getAlmostHigh());
-                    }
-                    state++;
-                    break;
-                case 3:
-                    if (currentTime > time + DEPOSIT2_ARM) {
-                        state++;
-                    }
-                    if (currentTime > time + DEPOSIT2_ARM / 2.0) {
-                        if (barcodeLocation == LEFT) {
-                            setArmHopper(ARM_HOPPER_POSITION.getAlmostLow());
-                        } else if (barcodeLocation == MIDDLE) {
-                            setArmHopper(ARM_HOPPER_POSITION.getAlmostMid());
-                        } else {
-                            setArmHopper(ARM_HOPPER_POSITION.getAlmostHigh());
-                        }
-                    }
-                    break;
-                case 4:
-                    time = currentTime;
-                    setTurret(alliance == RED ? TURRET_ALLIANCE : -TURRET_ALLIANCE);
-                    setSlides(SLIDES_ALLIANCE_HIGH);
-                    state++;
-                    break;
-                case 5:
-                    if (currentTime > time + DEPOSIT3_EXTEND || (turretController.atSetPoint() && slidesController.atSetPoint())) {
-                        state++;
-                    }
-                    break;
-                case 6:
-                    runningAlliance = false;
-                    justFinishedAllianceMacro = true;
-                    if (depositQueue) {
-                        depositQueue = false;
-                        runningDeposit = true;
-                    } else {
-                        justFinishedAMacro = true;
-                    }
-                    state = 0;
-            }
-        }
-    }
-
-    public void runningShared_OLD(double currentTime, Alliance alliance, BarcodeLocation barcodeLocation) {
-        if (runningShared) {
-            resetIntake();
-            switch (state) {
-                case 0:
-                    time = currentTime;
-                    setIntakePosition((int) (intakeStartPos + (getIntakePosition() - (getIntakePosition() % 145.1))));
-                    setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
-                    state++;
-                    break;
-                case 1:
-                    if (currentTime > time + DEPOSIT1_ALMOST) {
-                        state++;
-                    }
-                    if (currentTime > time + DEPOSIT1_ALMOST / 2.0) {
-                        setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
-                    }
-                    break;
-                case 2:
-                    time = currentTime;
-                    if (barcodeLocation == LEFT) {
-                        setArmPivot(ARM_PIVOT_POSITION.getAlmostLow());
-                    } else if (barcodeLocation == MIDDLE) {
-                        setArmPivot(ARM_PIVOT_POSITION.getAlmostMid());
-                    } else {
-                        setArmPivot(ARM_PIVOT_POSITION.getAlmostHigh());
-                    }
-                    state++;
-                    break;
-                case 3:
-                    if (currentTime > time + DEPOSIT2_ARM) {
-                        state++;
-                    }
-                    if (currentTime > time + DEPOSIT2_ARM / 2.0) {
-                        if (barcodeLocation == LEFT) {
-                            setArmHopper(ARM_HOPPER_POSITION.getAlmostLow());
-                        } else if (barcodeLocation == MIDDLE) {
-                            setArmHopper(ARM_HOPPER_POSITION.getAlmostMid());
-                        } else {
-                            setArmHopper(ARM_HOPPER_POSITION.getAlmostHigh());
-                        }
-                    }
-                    break;
-                case 4:
-                    time = currentTime;
-                    setTurret(alliance == RED ? TURRET_SHARED : -TURRET_SHARED);
-                    setSlides(SLIDES_SHARED);
-                    state++;
-                    break;
-                case 5:
-                    if (currentTime > time + DEPOSIT3_EXTEND || (turretController.atSetPoint() && slidesController.atSetPoint())) {
-                        state++;
-                    }
-                    break;
-                case 6:
-                    runningShared = false;
-                    justFinishedSharedMacro = true;
-                    if (depositQueue) {
-                        depositQueue = false;
-                        runningDeposit = true;
-                    } else {
-                        justFinishedAMacro = true;
-                    }
-                    state = 0;
-            }
-        }
-    }
-
-    public void runningDeposit_OLD(double currentTime, Alliance alliance, BarcodeLocation barcodeLocation) {
-        if (runningDeposit) {
-            resetIntake();
-            switch (state) {
-                case 0:
-                    //"memory" stuff
-                    if (justFinishedAllianceMacro) {
-                        TURRET_ALLIANCE = alliance == RED ? (int) turretController.getSetPoint() : -(int) turretController.getSetPoint();
-                        SLIDES_ALLIANCE_HIGH = (int) slidesController.getSetPoint();
-                    } else if (justFinishedSharedMacro) {
-                        TURRET_SHARED = alliance == RED ? (int) turretController.getSetPoint() : -(int) turretController.getSetPoint();
-                        SLIDES_SHARED = (int) slidesController.getSetPoint();
-                    }
-
-                    time = currentTime;
-                    setIntakePosition((int) (intakeStartPos + (getIntakePosition() - (getIntakePosition() % 145.1))));
-                    if (barcodeLocation == LEFT) {
-                        setArmHopper(ARM_HOPPER_POSITION.getLow());
-                        setArmPivot(ARM_PIVOT_POSITION.getLow());
-                    } else if (barcodeLocation == MIDDLE) {
-                        setArmHopper(ARM_HOPPER_POSITION.getMid());
-                        setArmPivot(ARM_PIVOT_POSITION.getMid());
-                    } else if (barcodeLocation == RIGHT) {
-                        setArmHopper(ARM_HOPPER_POSITION.getHigh());
-                        setArmPivot(ARM_PIVOT_POSITION.getHigh());
-                    }
-
-                    state++;
-                    break;
-                case 1:
-                    if (currentTime > time + RETRACT1_SCORE) {
-                        state++;
-                    }
-//                    if (justFinishedSharedMacro && currentTime > time + SLOW_DEPOSIT_TIME) {
-//                        if(getArmHopper()>ARM_HOPPER_POSITION.getLow())
-//                        {
-//                            setArmHopper(getArmHopper()+SLOW_DEPOSIT_INCREMENT);
-//                        }
-//                    }
-                    break;
-                case 2:
-                    time = currentTime;
-                    setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
-                    state++;
-                    break;
-                case 3:
-                    if (currentTime > time + 0.25) {
-                        state++;
-                    }
-                    break;
-                case 4:
-                    time = currentTime;
-                    setSlides(0);
-                    state++;
-                    break;
-                case 5:
-                    if (currentTime > time + RETRACT2_RETRACT || slidesController.atSetPoint()) {
-                        state++;
-                    }
-                    break;
-                case 6:
-                    time = currentTime;
-                    setTurret(0);
-                    state++;
-                    break;
-                case 7:
-                    if (currentTime > time + RETRACT3_TURRET || turretController.atSetPoint()) {
-                        state++;
-                    }
-                    break;
-                case 8:
-                    time = currentTime;
-                    setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
-                    setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
-                    state++;
-                    break;
-                case 9:
-                    if (currentTime > time + RETRACT4_ALMOST) {
-                        state++;
-                    }
-                    break;
-                case 10:
-                    time = currentTime;
-                    setArmPivot(ARM_PIVOT_POSITION.getDown());
-                    setArmHopper(ARM_HOPPER_POSITION.getDown());
-                    state++;
-                    break;
-                case 11:
-                    if (currentTime > time + RETRACT5_DOWN) {
-                        state++;
-                    }
-                    break;
-                case 12:
-                    runningDeposit = false;
-                    justFinishedAMacro = true;
-                    justFinishedAllianceMacro = false;
-                    justFinishedSharedMacro = false;
-                    state = 0;
-            }
-        }
-    }
-
-    public void runningArm(double currentTime) {
-        if (runningArm) {
-            resetIntake();
-            switch (state) {
-                case 0:
-                    time = currentTime;
-                    setIntakePosition((int) (intakeStartPos + (getIntakePosition() - (getIntakePosition() % 145.1))));
-                    setArmPivot(ARM_PIVOT_POSITION.getAlmostDown());
-                    setArmHopper(ARM_HOPPER_POSITION.getAlmostDown());
-                    state++;
-                    break;
-                case 1:
-                    if (currentTime > time + 1) {
-                        state++;
-                    }
-                    break;
-                case 2:
-                    time = currentTime;
-                    setArmPivot(ARM_PIVOT_POSITION.getAlmostHigh());
-                    state++;
-                    break;
-                case 3:
-                    if (currentTime > time + 1.1) {
-                        state++;
-                    }
-                    if (currentTime > time + 0.4) {
-                        setArmHopper(ARM_HOPPER_POSITION.getAlmostHigh());
-                    }
-                    break;
-                case 4:
-                    runningArm = false;
                     justFinishedAMacro = true;
                     state = 0;
             }

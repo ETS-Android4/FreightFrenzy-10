@@ -29,7 +29,6 @@ import static org.firstinspires.ftc.teamcode.util.DepositPosition.SHARED;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
@@ -43,9 +42,6 @@ import org.firstinspires.ftc.teamcode.util.controller.Controller;
 
 @Config
 public class AbstractTeleOp extends OpMode {
-
-    public static int speed_for_driving_macro_in_teleop_WALL_ALIGHNMENT = (int) (20*1);
-    public static int speed_for_driving_macro_in_teleop_EXIT_WAREHOUSE = (int) (20*1);
 
     enum Mode {
         DRIVER_CONTROL,
@@ -81,7 +77,6 @@ public class AbstractTeleOp extends OpMode {
     Trajectory pathToScore;
     Trajectory pathToScore2;
 
-
     @Override
     public void init() {
         telemetry.addLine("Initializing Robot...");
@@ -89,30 +84,21 @@ public class AbstractTeleOp extends OpMode {
 
         setAlliance();
 
-
         driver1 = new Controller(gamepad1);
         driver2 = new Controller(gamepad2);
 
         robot = new Robot(hardwareMap, alliance);
+
         // set the pose from auto
-
-        if (PoseStorage.currentPoseIsDefault){
-            PoseStorage.currentPose = alliance == RED ? PoseStorage.TELEOP_RED_START_POSE : PoseStorage.TELEOP_BLUE_START_POSE;
+        if (PoseStorage.POSE_IS_DEFAULT) {
+            PoseStorage.CURRENT_POSE = alliance == RED ? PoseStorage.START_RED : PoseStorage.START_BLUE;
         }
-
-        robot.drive.setPoseEstimate(PoseStorage.currentPose);
-
-        robot.actuators.intakeStartPos = 0;
+        robot.drive.setPoseEstimate(PoseStorage.CURRENT_POSE);
 
         // reset positions every teleop
         robot.actuators.clearMemory();
 
-        Vector2d score1Pos = alliance == RED
-                ? PoseStorage.SCORE_1_POS_RED
-                : PoseStorage.SCORE_1_POS_BLUE;
-        double score1Heading = alliance == RED ? PoseStorage.SCORE_1_HEADING_RED : PoseStorage.SCORE_1_HEADING_BLUE;
-        Vector2d score2Pos = alliance == RED ? PoseStorage.SCORE_2_POS_RED : PoseStorage.SCORE_2_POS_BLUE;
-        double score2Heading = alliance == RED ? PoseStorage.SCORE_2_HEADING_RED : PoseStorage.SCORE_2_HEADING_BLUE;
+        robot.actuators.intakeStartPos = 0;
 
         //robot.actuators.odoRetracted = false;
         robot.actuators.setOdoServo(ODO_SERVO_DOWN);
@@ -120,16 +106,9 @@ public class AbstractTeleOp extends OpMode {
 
     @Override
     public void init_loop() {
-//        if (robot.camera.getFrameCount() > 0) {
-//            telemetry.addLine("Alliance: "+alliance);
-//            telemetry.addLine(robot.getTelemetry());
-//            telemetry.update();
-//        }
         robot.updateLights();
         telemetry.addLine(("Initialized: " + alliance + " alliance selected."));
         telemetry.update();
-        //robot.actuators.odoRetracted=false;
-        //robot.actuators.setOdoServo(0.01);
     }
 
     @Override
@@ -138,10 +117,7 @@ public class AbstractTeleOp extends OpMode {
         driver1.update();
         driver2.update();
 
-//        robot.actuators.odoRetracted=false;
-
         // drive base
-//        PoseStorage.currentPose = robot.drive.getPoseEstimate();
         switch (currentMode) {
             case DRIVER_CONTROL:
                 // normal driver stuff
@@ -159,19 +135,10 @@ public class AbstractTeleOp extends OpMode {
 
                 // if x is pressed, go into automatic mode
                 if (driver1.getX().isJustPressed()) {
-
-                    // make a finite state machine here to chain the 2 trajectories!
+                    extendTo = HIGH;
                     pathToScore = robot.drive.trajectoryBuilder(robot.drive.getPoseEstimate())
                             .lineToLinearHeading(
-                                    //chose the right pose based on alliance
-                                    (alliance == RED
-                                    ? (new Pose2d(PoseStorage.SCORE_1_POS_RED().getX(),
-                                            PoseStorage.SCORE_1_POS_RED().getY(),
-                                            PoseStorage.SCORE_1_HEADING_RED()))
-                                    : (new Pose2d(PoseStorage.SCORE_1_POS_BLUE().getX(),
-                                                PoseStorage.SCORE_1_POS_BLUE().getY(),
-                                                PoseStorage.SCORE_1_HEADING_BLUE()))
-                                    ),
+                                    (alliance == RED ? PoseStorage.SCORE_1_RED : PoseStorage.SCORE_1_BLUE),
                                     SampleMecanumDrive.getVelocityConstraint(20,
                                             DriveConstants.MAX_ANG_VEL,
                                             DriveConstants.TRACK_WIDTH),
@@ -179,18 +146,9 @@ public class AbstractTeleOp extends OpMode {
                                             DriveConstants.MAX_ACCEL)
                             )
                             .build();
-
                     pathToScore2 = robot.drive.trajectoryBuilder(pathToScore.end())
                             .lineToLinearHeading(
-                                    //chose the right pose based on alliance
-                                    (alliance == RED
-                                            ? (new Pose2d(PoseStorage.SCORE_2_POS_RED().getX(),
-                                                PoseStorage.SCORE_2_POS_RED().getY(),
-                                                PoseStorage.SCORE_2_HEADING_RED()))
-                                            : (new Pose2d(PoseStorage.SCORE_2_POS_BLUE().getX(),
-                                                PoseStorage.SCORE_2_POS_BLUE().getY(),
-                                                PoseStorage.SCORE_2_HEADING_BLUE()))
-                                    ),
+                                    (alliance == RED ? PoseStorage.SCORE_2_RED : PoseStorage.SCORE_2_BLUE),
                                     SampleMecanumDrive.getVelocityConstraint(20,
                                             DriveConstants.MAX_ANG_VEL,
                                             DriveConstants.TRACK_WIDTH),
@@ -198,7 +156,32 @@ public class AbstractTeleOp extends OpMode {
                                             DriveConstants.MAX_ACCEL)
                             )
                             .build();
+                    currentMode = Mode.AUTOMATIC_CONTROL;
+                }
 
+                // or if b is pressed, go into automatic mode
+                if (driver1.getB().isJustPressed()) {
+                    extendTo = SHARED;
+                    pathToScore = robot.drive.trajectoryBuilder(robot.drive.getPoseEstimate())
+                            .lineToLinearHeading(
+                                    (alliance == RED ? PoseStorage.SCORE_1_SHARED_RED : PoseStorage.SCORE_1_SHARED_BLUE),
+                                    SampleMecanumDrive.getVelocityConstraint(20,
+                                            DriveConstants.MAX_ANG_VEL,
+                                            DriveConstants.TRACK_WIDTH),
+                                    SampleMecanumDrive.getAccelerationConstraint(
+                                            DriveConstants.MAX_ACCEL)
+                            )
+                            .build();
+                    pathToScore2 = robot.drive.trajectoryBuilder(pathToScore.end())
+                            .lineToLinearHeading(
+                                    (alliance == RED ? PoseStorage.SCORE_2_SHARED_RED : PoseStorage.SCORE_2_SHARED_BLUE),
+                                    SampleMecanumDrive.getVelocityConstraint(20,
+                                            DriveConstants.MAX_ANG_VEL,
+                                            DriveConstants.TRACK_WIDTH),
+                                    SampleMecanumDrive.getAccelerationConstraint(
+                                            DriveConstants.MAX_ACCEL)
+                            )
+                            .build();
                     currentMode = Mode.AUTOMATIC_CONTROL;
                 }
                 break;
@@ -206,33 +189,26 @@ public class AbstractTeleOp extends OpMode {
                 switch(state) {
                     case 0:
                         robot.drive.followTrajectoryAsync(pathToScore);
-                        robot.actuators.setIntakePosition((int) (robot.actuators.intakeStartPos + (robot.actuators.getIntakePosition() - (robot.actuators.getIntakePosition() % 145.1))));
+                        robot.actuators.setIntakePosition((int) (robot.actuators.getIntakePosition() + (robot.actuators.getIntakePosition() % 145.1)));
                         state++;
                         break;
                     case 1:
-                        if (!robot.drive.isBusy() && robot.actuators.intakeIsReset()) {
+                        if (!robot.drive.isBusy()) {
+                            robot.drive.followTrajectoryAsync(pathToScore2);
+                            robot.actuators.setIntakePower(0);
+                            robot.actuators.runningExtend = true;
                             state++;
                         }
                         break;
                     case 2:
-                        robot.drive.followTrajectoryAsync(pathToScore2);
-                        // start macro
-                        robot.actuators.runningExtend = true;
-                        extendTo = HIGH;
-                        state++;
-                        break;
-                    case 3:
                         if (!robot.actuators.runningExtend) {
-//                            robot.drive.setPoseEstimate(PoseStorage.currentPose);//maybe get rid of this
                             state++;
                         }
                         break;
                 }
-                robot.actuators.resetIntake();
-
 
                 // if drive finishes its task, cede control to the driver
-                if (state == 4) {
+                if (state == 3) {
                     currentMode = Mode.DRIVER_CONTROL;
                     state = 0;
                 }
@@ -245,6 +221,7 @@ public class AbstractTeleOp extends OpMode {
                 break;
         }
         robot.drive.update();
+//        PoseStorage.CURRENT_POSE = robot.drive.getPoseEstimate();
 
         // automation
         if (!(robot.actuators.runningExtend || robot.actuators.runningRetract)) {
@@ -329,11 +306,8 @@ public class AbstractTeleOp extends OpMode {
 
         // intake
         if (driver2.getRightBumper().isJustPressed()) {
-            int newPos = (int) (robot.actuators.getIntakePosition() - (robot.actuators.getIntakePosition() % (145.1)));
-            robot.actuators.setIntakePosition(newPos);
-        } else if (driver2.getRightBumper().isPressed()) {
-            robot.actuators.resetIntake();
-        } else {
+            robot.actuators.setIntakePosition((int) (robot.actuators.getIntakePosition() + (robot.actuators.getIntakePosition() % 145.1)));
+        } else if (!driver2.getRightBumper().isPressed()) {
             if (driver2.getRightTrigger().getValue() > 0.1) {
                 robot.actuators.setIntakePower(-driver2.getRightTrigger().getValue() * INTAKE_SPEED);
             } else if (driver2.getLeftTrigger().getValue() > 0.1) {
@@ -353,17 +327,6 @@ public class AbstractTeleOp extends OpMode {
 
         // cancel macro button
         if(driver2.getLeftStickButton().isJustPressed() || driver2.getRightStickButton().isJustPressed() || driver1.getLeftStickButton().isJustPressed() || driver1.getRightStickButton().isJustPressed()) {
-            // old macro variables
-//            robot.actuators.runningAlliance = false;
-//            robot.actuators.runningDeposit = false;
-//            robot.actuators.runningShared = false;
-//            robot.actuators.sharedQueue = false;
-//            robot.actuators.allianceQueue = false;
-//            robot.actuators.justFinishedAllianceMacro = false;
-//            robot.actuators.runningArm = false;
-//            robot.actuators.pickingUpFreight = false;
-//            robot.actuators.justFinishedSharedMacro = false;
-//            robot.actuators.depositQueue = false;
             robot.actuators.justCancledMacro = true; //used to deactivate memory
             robot.actuators.justFinishedAMacro = true; // used in both
             robot.actuators.setState(0); // used in both
@@ -380,7 +343,7 @@ public class AbstractTeleOp extends OpMode {
         robot.actuators.setDuckies(driver1.getY().isPressed() ? DUCKY_SPEED : 0 , alliance);
 
         // retractables
-        if (!driver1.getBack().isPressed() && driver1.getB().isJustPressed()) {
+        if (!driver2.getBack().isPressed() && driver2.getY().isJustPressed()) {
             robot.actuators.intakeRetracted = !robot.actuators.intakeRetracted;
         }
         if (!driver1.getBack().isPressed() && driver1.getA().isJustPressed()) {
