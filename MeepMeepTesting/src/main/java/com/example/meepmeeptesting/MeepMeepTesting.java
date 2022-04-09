@@ -23,65 +23,40 @@ public class MeepMeepTesting {
                 .setColorScheme(new ColorSchemeRedDark())
                 .setConstraints(30, 30, Math.toRadians(60), Math.toRadians(60), 11)
                 .followTrajectorySequence(drive ->
-                                drive.trajectorySequenceBuilder(new Pose2d(12, -63, 0))
-                                        .splineToConstantHeading(new Vector2d(36, -63), Math.toRadians(0))
-                                        .splineToConstantHeading(new Vector2d(56, -63), Math.toRadians(0),
+                                drive.trajectorySequenceBuilder(new Pose2d(45, -56, Math.toRadians(45)))
+                                        .setReversed(true)
+                                        .splineToLinearHeading(new Pose2d(36, -63, Math.toRadians(0)), Math.toRadians(180),
                                                 new MinVelocityConstraint(Arrays.asList(
                                                         new AngularVelocityConstraint(30),
-                                                        new MecanumVelocityConstraint(10, 11)
+                                                        new MecanumVelocityConstraint(30, 11)
                                                 )),
-                                                new ProfileAccelerationConstraint(30)
-                                        )
-//                                        .lineToSplineHeading(new Pose2d(36, -63, Math.toRadians(0)))
-//                                        .lineToSplineHeading(new Pose2d(50, -63, Math.toRadians(0)),
+                                                new ProfileAccelerationConstraint(30))
+                                        .splineToLinearHeading(new Pose2d(12, -63, Math.toRadians(0)), Math.toRadians(0),
+                                                new MinVelocityConstraint(Arrays.asList(
+                                                        new AngularVelocityConstraint(30),
+                                                        new MecanumVelocityConstraint(30, 11)
+                                                )),
+                                                new ProfileAccelerationConstraint(30))
+//                                        .splineToSplineHeading(new Pose2d(12, -63, Math.toRadians(0)), Math.toRadians(0),
 //                                                new MinVelocityConstraint(Arrays.asList(
 //                                                        new AngularVelocityConstraint(30),
-//                                                        new MecanumVelocityConstraint(10, 11)
+//                                                        new MecanumVelocityConstraint(30, 11)
 //                                                )),
 //                                                new ProfileAccelerationConstraint(30)
 //                                        )
-//                                        .lineToSplineHeading(new Pose2d(12, -63, Math.toRadians(0)))
-                                        .build()
-                );
-        RoadRunnerBotEntity blueWarehouseBot = new DefaultBotBuilder(meepMeep)
-                .setColorScheme(new ColorSchemeBlueDark())
-                .setConstraints(30, 30, Math.toRadians(60), Math.toRadians(60), 11)
-                .followTrajectorySequence(drive ->
-                                drive.trajectorySequenceBuilder(new Pose2d(50, 45, 0))
-                                        .lineToLinearHeading(new Pose2d(40, 63, Math.toRadians(0)))
-                                        .lineToLinearHeading(new Pose2d(12, 63, Math.toRadians(0)))
-                                        .build()
-                );
-
-        RoadRunnerBotEntity redDuckBot = new DefaultBotBuilder(meepMeep)
-                .setColorScheme(new ColorSchemeRedDark())
-                .setConstraints(30, 30, Math.toRadians(60), Math.toRadians(60), 11)
-                .followTrajectorySequence(drive ->
-                                drive.trajectorySequenceBuilder(new Pose2d(-36, -63, -180))
-//                                        .setReversed(true)
-//                                        .splineTo(new Vector2d(-58, -58), Math.toRadians(-135))
-                                        .lineToLinearHeading(new Pose2d(-63, -57, Math.toRadians(-135)))//spin
-                                        .lineToLinearHeading(new Pose2d(-63, -48, Math.toRadians(-135)))
-                                        .lineToLinearHeading(new Pose2d(-40, -48, Math.toRadians(-135)))
-                                        .lineToLinearHeading(new Pose2d(-59, -59, Math.toRadians(-135)))
-                                        .lineToLinearHeading(new Pose2d(-36, -63, Math.toRadians(-180)))//score duck
-//                                        .splineToConstantHeading(new Vector2d(12, 63), Math.toRadians(0))
-                                        .lineToLinearHeading(new Pose2d(-60, -36, Math.toRadians(-180)))
-                                        .build()
-                );
-
-        RoadRunnerBotEntity blueDuckBot = new DefaultBotBuilder(meepMeep)
-                .setColorScheme(new ColorSchemeBlueDark())
-                .setConstraints(30, 30, Math.toRadians(60), Math.toRadians(60), 11)
-                .followTrajectorySequence(drive ->
-                                drive.trajectorySequenceBuilder(new Pose2d(-36, 63, 180))
-                                        .setReversed(true)
-//                                        .splineToConstantHeading(new Vector2d(40, 63), Math.toRadians(0))
-                                        .lineToLinearHeading(new Pose2d(-60, 60, Math.toRadians(135)))
-                                        .lineToLinearHeading(new Pose2d(-36, 60, Math.toRadians(135)))//intake duck
-                                        .lineToLinearHeading(new Pose2d(-36, 63, Math.toRadians(180)))//score duck
-//                                        .splineToConstantHeading(new Vector2d(12, 63), Math.toRadians(0))
-                                        .lineToLinearHeading(new Pose2d(-63, 36, Math.toRadians(180)))
+                                        .splineToLinearHeading(new Pose2d(36, -63, Math.toRadians(0)), Math.toRadians(0),
+                                                new MinVelocityConstraint(Arrays.asList(
+                                                        new AngularVelocityConstraint(30),
+                                                        new MecanumVelocityConstraint(30, 11)
+                                                )),
+                                                new ProfileAccelerationConstraint(30))
+                                        .splineToLinearHeading(new Pose2d(12, -63, Math.toRadians(0)), Math.toRadians(0),
+                                                new MinVelocityConstraint(Arrays.asList(
+                                                        new AngularVelocityConstraint(30),
+                                                        new MecanumVelocityConstraint(30, 11)
+                                                )),
+                                                new ProfileAccelerationConstraint(30))
+                                        .lineToLinearHeading(new Pose2d(40, -63, 0))
                                         .build()
                 );
 
@@ -90,10 +65,7 @@ public class MeepMeepTesting {
                 .setBackgroundAlpha(0.95f)
 
                 // Add bot entities
-//                .addEntity(redWarehouseBot)
-//                .addEntity(blueWarehouseBot)
-                .addEntity(redDuckBot)
-//                .addEntity(blueDuckBot)
+                .addEntity(redWarehouseBot)
                 .start();
     }
 }
