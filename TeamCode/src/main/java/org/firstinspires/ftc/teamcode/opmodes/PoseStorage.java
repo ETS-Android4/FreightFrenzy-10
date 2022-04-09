@@ -12,14 +12,14 @@ public class PoseStorage {
     public static final Pose2d TELEOP_RED_START_POSE = new Pose2d(12,-63,Math.toRadians(0));
     public static final Pose2d TELEOP_BLUE_START_POSE = new Pose2d(12,63,Math.toRadians(0));
 
-    public static final Vector2d SCORE_1_POS_BLUE = new Vector2d(37, 66);
+    public static final Vector2d SCORE_1_POS_BLUE = new Vector2d(37, 63.5);
     public static final double SCORE_1_HEADING_BLUE = Math.toRadians(0);
-    public static final Vector2d SCORE_2_POS_BLUE = new Vector2d(12, 66);
+    public static final Vector2d SCORE_2_POS_BLUE = new Vector2d(12, 63.5);
     public static final double SCORE_2_HEADING_BLUE = Math.toRadians(0);
 
-    public static final Vector2d SCORE_1_POS_RED = new Vector2d(37, -66);
+    public static final Vector2d SCORE_1_POS_RED = new Vector2d(37, -63.5);
     public static final double SCORE_1_HEADING_RED = Math.toRadians(0);
-    public static final Vector2d SCORE_2_POS_RED = new Vector2d(12, -66);
+    public static final Vector2d SCORE_2_POS_RED = new Vector2d(12, -63.5);
     public static final double SCORE_2_HEADING_RED = Math.toRadians(0);
 
     public static Pose2d currentPose(){ return currentPose; }

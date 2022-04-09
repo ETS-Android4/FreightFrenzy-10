@@ -54,7 +54,7 @@ public class Actuators {
     public static double INTAKE_SERVO_SPEED = 0.02;
     public static double DUCKY_SPEED = 1.0;
 
-    public boolean odoRetracted;
+    public boolean odoRetracted = false;
     public boolean intakeRetracted;
 
     // pid variables
@@ -119,8 +119,8 @@ public class Actuators {
     public DepositPosition justFinishedPos = HIGH;
 
     public static double EXTEND_ALMOST = 0.4;
-    public static double EXTEND_FULL = 0.7;
-    public static double EXTEND_TURRET_SLIDES = 0.7;
+    public static double EXTEND_ARM = 0.7;
+    public static double EXTEND_TURRET_SLIDES = 3;
     public static double RETRACT_WAIT_FOR_HOPPER = 0.2;
     public static double RETRACT_SLIDES = 0.5;
     public static double RETRACT_TURRET = 0.35;
@@ -395,7 +395,7 @@ public class Actuators {
                     break;
                 // hopper full
                 case 1:
-                    if (currentTime > time + EXTEND_FULL/2.0) {
+                    if (currentTime > time + EXTEND_ARM /2.0) {
                         time = currentTime;
                         state++;
                     }
@@ -417,7 +417,7 @@ public class Actuators {
                     } else if (depoPos == HIGH) {
                         setArmHopper(ARM_HOPPER_POSITION.getAlmostHigh());
                     }
-                    if (currentTime > time + EXTEND_FULL/2.0) {
+                    if (currentTime > time + EXTEND_ARM /2.0) {
                         time = currentTime;
                         state++;
                     }

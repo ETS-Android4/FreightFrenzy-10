@@ -102,6 +102,11 @@ public class AbstractTeleOp extends OpMode {
 
         robot.drive.setPoseEstimate(PoseStorage.currentPose);
 
+        robot.actuators.intakeStartPos = 0;
+
+        // reset positions every teleop
+        robot.actuators.clearMemory();
+
         Vector2d score1Pos = alliance == RED
                 ? PoseStorage.SCORE_1_POS_RED
                 : PoseStorage.SCORE_1_POS_BLUE;
@@ -109,18 +114,8 @@ public class AbstractTeleOp extends OpMode {
         Vector2d score2Pos = alliance == RED ? PoseStorage.SCORE_2_POS_RED : PoseStorage.SCORE_2_POS_BLUE;
         double score2Heading = alliance == RED ? PoseStorage.SCORE_2_HEADING_RED : PoseStorage.SCORE_2_HEADING_BLUE;
 
-
-
-
-        setAlliance();
-
-
-        robot.actuators.intakeStartPos = 0;
-
-        // reset positions every teleop
-        robot.actuators.clearMemory();
-
-        robot.actuators.odoRetracted = false;
+        //robot.actuators.odoRetracted = false;
+        robot.actuators.setOdoServo(ODO_SERVO_DOWN);
     }
 
     @Override
@@ -133,8 +128,8 @@ public class AbstractTeleOp extends OpMode {
         robot.updateLights();
         telemetry.addLine(("Initialized: " + alliance + " alliance selected."));
         telemetry.update();
-        robot.actuators.odoRetracted=false;
-        robot.actuators.setOdoServo(0.01);
+        //robot.actuators.odoRetracted=false;
+        //robot.actuators.setOdoServo(0.01);
     }
 
     @Override
@@ -167,15 +162,15 @@ public class AbstractTeleOp extends OpMode {
 
                     // make a finite state machine here to chain the 2 trajectories!
                     pathToScore = robot.drive.trajectoryBuilder(robot.drive.getPoseEstimate())
-                            .lineToSplineHeading(
+                            .lineToLinearHeading(
                                     //chose the right pose based on alliance
                                     (alliance == RED
-                                    ? (new Pose2d(PoseStorage.SCORE_1_POS_BLUE().getX(),
-                                        PoseStorage.SCORE_1_POS_BLUE().getY(),
-                                        PoseStorage.SCORE_1_HEADING_BLUE()))
-                                    : (new Pose2d(PoseStorage.SCORE_1_POS_RED().getX(),
+                                    ? (new Pose2d(PoseStorage.SCORE_1_POS_RED().getX(),
                                             PoseStorage.SCORE_1_POS_RED().getY(),
                                             PoseStorage.SCORE_1_HEADING_RED()))
+                                    : (new Pose2d(PoseStorage.SCORE_1_POS_BLUE().getX(),
+                                                PoseStorage.SCORE_1_POS_BLUE().getY(),
+                                                PoseStorage.SCORE_1_HEADING_BLUE()))
                                     ),
                                     SampleMecanumDrive.getVelocityConstraint(20,
                                             DriveConstants.MAX_ANG_VEL,
@@ -186,15 +181,15 @@ public class AbstractTeleOp extends OpMode {
                             .build();
 
                     pathToScore2 = robot.drive.trajectoryBuilder(pathToScore.end())
-                            .lineToSplineHeading(
+                            .lineToLinearHeading(
                                     //chose the right pose based on alliance
                                     (alliance == RED
-                                            ? (new Pose2d(PoseStorage.SCORE_2_POS_BLUE().getX(),
-                                            PoseStorage.SCORE_2_POS_BLUE().getY(),
-                                            PoseStorage.SCORE_2_HEADING_BLUE()))
-                                            : (new Pose2d(PoseStorage.SCORE_2_POS_RED().getX(),
-                                            PoseStorage.SCORE_2_POS_RED().getY(),
-                                            PoseStorage.SCORE_2_HEADING_RED()))
+                                            ? (new Pose2d(PoseStorage.SCORE_2_POS_RED().getX(),
+                                                PoseStorage.SCORE_2_POS_RED().getY(),
+                                                PoseStorage.SCORE_2_HEADING_RED()))
+                                            : (new Pose2d(PoseStorage.SCORE_2_POS_BLUE().getX(),
+                                                PoseStorage.SCORE_2_POS_BLUE().getY(),
+                                                PoseStorage.SCORE_2_HEADING_BLUE()))
                                     ),
                                     SampleMecanumDrive.getVelocityConstraint(20,
                                             DriveConstants.MAX_ANG_VEL,
