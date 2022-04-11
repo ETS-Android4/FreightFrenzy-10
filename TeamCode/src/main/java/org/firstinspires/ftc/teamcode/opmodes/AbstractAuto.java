@@ -8,6 +8,9 @@ import static org.firstinspires.ftc.teamcode.hardware.Actuators.TURRET_ALLIANCE;
 import static org.firstinspires.ftc.teamcode.opmodes.AbstractTeleOp.INTAKE_SPEED;
 import static org.firstinspires.ftc.teamcode.util.Alliance.BLUE;
 import static org.firstinspires.ftc.teamcode.util.Alliance.RED;
+import static org.firstinspires.ftc.teamcode.util.DepositPosition.HIGH;
+import static org.firstinspires.ftc.teamcode.util.DepositPosition.LOW;
+import static org.firstinspires.ftc.teamcode.util.DepositPosition.MID;
 
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -556,7 +559,8 @@ public abstract class AbstractAuto extends LinearOpMode {
                         break;
                     // wait for block and drive out
                     case 2:
-                        if (robot.actuators.hopperIsFull()) {
+                        //if (robot.actuators.hopperIsFull()) {
+                        if (robot.actuators.getHopperDistance() < 15) {
                             robot.drive.breakFollowing();
                             stepStartTime = currentRuntime;
                             stepCaseStep++;
@@ -626,29 +630,40 @@ public abstract class AbstractAuto extends LinearOpMode {
                     case 0:
                         robot.actuators.setIntakeServo(INTAKE_SERVO_DOWN);
                         // set hopper in motion because the normal macro waits a bit
-                        if (barcodeLocation == BarcodeLocation.LEFT) {
-                            robot.actuators.setArmHopper(ARM_HOPPER_POSITION.getAlmostLow());
-                        } else if (barcodeLocation == BarcodeLocation.MIDDLE) {
-                            robot.actuators.setArmHopper(ARM_HOPPER_POSITION.getAlmostMid());
-                        } else if (barcodeLocation == BarcodeLocation.RIGHT || barcodeLocation == BarcodeLocation.UNKNOWN) {
-                            robot.actuators.setArmHopper(ARM_HOPPER_POSITION.getAlmostHigh());
-                        }
                         robot.actuators.setState(4);
                         robot.actuators.runningExtend = true;
+                        if (barcodeLocation == BarcodeLocation.LEFT) {
+                            robot.actuators.setArmPivot(ARM_PIVOT_POSITION.getAlmostLow());
+                        } else if (barcodeLocation == BarcodeLocation.MIDDLE) {
+                            robot.actuators.setArmPivot(ARM_PIVOT_POSITION.getAlmostMid());
+                        } else if (barcodeLocation == BarcodeLocation.RIGHT || barcodeLocation == BarcodeLocation.UNKNOWN) {
+                            robot.actuators.setArmPivot(ARM_PIVOT_POSITION.getAlmostHigh());
+                        }
                         stepCaseStep++;
                         stepStartTime = currentRuntime;
                         break;
                     case 1:
+                        if (stepTime > 0) {
+                            if (barcodeLocation == BarcodeLocation.LEFT) {
+                                robot.actuators.setArmHopper(ARM_HOPPER_POSITION.getAlmostLow());
+                            } else if (barcodeLocation == BarcodeLocation.MIDDLE) {
+                                robot.actuators.setArmHopper(ARM_HOPPER_POSITION.getAlmostMid());
+                            } else if (barcodeLocation == BarcodeLocation.RIGHT || barcodeLocation == BarcodeLocation.UNKNOWN) {
+                                robot.actuators.setArmHopper(ARM_HOPPER_POSITION.getAlmostHigh());
+                            }
+                            stepCaseStep++;
+                        }
+                    case 2:
                         if (!robot.actuators.runningExtend) {
                             stepCaseStep++;
                         }
                         break;
                         // retract
-                    case 2:
+                    case 3:
                         robot.actuators.runningRetract = true;
                         stepCaseStep++;
                         break;
-                    case 3:
+                    case 4:
                         if (robot.actuators.getState() >= 8) { // if the retract macro is almost done, start cycling
                             stepCaseStep++;
                         }
@@ -669,7 +684,7 @@ public abstract class AbstractAuto extends LinearOpMode {
 
             @Override
             public boolean isFinished() {
-                return stepCaseStep == 4;
+                return stepCaseStep == 5;
             }
         });
     }
