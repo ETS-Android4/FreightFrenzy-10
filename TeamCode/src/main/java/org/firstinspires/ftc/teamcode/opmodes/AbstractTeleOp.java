@@ -134,7 +134,7 @@ public class AbstractTeleOp extends OpMode {
 
                 //transform the linear controller output into the nonlinear curve
                 x =  0.2*Math.tan(1.3734*x)  ;
-                y =  0.2*Math.tan(1.3734*y)  ;
+                //y =  0.2*Math.tan(1.3734*y)  ;
                 z =  0.2*Math.tan(1.3734*z)  ;
 
 
