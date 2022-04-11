@@ -137,7 +137,6 @@ public class AbstractTeleOp extends OpMode {
                 //y =  0.2*Math.tan(1.3734*y)  ;
                 z =  0.15*Math.tan(1.4*z)  ;
 
-
                 //old stuff with boost button
 
 //                if (driver1.getLeftBumper().isPressed()) {
