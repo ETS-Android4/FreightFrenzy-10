@@ -134,15 +134,9 @@ public class AbstractTeleOp extends OpMode {
                     z = -driver1.getRightStick().getX(); //* DRIVE_SPEED;
                 //}
 
-                x = Math.copySign(
-                        0.09*Math.tan(1.48*(x))
-                        , x);
-                y = Math.copySign(
-                        0.09*Math.tan(1.48*(y))
-                        , y);
-                z = Math.copySign(
-                        0.09*Math.tan(1.48*(z))
-                        , z);
+                x = Math.copySign( 0.09*Math.tan(1.48*(x)) , x);
+                y = Math.copySign( 0.09*Math.tan(1.48*(y)) , y);
+                z = Math.copySign( 0.09*Math.tan(1.48*(z)) , z);
 
 
 
