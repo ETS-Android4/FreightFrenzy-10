@@ -159,7 +159,7 @@ public class AbstractTeleOp extends OpMode {
                     pathToScore = robot.drive.trajectoryBuilder(robot.drive.getPoseEstimate())
                             .lineToLinearHeading(
                                     (alliance == RED ? PoseStorage.SCORE_1_RED : PoseStorage.SCORE_1_BLUE),
-                                    SampleMecanumDrive.getVelocityConstraint(20,
+                                    SampleMecanumDrive.getVelocityConstraint(30,
                                             DriveConstants.MAX_ANG_VEL,
                                             DriveConstants.TRACK_WIDTH),
                                     SampleMecanumDrive.getAccelerationConstraint(
@@ -169,7 +169,7 @@ public class AbstractTeleOp extends OpMode {
                     pathToScore2 = robot.drive.trajectoryBuilder(pathToScore.end())
                             .lineToLinearHeading(
                                     (alliance == RED ? PoseStorage.SCORE_2_RED : PoseStorage.SCORE_2_BLUE),
-                                    SampleMecanumDrive.getVelocityConstraint(20,
+                                    SampleMecanumDrive.getVelocityConstraint(30,
                                             DriveConstants.MAX_ANG_VEL,
                                             DriveConstants.TRACK_WIDTH),
                                     SampleMecanumDrive.getAccelerationConstraint(
@@ -185,7 +185,7 @@ public class AbstractTeleOp extends OpMode {
                     pathToScore = robot.drive.trajectoryBuilder(robot.drive.getPoseEstimate())
                             .lineToLinearHeading(
                                     (alliance == RED ? PoseStorage.SCORE_1_SHARED_RED : PoseStorage.SCORE_1_SHARED_BLUE),
-                                    SampleMecanumDrive.getVelocityConstraint(20,
+                                    SampleMecanumDrive.getVelocityConstraint(30,
                                             DriveConstants.MAX_ANG_VEL,
                                             DriveConstants.TRACK_WIDTH),
                                     SampleMecanumDrive.getAccelerationConstraint(
@@ -195,7 +195,7 @@ public class AbstractTeleOp extends OpMode {
                     pathToScore2 = robot.drive.trajectoryBuilder(pathToScore.end())
                             .lineToLinearHeading(
                                     (alliance == RED ? PoseStorage.SCORE_2_SHARED_RED : PoseStorage.SCORE_2_SHARED_BLUE),
-                                    SampleMecanumDrive.getVelocityConstraint(20,
+                                    SampleMecanumDrive.getVelocityConstraint(30,
                                             DriveConstants.MAX_ANG_VEL,
                                             DriveConstants.TRACK_WIDTH),
                                     SampleMecanumDrive.getAccelerationConstraint(

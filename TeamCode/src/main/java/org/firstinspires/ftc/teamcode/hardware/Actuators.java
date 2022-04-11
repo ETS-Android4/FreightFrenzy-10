@@ -62,8 +62,8 @@ public class Actuators {
     private PIDController slidesController;
     private PIDController intakeController;
 
-    public static PIDCoefficients TURRET_COEFFICIENTS = new PIDCoefficients(0.0018, 0, 0);
-    public static PIDCoefficients SLIDES_COEFFICIENTS = new PIDCoefficients(0.002, 0, 0);
+    public static PIDCoefficients TURRET_COEFFICIENTS = new PIDCoefficients(0.002, 0, 0);
+    public static PIDCoefficients SLIDES_COEFFICIENTS = new PIDCoefficients(0.0022, 0, 0);
     public static PIDCoefficients INTAKE_COEFFICIENTS = new PIDCoefficients(0.005, 0, 0.0001);
 
     public static double TURRET_TOLERANCE = 30;
