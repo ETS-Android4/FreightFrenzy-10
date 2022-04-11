@@ -134,9 +134,9 @@ public class AbstractTeleOp extends OpMode {
                     z = -driver1.getRightStick().getX(); //* DRIVE_SPEED;
                 //}
 
-                x = Math.copySign(9*Math.tan(Math.abs(x)/(67.5)) , x);
-                y = Math.copySign(9*Math.tan(Math.abs(y)/(67.5)) , y);
-                z = Math.copySign(9*Math.tan(Math.abs(z)/(67.5)) , z);
+                x = 100*Math.copySign(9*Math.tan(Math.abs(x)/(67.5)) , x);
+                y = 100*Math.copySign(9*Math.tan(Math.abs(y)/(67.5)) , y);
+                z = 100*Math.copySign(9*Math.tan(Math.abs(z)/(67.5)) , z);
 
 
                 robot.drive.setWeightedDrivePower(new Pose2d(x, y, z));
