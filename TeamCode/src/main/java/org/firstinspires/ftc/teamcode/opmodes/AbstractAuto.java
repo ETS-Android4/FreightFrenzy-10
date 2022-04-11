@@ -633,27 +633,22 @@ public abstract class AbstractAuto extends LinearOpMode {
                         } else if (barcodeLocation == BarcodeLocation.RIGHT || barcodeLocation == BarcodeLocation.UNKNOWN) {
                             robot.actuators.setArmHopper(ARM_HOPPER_POSITION.getAlmostHigh());
                         }
+                        robot.actuators.setState(4);
+                        robot.actuators.runningExtend = true;
                         stepCaseStep++;
                         stepStartTime = currentRuntime;
                         break;
-                    // wait
                     case 1:
-                        if (stepTime >= 0) {
-                            robot.actuators.runningExtend = true;
-                            stepCaseStep++;
-                        }
-                        break;
-                    case 2:
                         if (!robot.actuators.runningExtend) {
                             stepCaseStep++;
                         }
                         break;
                         // retract
-                    case 3:
+                    case 2:
                         robot.actuators.runningRetract = true;
                         stepCaseStep++;
                         break;
-                    case 4:
+                    case 3:
                         if (robot.actuators.getState() >= 8) { // if the retract macro is almost done, start cycling
                             stepCaseStep++;
                         }
@@ -674,7 +669,7 @@ public abstract class AbstractAuto extends LinearOpMode {
 
             @Override
             public boolean isFinished() {
-                return stepCaseStep == 5;
+                return stepCaseStep == 4;
             }
         });
     }

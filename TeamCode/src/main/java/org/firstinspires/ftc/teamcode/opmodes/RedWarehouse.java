@@ -27,8 +27,8 @@ public class RedWarehouse extends AbstractAuto {
     public static Pose2d SCORE = new Pose2d(10.6875, -66.25, Math.toRadians(0));
     public static Pose2d PARK = new Pose2d(39, -66.25, Math.toRadians(0));
 
-    public int intake_speed = 30;
-    public int creep_speed = 15;
+    public int intake_speed = 35;
+    public int creep_speed = 20;
 
     Trajectory intake1;
     Trajectory intake2;
@@ -122,19 +122,19 @@ public class RedWarehouse extends AbstractAuto {
                 )
                 .build();
 
-        score1 = robot.drive.trajectoryBuilder(intake1.end())
+        score1 = robot.drive.trajectoryBuilder(INTAKE1)
                 .lineToLinearHeading(SCORE)
                 .build();
-        score2 = robot.drive.trajectoryBuilder(intake2.end())
+        score2 = robot.drive.trajectoryBuilder(INTAKE2)
                 .lineToLinearHeading(SCORE)
                 .build();
-        score3 = robot.drive.trajectoryBuilder(intake3.end())
+        score3 = robot.drive.trajectoryBuilder(INTAKE3)
                 .lineToLinearHeading(SCORE)
                 .build();
-        score4 = robot.drive.trajectoryBuilder(intake4.end())
+        score4 = robot.drive.trajectoryBuilder(INTAKE4)
                 .lineToLinearHeading(SCORE)
                 .build();
-        score5 = robot.drive.trajectoryBuilder(intake5.end())
+        score5 = robot.drive.trajectoryBuilder(INTAKE5)
                 .lineToLinearHeading(SCORE)
                 .build();
 
