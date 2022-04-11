@@ -106,7 +106,7 @@ public class Actuators {
     public static double RETRACT_WAIT_FOR_HOPPER = 0.2;
     public static double RETRACT_SLIDES = 0.4;
     public static double RETRACT_TURRET = 0.4;
-    public static double RETRACT_DOWN = 1;
+    public static double RETRACT_DOWN = 0.4;
 
     private int state;
     private double time;
