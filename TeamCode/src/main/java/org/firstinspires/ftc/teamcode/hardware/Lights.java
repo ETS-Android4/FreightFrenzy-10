@@ -13,10 +13,10 @@ public class Lights {
     public static int NUMBER = 1;//80 solid
     public static int RED = 80;
     public static int REDFULL = 3;
-    public static int REDSCORING = 5;
+    public static int REDSCORING = 3;//5
     public static int BLUE = 93;
     public static int BLUEFULL = 2;
-    public static int BLUESCORING = 5;
+    public static int BLUESCORING = 2;//5
 
     private RevBlinkinLedDriver blinkinLedDriver;
     private RevBlinkinLedDriver.BlinkinPattern pattern;

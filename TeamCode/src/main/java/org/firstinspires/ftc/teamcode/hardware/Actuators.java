@@ -409,7 +409,7 @@ public class Actuators {
                     state++;
                     break;
                 case 4:
-                    if (currentTime > time + EXTEND_TURRET || turretController.atSetPoint()) {
+                    if (turretController.atSetPoint()) {
                         if (depoPos == GENERAL) {
                             setSlides(SLIDES_CAP);
                         } else if (depoPos == SHARED) {
@@ -426,7 +426,7 @@ public class Actuators {
                     }
                     break;
                 case 5:
-                    if (currentTime > time + EXTEND_SLIDES || slidesController.atSetPoint()) {
+                    if (slidesController.atSetPoint()) {
                         time = currentTime;
                         state++;
                     }
@@ -553,7 +553,7 @@ public class Actuators {
                     state++;
                     break;
                 case 5:
-                    if (currentTime > time + RETRACT_SLIDES || slidesController.atSetPoint()) {
+                    if (slidesController.atSetPoint()) {
                         state++;
                     }
                     break;
