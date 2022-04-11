@@ -123,7 +123,23 @@ public class AbstractTeleOp extends OpMode {
                 // normal driver stuff
                 double x, y, z;
 
+
+
+                //new stuff with "exponential" speed
+
+                //get the initial values
+                x = driver1.getLeftStick().getY();
+                y = -driver1.getLeftStick().getX();
+                z = -driver1.getRightStick().getX();
+
+                //transform them into the nonlinear curve
+                x =  0.09*Math.tan(1.48*x)  ;
+                y =  0.09*Math.tan(1.48*y)  ;
+                z =  0.09*Math.tan(1.48*z)  ;
+
+
                 //old stuff with boost button
+
 //                if (driver1.getLeftBumper().isPressed()) {
 //                    x = driver1.getLeftStick().getY();
 //                    y = -driver1.getLeftStick().getX();
@@ -133,19 +149,6 @@ public class AbstractTeleOp extends OpMode {
 //                    y = -driver1.getLeftStick().getX(); //* DRIVE_SPEED;
 //                    z = -driver1.getRightStick().getX(); //* DRIVE_SPEED;
 //                }
-
-                //new stuff with "exponential" speed
-
-                //get the initial values
-                x = driver1.getLeftStick().getY(); //* DRIVE_SPEED;
-                y = -driver1.getLeftStick().getX(); //* DRIVE_SPEED;
-                z = -driver1.getRightStick().getX(); //* DRIVE_SPEED;
-
-                //transform them into the nonlinear curve
-                x =  0.09*Math.tan(1.48*x)  ;
-                y =  0.09*Math.tan(1.48*y)  ;
-                z =  0.09*Math.tan(1.48*z)  ;
-
 
 
                 robot.drive.setWeightedDrivePower(new Pose2d(x, y, z));
