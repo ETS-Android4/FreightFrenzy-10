@@ -137,6 +137,7 @@ public class Actuators {
     public static int SLIDES_ALLIANCE_HIGH = 780;
 
 
+    public static double ARM_PIVOT_INTERMEDIATE_POSITION = 0.5;
     public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.9, 0.9, 0.9, 0.48, 0.48, 0.09, 0.01, 0.1, 0.24, 0.8, 0.09, 0.01, 0.1, 0.24);
     public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.55, 0.55, 0.55, 0.4, 0.4, 0.2, 0.24, 0.2, 0.25, 0.99, 0.66, 0.48, 0.48, 0.6);
 
@@ -559,6 +560,7 @@ public class Actuators {
                     break;
                 case 6:
                     setTurret(0);
+                    setArmPivot(ARM_PIVOT_INTERMEDIATE_POSITION);
                     time = currentTime;
                     state++;
                     break;
