@@ -123,14 +123,21 @@ public class AbstractTeleOp extends OpMode {
                 // normal driver stuff
                 double x, y, z;
                 if (driver1.getLeftBumper().isPressed()) {
-                    x = driver1.getLeftStick().getY() * DRIVE_SPEED/2;
-                    y = -driver1.getLeftStick().getX() * DRIVE_SPEED/2;
-                    z = -driver1.getRightStick().getX() * DRIVE_SPEED/2;
+                    x = driver1.getLeftStick().getY();
+                    y = -driver1.getLeftStick().getX();
+                    z = -driver1.getRightStick().getX();
                 } else {
                     x = driver1.getLeftStick().getY() * DRIVE_SPEED;
                     y = -driver1.getLeftStick().getX() * DRIVE_SPEED;
                     z = -driver1.getRightStick().getX() * DRIVE_SPEED;
                 }
+//                x = driver1.getLeftStick().getY() * DRIVE_SPEED;
+//                y = -driver1.getLeftStick().getX() * DRIVE_SPEED;
+//                z = -driver1.getRightStick().getX() * DRIVE_SPEED;
+//                x = Math.copySign(0.9*Math.pow(Math.tanh(Math.abs(x))/Math.tanh(1),8)+0.1,-x);
+//                y = Math.copySign(0.9*Math.pow(Math.tanh(Math.abs(y))/Math.tanh(1),8)+0.1,-y);
+//                z = Math.copySign(0.9*Math.pow(Math.tanh(Math.abs(z))/Math.tanh(1),8)+0.1,-z);
+
                 robot.drive.setWeightedDrivePower(new Pose2d(x, y, z));
 
                 // if x is pressed, go into automatic mode
