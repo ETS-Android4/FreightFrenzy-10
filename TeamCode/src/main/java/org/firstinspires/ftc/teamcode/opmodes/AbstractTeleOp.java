@@ -133,9 +133,9 @@ public class AbstractTeleOp extends OpMode {
                 z = -driver1.getRightStick().getX();
 
                 //transform the linear controller output into the nonlinear curve
-                x =  0.15*Math.tan(1.4*x)  ; // blue desmos curve
+                x =  0.152*Math.tan(1.42*x)  ; // blue desmos curve
                 //y =  0.2*Math.tan(1.3734*y)  ;
-                z =  0.15*Math.tan(1.4*z)  ;
+                z =  0.152*Math.tan(1.42*z)  ;
 
                 //old stuff with boost button
 
