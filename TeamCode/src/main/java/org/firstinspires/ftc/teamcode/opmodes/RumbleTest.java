@@ -23,6 +23,8 @@ import static org.firstinspires.ftc.teamcode.hardware.Actuators.TURRET_SPEED;
 import static org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive.DRIVE_SPEED;
 import static org.firstinspires.ftc.teamcode.util.Alliance.BLUE;
 import static org.firstinspires.ftc.teamcode.util.Alliance.RED;
+import static org.firstinspires.ftc.teamcode.util.Constants.LEFT_DUCKY;
+import static org.firstinspires.ftc.teamcode.util.Constants.RIGHT_DUCKY;
 import static org.firstinspires.ftc.teamcode.util.DepositPosition.GENERAL;
 import static org.firstinspires.ftc.teamcode.util.DepositPosition.HIGH;
 import static org.firstinspires.ftc.teamcode.util.DepositPosition.SHARED;
@@ -33,6 +35,7 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.CRServo;
 
 import org.firstinspires.ftc.teamcode.hardware.Robot;
 import org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants;
@@ -51,6 +54,10 @@ public class RumbleTest extends OpMode {
     private Controller driver1;
     private Controller driver2;
 
+    private CRServo leftDucky;
+//    private CRServo rightDucky;
+
+
     //private Robot robot;
 
     @Override
@@ -60,6 +67,9 @@ public class RumbleTest extends OpMode {
 
         driver1 = new Controller(gamepad1);
         driver2 = new Controller(gamepad2);
+
+        this.leftDucky = hardwareMap.get(CRServo.class, LEFT_DUCKY);
+//        this.rightDucky = hardwareMap.get(CRServo.class, RIGHT_DUCKY);
 
         //robot.actuators.odoRetracted = false;
 
@@ -89,6 +99,14 @@ public class RumbleTest extends OpMode {
         flag = false;
         }
 
+        if (driver1.getA().isPressed()) {
+            leftDucky.setPower(0.9);
+//            rightDucky.setPower(0.9);
+        } else if (leftDucky.getPower() > 0) {
+            leftDucky.setPower(0);
+//            rightDucky.setPower(0);
+        }
+
 //        if(driver1.getA().isJustPressed()){
 //            driver1.rumble(1000);
 //        }else{driver1.stopRumble();}
@@ -106,6 +124,8 @@ public class RumbleTest extends OpMode {
 //        }else{driver2.stopRumble();}
 //
 //
+
+
 
 
         //robot.actuators.update();
