@@ -315,7 +315,13 @@ public class AbstractTeleOp extends OpMode {
                 //reset turret pos so that the current value becomes the zero point
                 robot.actuators.resetTurret();
                 turretPosition = 0;
+                //robot.drive.setPoseEstimate(new Pose2d(10.6875, (alliance == RED ? -65.75 : 65.75), Math.toRadians(0)));
+            }
+
+            //reset robot field position
+            if(driver1.getLeftBumper().isJustPressed() || driver1.getRightBumper().isJustPressed()){
                 robot.drive.setPoseEstimate(new Pose2d(10.6875, (alliance == RED ? -65.75 : 65.75), Math.toRadians(0)));
+
             }
 
             // cancel macro button
