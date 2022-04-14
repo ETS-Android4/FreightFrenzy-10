@@ -4,7 +4,7 @@ import com.acmerobotics.dashboard.config.Config;
 
 @Config
 public class Joystick {
-    public static double DEADZONE = 0.1;
+    public static double DEADZONE = 0.05;
     double x = 0;
     double y = 0;
 
