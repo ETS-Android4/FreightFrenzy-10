@@ -75,7 +75,6 @@ public class AbstractTeleOp extends OpMode {
     }
 
     Trajectory pathToScore;
-    Trajectory pathToScore2;
 
     @Override
     public void init() {
@@ -94,6 +93,7 @@ public class AbstractTeleOp extends OpMode {
             PoseStorage.CURRENT_POSE = alliance == RED ? PoseStorage.START_RED : PoseStorage.START_BLUE;
         }
         robot.drive.setPoseEstimate(PoseStorage.CURRENT_POSE);
+        PoseStorage.POSE_IS_DEFAULT = true;
 
         // reset positions every teleop
         robot.actuators.clearMemory();
@@ -117,13 +117,18 @@ public class AbstractTeleOp extends OpMode {
         driver1.update();
         driver2.update();
 
+        // check for rumble
+        if (!robot.actuators.hasBlock && robot.actuators.hopperIsFull()) {
+            driver1.rumble(500);
+            driver2.rumble(500);
+            robot.actuators.hasBlock = true;
+        }
+
         // drive base
         switch (currentMode) {
             case DRIVER_CONTROL:
                 // normal driver stuff
                 double x, y, z;
-
-
 
                 //new stuff with "exponential" speed
 
@@ -138,7 +143,6 @@ public class AbstractTeleOp extends OpMode {
                 z =  0.152*Math.tan(1.42*z)  ;
 
                 //old stuff with boost button
-
 //                if (driver1.getLeftBumper().isPressed()) {
 //                    x = driver1.getLeftStick().getY();
 //                    y = -driver1.getLeftStick().getX();
@@ -149,62 +153,34 @@ public class AbstractTeleOp extends OpMode {
 //                    z = -driver1.getRightStick().getX(); //* DRIVE_SPEED;
 //                }
 
-
                 robot.drive.setWeightedDrivePower(new Pose2d(x, y, z));
 
                 // if x is pressed, go into automatic mode
                 if (driver1.getX().isJustPressed()) {
                     extendTo = HIGH;
                     pathToScore = robot.drive.trajectoryBuilder(robot.drive.getPoseEstimate(), true)
-                            .lineToLinearHeading(
-                                    (alliance == RED ? PoseStorage.SCORE_1_RED : PoseStorage.SCORE_1_BLUE)
-//                                    SampleMecanumDrive.getVelocityConstraint(30,
-//                                            DriveConstants.MAX_ANG_VEL,
-//                                            DriveConstants.TRACK_WIDTH),
-//                                    SampleMecanumDrive.getAccelerationConstraint(
-//                                            DriveConstants.MAX_ACCEL)
-                            )
+                            .lineToSplineHeading((alliance == RED ? PoseStorage.SCORE_1_RED : PoseStorage.SCORE_1_BLUE))
                             .addDisplacementMarker(() -> {
                                 robot.actuators.setIntakePower(0);
                                 robot.actuators.runningExtend = true;
                             })
-                            .splineToLinearHeading(alliance == RED ? PoseStorage.SCORE_2_RED : PoseStorage.SCORE_2_BLUE, Math.toRadians(180))
+                            .splineToSplineHeading(alliance == RED ? PoseStorage.SCORE_1_1_RED : PoseStorage.SCORE_1_1_BLUE, Math.toRadians(180))
+                            .lineToSplineHeading(alliance == RED ? PoseStorage.SCORE_2_RED : PoseStorage.SCORE_2_BLUE)
                             .build();
-//                    pathToScore2 = robot.drive.trajectoryBuilder(pathToScore.end())
-//                            .lineToLinearHeading(
-//                                    (alliance == RED ? PoseStorage.SCORE_2_RED : PoseStorage.SCORE_2_BLUE),
-//                                    SampleMecanumDrive.getVelocityConstraint(30,
-//                                            DriveConstants.MAX_ANG_VEL,
-//                                            DriveConstants.TRACK_WIDTH),
-//                                    SampleMecanumDrive.getAccelerationConstraint(
-//                                            DriveConstants.MAX_ACCEL)
-//                            )
-//                            .build();
                     currentMode = Mode.AUTOMATIC_CONTROL;
                 }
 
                 // or if b is pressed, go into automatic mode
                 if (driver1.getB().isJustPressed()) {
                     extendTo = SHARED;
-                    pathToScore = robot.drive.trajectoryBuilder(robot.drive.getPoseEstimate())
-                            .lineToLinearHeading(
-                                    (alliance == RED ? PoseStorage.SCORE_1_SHARED_RED : PoseStorage.SCORE_1_SHARED_BLUE),
-                                    SampleMecanumDrive.getVelocityConstraint(30,
-                                            DriveConstants.MAX_ANG_VEL,
-                                            DriveConstants.TRACK_WIDTH),
-                                    SampleMecanumDrive.getAccelerationConstraint(
-                                            DriveConstants.MAX_ACCEL)
-                            )
-                            .build();
-                    pathToScore2 = robot.drive.trajectoryBuilder(pathToScore.end())
-                            .lineToLinearHeading(
-                                    (alliance == RED ? PoseStorage.SCORE_2_SHARED_RED : PoseStorage.SCORE_2_SHARED_BLUE),
-                                    SampleMecanumDrive.getVelocityConstraint(30,
-                                            DriveConstants.MAX_ANG_VEL,
-                                            DriveConstants.TRACK_WIDTH),
-                                    SampleMecanumDrive.getAccelerationConstraint(
-                                            DriveConstants.MAX_ACCEL)
-                            )
+                    pathToScore = robot.drive.trajectoryBuilder(robot.drive.getPoseEstimate(), true)
+                            .lineToSplineHeading((alliance == RED ? PoseStorage.SCORE_1_SHARED_RED : PoseStorage.SCORE_1_SHARED_BLUE))
+                            .addDisplacementMarker(() -> {
+                                robot.actuators.setIntakePower(0);
+                                robot.actuators.runningExtend = true;
+                            })
+                            .splineToSplineHeading(alliance == RED ? PoseStorage.SCORE_1_1_SHARED_RED : PoseStorage.SCORE_1_1_SHARED_BLUE, Math.toRadians(180))
+                            .lineToSplineHeading(alliance == RED ? PoseStorage.SCORE_2_SHARED_RED : PoseStorage.SCORE_2_SHARED_BLUE)
                             .build();
                     currentMode = Mode.AUTOMATIC_CONTROL;
                 }
@@ -216,19 +192,6 @@ public class AbstractTeleOp extends OpMode {
                         robot.actuators.setIntakePosition((int) (robot.actuators.getIntakePosition() + (robot.actuators.getIntakePosition() % 145.1)));
                         state++;
                         break;
-//                    case 1:
-//                        if (!robot.drive.isBusy()) {
-//                            robot.drive.followTrajectoryAsync(pathToScore2);
-//                            robot.actuators.setIntakePower(0);
-//                            robot.actuators.runningExtend = true;
-//                            state++;
-//                        }
-//                        break;
-//                    case 2:
-//                        if (!robot.actuators.runningExtend) {
-//                            state++;
-//                        }
-//                        break;
                     case 1:
                         if (!robot.drive.isBusy() && !robot.actuators.runningExtend) {
                             state++;

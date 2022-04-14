@@ -5,7 +5,6 @@ import static org.firstinspires.ftc.teamcode.util.Alliance.BLUE;
 import static org.firstinspires.ftc.teamcode.util.Alliance.RED;
 import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.LEFT;
 import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.MIDDLE;
-import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.RIGHT;
 import static org.firstinspires.ftc.teamcode.util.Constants.COLOR;
 import static org.firstinspires.ftc.teamcode.util.Constants.HOPPER_SERVO;
 import static org.firstinspires.ftc.teamcode.util.Constants.INTAKE;
@@ -45,6 +44,7 @@ public class Actuators {
     public static double INTAKE_RESET_TIME = 1;
     public static double HOPPER_DISTANCE_CUTOFF = 25;
     public int intakeStartPos = (int) (145.1/8.0);
+    public boolean hasBlock = false;
 
     // driver variables
     public static int TURRET_SPEED = 5;
@@ -83,8 +83,8 @@ public class Actuators {
     public static double ARM_PIVOT_MAX = 0.99;
     public static double INTAKE_SERVO_DOWN = 0.99;
     public static double INTAKE_SERVO_UP = 0.35;
-    public static double ODO_SERVO_DOWN = 0.99;
-    public static double ODO_SERVO_UP = 0.01;
+    public static double ODO_SERVO_UP = 0.99;
+    public static double ODO_SERVO_DOWN = 0.01;
 
     // old state machine variables
     public boolean runningAlliance;
@@ -125,12 +125,12 @@ public class Actuators {
 
     // macro positions
     // IF YOU EDIT THESE MACRO POSITIONS, COPY THEM TO THE CLEARMEMORY FUNCTION LINE 189!!!!
-    public static int TURRET_CAP = 0;
-    public static int TURRET_SHARED = -1000;
+    public static int TURRET_GENERAL = -130;
+    public static int TURRET_SHARED = -900;
     public static int TURRET_ALLIANCE = 680;
 
     public static int SLIDES_CAP = 140;
-    public static int SLIDES_GENERAL = 150;
+    public static int SLIDES_AUTO = 150;
     public static int SLIDES_SHARED = 30;
     public static int SLIDES_ALLIANCE_LOW = 691;
     public static int SLIDES_ALLIANCE_MID = 635;
@@ -139,11 +139,11 @@ public class Actuators {
 
     public static double ARM_PIVOT_INTERMEDIATE_POSITION = 0.5;
     public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.9, 0.9, 0.9, 0.48, 0.48, 0.09, 0.01, 0.1, 0.24, 0.8, 0.09, 0.01, 0.1, 0.24);
-    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.55, 0.55, 0.55, 0.4, 0.4, 0.2, 0.24, 0.2, 0.25, 0.99, 0.66, 0.48, 0.48, 0.6);
+    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.55, 0.55, 0.55, 0.4, 0.55, 0.2, 0.24, 0.2, 0.25, 0.99, 0.66, 0.48, 0.48, 0.6);
 
     public void clearMemory() {
-        TURRET_CAP = 0;
-        TURRET_SHARED = -1000;
+        TURRET_GENERAL = -130;
+        TURRET_SHARED = -900;
         TURRET_ALLIANCE = 680;
 
         SLIDES_CAP = 140;
@@ -318,11 +318,6 @@ public class Actuators {
         runningExtend(currentTime, alliance, barcodeLocation == LEFT ? LOW : (barcodeLocation == MIDDLE ? MID : HIGH));
     }
 
-    public void runningShared(double currentTime, Alliance alliance, BarcodeLocation barcodeLocation) {
-//        runningShared_OLD(currentTime, alliance, barcodeLocation);
-        runningExtend(currentTime, alliance, SHARED);
-    }
-
     public void runningDeposit(double currentTime, Alliance alliance, BarcodeLocation barcodeLocation) {
 //        runningDeposit_OLD(currentTime, alliance, barcodeLocation);
         runningRetract(currentTime, alliance, barcodeLocation == LEFT ? LOW : (barcodeLocation == MIDDLE ? MID : HIGH));
@@ -332,21 +327,6 @@ public class Actuators {
     public void runningExtend(double currentTime, Alliance alliance, DepositPosition depoPos) {
         if (runningExtend) {
             switch(state) {
-                // reset intake
-//                case 0:
-//                    setIntakePosition((int) (intakeStartPos + (getIntakePosition() - (getIntakePosition() % 145.1))));
-//                    time = currentTime;
-//                    state++;
-//                    break;
-//                case 1:
-//                    resetIntake();
-//                    if (intakeController.atSetPoint()) {
-//                        intake.setPower(0);
-//                        this.intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);//allow hopper to push intake out of the way
-//                        time = currentTime;
-//                        state++;
-//                    }
-//                    break;
                 // arm full
                 case 0:
                     if (depoPos == GENERAL) {
@@ -394,9 +374,9 @@ public class Actuators {
                 // turret and slides
                 case 3:
                     if (depoPos == GENERAL && alliance == RED) {
-                        setTurret(TURRET_CAP);
+                        setTurret(TURRET_GENERAL);
                     } else if (depoPos == GENERAL && alliance == BLUE) {
-                        setTurret(-TURRET_CAP);
+                        setTurret(-TURRET_GENERAL);
                     } else if (depoPos == SHARED && alliance == RED) {
                         setTurret(TURRET_SHARED);
                     } else if (depoPos == SHARED && alliance == BLUE) {
@@ -550,6 +530,9 @@ public class Actuators {
                     break;
                 // return slides and turret
                 case 4:
+                    // update variable to keep track of blocks for when to rumble
+                    hasBlock = false;
+
                     setSlides(30);
                     time = currentTime;
                     state++;
@@ -580,7 +563,6 @@ public class Actuators {
                     break;
                 case 9:
                     if (currentTime > time + RETRACT_DOWN) {
-//                        this.intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);//hopper cannot be pushed anymore
                         state++;
                     }
                     break;

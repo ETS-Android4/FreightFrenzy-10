@@ -1,13 +1,9 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_HOPPER_POSITION;
-import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_PIVOT_POSITION;
-import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_RESET_TIME;
-import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SERVO_DOWN;
 import static org.firstinspires.ftc.teamcode.opmodes.AbstractTeleOp.INTAKE_SPEED;
 import static org.firstinspires.ftc.teamcode.util.Alliance.BLUE;
 import static org.firstinspires.ftc.teamcode.util.Alliance.RED;
-import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.RIGHT;
+import static org.firstinspires.ftc.teamcode.util.DepositPosition.GENERAL;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
@@ -23,10 +19,10 @@ public class RedDuck extends AbstractAuto {
 
     //define the waypoints in this auto
     public static Pose2d START_POSE = new Pose2d(-34.6875, -65.75, Math.toRadians(-180));
-    public static Pose2d DUCK_SPIN = new Pose2d(-53.6875, -59.75, Math.toRadians(-180));
-    public static Pose2d DUCK_TRANSITION = new Pose2d(-48, -54, Math.toRadians(-90));
-    public static Pose2d DUCK_PICKUP = new Pose2d(-40, -57, Math.toRadians(-45));
-    public static Pose2d DUCK_SCORE = new Pose2d(-36, -63, Math.toRadians(-180));
+    public static Pose2d DUCK_SPIN = new Pose2d(-55, -60, Math.toRadians(-180));
+    public static Pose2d DUCK_TRANSITION = new Pose2d(-54.5, -58.5, Math.toRadians(220));
+    public static Pose2d DUCK_PICKUP = new Pose2d(-54.5, -58, Math.toRadians(300));
+    public static Pose2d DUCK_SCORE = new Pose2d(-59, -44, Math.toRadians(-180));
     public static Pose2d PARK = new Pose2d(-60, -36, Math.toRadians(-180));
 
     Trajectory spin;
@@ -56,7 +52,7 @@ public class RedDuck extends AbstractAuto {
 
         spin = robot.drive.trajectoryBuilder(START_POSE)
                 .lineToLinearHeading(DUCK_SPIN,
-                        SampleMecanumDrive.getVelocityConstraint(15, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
                         .build();
         transition = robot.drive.trajectoryBuilder(spin.end())
@@ -67,7 +63,7 @@ public class RedDuck extends AbstractAuto {
 
         pickup = robot.drive.trajectoryBuilder(transition.end())
                 .lineToLinearHeading(DUCK_PICKUP,
-                        SampleMecanumDrive.getVelocityConstraint(10, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
+                        SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL)
                 )
 //                .lineToLinearHeading(new Pose2d(-63, -48, Math.toRadians(-135)),
@@ -95,14 +91,14 @@ public class RedDuck extends AbstractAuto {
     public void initializeSteps(BarcodeLocation location) {
         scorePreloadInAuto(1000, alliance, location);
         followTrajectory(spin);
-        addDuckSpinner(5, 0.8);
-//        addIntake(0, -INTAKE_SPEED);
+        addDuckSpinner(4, 0.8);
+        addIntake(0, -INTAKE_SPEED);
         followTrajectory(transition);
-//        followTrajectory(pickup);
-//        followTrajectory(score);
-//        addIntake(0, 0);
-//        addAlliance(10000, BLUE, RIGHT);
-//        addDeposit(10000, BLUE, RIGHT);
+        followTrajectory(pickup);
+        addIntake(0, 0);
+        followTrajectory(score);
+        addExtend(10000, RED, GENERAL);
+        addRetract(10000, RED, GENERAL);
 //        followTrajectory(park);
     }
 }

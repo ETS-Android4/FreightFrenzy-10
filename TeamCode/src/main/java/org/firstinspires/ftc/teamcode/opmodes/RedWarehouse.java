@@ -27,8 +27,8 @@ public class RedWarehouse extends AbstractAuto {
     public static Pose2d SCORE = new Pose2d(10.6875, -66.25, Math.toRadians(0));
     public static Pose2d PARK = new Pose2d(39, -66.25, Math.toRadians(0));
 
-    public int intake_speed = 30;
-    public int creep_speed = 15;
+    public int intake_speed = 35;
+    public int creep_speed = 8;
 
     Trajectory intake1;
     Trajectory intake2;
@@ -150,7 +150,7 @@ public class RedWarehouse extends AbstractAuto {
         cycleBlockInAuto(1000, intake2, score2, alliance, RIGHT);
         cycleBlockInAuto(1000, intake3, score3, alliance, RIGHT);
         cycleBlockInAuto(1000, intake4, score4, alliance, RIGHT);
-        cycleBlockInAuto(1000, intake5, score5, alliance, RIGHT);
+//        cycleBlockInAuto(1000, intake5, score5, alliance, RIGHT);
         parkInAuto(1000, alliance, park, RIGHT);
     }
 }

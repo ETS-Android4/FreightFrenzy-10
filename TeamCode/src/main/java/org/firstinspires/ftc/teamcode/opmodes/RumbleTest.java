@@ -1,47 +1,18 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import static androidx.core.math.MathUtils.clamp;
-import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_HOPPER_MAX;
-import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_HOPPER_MIN;
-import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_HOPPER_POSITION;
-import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_HOPPER_SPEED;
-import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_PIVOT_MAX;
-import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_PIVOT_MIN;
-import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_PIVOT_POSITION;
-import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_PIVOT_SPEED;
-import static org.firstinspires.ftc.teamcode.hardware.Actuators.DUCKY_SPEED;
-import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SERVO_DOWN;
-import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SERVO_UP;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.ODO_SERVO_DOWN;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.ODO_SERVO_UP;
-import static org.firstinspires.ftc.teamcode.hardware.Actuators.SLIDES_MAX;
-import static org.firstinspires.ftc.teamcode.hardware.Actuators.SLIDES_MIN;
-import static org.firstinspires.ftc.teamcode.hardware.Actuators.SLIDES_SPEED;
-import static org.firstinspires.ftc.teamcode.hardware.Actuators.TURRET_MAX;
-import static org.firstinspires.ftc.teamcode.hardware.Actuators.TURRET_MIN;
-import static org.firstinspires.ftc.teamcode.hardware.Actuators.TURRET_SPEED;
-import static org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive.DRIVE_SPEED;
-import static org.firstinspires.ftc.teamcode.util.Alliance.BLUE;
-import static org.firstinspires.ftc.teamcode.util.Alliance.RED;
 import static org.firstinspires.ftc.teamcode.util.Constants.LEFT_DUCKY;
+import static org.firstinspires.ftc.teamcode.util.Constants.ODO_SERVO;
 import static org.firstinspires.ftc.teamcode.util.Constants.RIGHT_DUCKY;
-import static org.firstinspires.ftc.teamcode.util.DepositPosition.GENERAL;
-import static org.firstinspires.ftc.teamcode.util.DepositPosition.HIGH;
-import static org.firstinspires.ftc.teamcode.util.DepositPosition.SHARED;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.teamcode.hardware.Robot;
-import org.firstinspires.ftc.teamcode.roadrunner.drive.DriveConstants;
-import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.Alliance;
-import org.firstinspires.ftc.teamcode.util.DepositPosition;
 import org.firstinspires.ftc.teamcode.util.controller.Controller;
 
 
@@ -55,10 +26,11 @@ public class RumbleTest extends OpMode {
     private Controller driver2;
 
     private CRServo leftDucky;
-//    private CRServo rightDucky;
+    private CRServo rightDucky;
 
+    private Servo odoServo;
 
-    //private Robot robot;
+    boolean odoRetracted = false;
 
     @Override
     public void init() {
@@ -69,20 +41,14 @@ public class RumbleTest extends OpMode {
         driver2 = new Controller(gamepad2);
 
         this.leftDucky = hardwareMap.get(CRServo.class, LEFT_DUCKY);
-//        this.rightDucky = hardwareMap.get(CRServo.class, RIGHT_DUCKY);
-
-        //robot.actuators.odoRetracted = false;
-
-        //robot.lights.setPattern(98);
+        this.rightDucky = hardwareMap.get(CRServo.class, RIGHT_DUCKY);
+        this.odoServo = hardwareMap.get(Servo.class, ODO_SERVO);
     }
 
     @Override
     public void init_loop() {
-        //robot.updateLights();
         telemetry.addLine(("Initialized: " + alliance + " alliance selected."));
         telemetry.update();
-        //robot.actuators.odoRetracted=false;
-        //robot.actuators.setOdoServo(0.01);
     }
 
     boolean flag = true;
@@ -101,11 +67,17 @@ public class RumbleTest extends OpMode {
 
         if (driver1.getA().isPressed()) {
             leftDucky.setPower(0.9);
-//            rightDucky.setPower(0.9);
+            rightDucky.setPower(0.9);
         } else if (leftDucky.getPower() > 0) {
             leftDucky.setPower(0);
-//            rightDucky.setPower(0);
+            rightDucky.setPower(0);
         }
+
+        if (driver1.getB().isJustPressed()) {
+            odoRetracted = !odoRetracted;
+        }
+
+        odoServo.setPosition(odoRetracted ? ODO_SERVO_UP : ODO_SERVO_DOWN);
 
 //        if(driver1.getA().isJustPressed()){
 //            driver1.rumble(1000);
@@ -125,14 +97,12 @@ public class RumbleTest extends OpMode {
 //
 //
 
-
-
-
         //robot.actuators.update();
 
         // telemetry
         telemetry.addLine("Rumble mode: " + driver1.isRumbling());
-        //telemetry.addLine(robot.getTelemetry());
+        telemetry.addLine("Odometry: "+odoServo.getPosition());
+        telemetry.addLine("Odo retracted: "+odoRetracted);
         telemetry.update();
     }
 }
