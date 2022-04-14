@@ -138,9 +138,9 @@ public class AbstractTeleOp extends OpMode {
                 z = -driver1.getRightStick().getX();
 
                 //transform the linear controller output into the nonlinear curve
-                x =  0.152*Math.tan(1.42*x)  ; // blue desmos curve
+                x = 0.152 * Math.tan(1.42 * x); // blue desmos curve
                 //y =  0.2*Math.tan(1.3734*y)  ;
-                z =  0.152*Math.tan(1.42*z)  ;
+                z = 0.152 * Math.tan(1.42 * z);
 
                 //old stuff with boost button
 //                if (driver1.getLeftBumper().isPressed()) {
@@ -186,7 +186,7 @@ public class AbstractTeleOp extends OpMode {
                 }
                 break;
             case AUTOMATIC_CONTROL:
-                switch(state) {
+                switch (state) {
                     case 0:
                         robot.drive.followTrajectoryAsync(pathToScore);
                         robot.actuators.setIntakePosition((int) (robot.actuators.getIntakePosition() + (robot.actuators.getIntakePosition() % 145.1)));
@@ -229,31 +229,31 @@ public class AbstractTeleOp extends OpMode {
                 // new:
                 extendFrom = extendTo;
                 robot.actuators.runningRetract = true;
-            } else if (driver2.getY().isJustPressed()) {
-                if (!robot.actuators.capPickedUp) {
-                    robot.actuators.runningExtend = true;
-                    extendTo = GENERAL;
-                    robot.actuators.capPickedUp = true;
-                } else {
-                    armPivotPosition = ARM_PIVOT_POSITION.getGeneral();
-                    armHopperPosition = ARM_HOPPER_POSITION.getGeneral();
-                    slidesPosition = 348;
-                    robot.actuators.capPickedUp = false;
+//            } else if (driver2.getY().isJustPressed()) {
+//                if (!robot.actuators.capPickedUp) {
+//                    robot.actuators.runningExtend = true;
+//                    extendTo = GENERAL;
+//                    robot.actuators.capPickedUp = true;
+//                } else {
+//                    armPivotPosition = ARM_PIVOT_POSITION.getGeneral();
+//                    armHopperPosition = ARM_HOPPER_POSITION.getGeneral();
+//                    slidesPosition = 348;
+//                    robot.actuators.capPickedUp = false;
+//                }
+//            }
+            } else if ((robot.actuators.runningExtend) && !(robot.actuators.runningRetract)) {
+                if (!driver2.getStart().isPressed() && driver2.getA().isJustPressed()) {
+                    // new:
+                    robot.actuators.retractQueue = true;
                 }
             }
-        } else if ((robot.actuators.runningExtend) && !(robot.actuators.runningRetract)) {
-            if (!driver2.getStart().isPressed() && driver2.getA().isJustPressed()) {
-                // new:
-                robot.actuators.retractQueue = true;
-            }
-        }
 
-        // macro or manual control
-        if (robot.actuators.runningExtend) {
-            robot.actuators.runningExtend(getRuntime(), alliance, extendTo);
-        } else if (robot.actuators.runningRetract) {
-            robot.actuators.runningRetract(getRuntime(), alliance, extendFrom);
-        }
+            // macro or manual control
+            if (robot.actuators.runningExtend) {
+                robot.actuators.runningExtend(getRuntime(), alliance, extendTo);
+            } else if (robot.actuators.runningRetract) {
+                robot.actuators.runningRetract(getRuntime(), alliance, extendFrom);
+            }
 
 //        if (robot.actuators.runningAlliance) {
 //            robot.actuators.runningAlliance(getRuntime(), alliance, BarcodeLocation.RIGHT);
@@ -261,105 +261,109 @@ public class AbstractTeleOp extends OpMode {
 //            robot.actuators.runningShared(getRuntime(), alliance, BarcodeLocation.RIGHT);
 //        } else if (robot.actuators.runningDeposit) {
 //            robot.actuators.runningDeposit(getRuntime(), alliance, BarcodeLocation.RIGHT);
-        else {
-            if (robot.actuators.justFinishedAMacro) {
-                turretPosition = robot.actuators.getTurret();
-                slidesPosition = robot.actuators.getSlides();
-                armPivotPosition = robot.actuators.getArmPivot();
-                armHopperPosition = robot.actuators.getArmHopper();
-                robot.actuators.justFinishedAMacro = false;
+            else {
+                if (robot.actuators.justFinishedAMacro) {
+                    turretPosition = robot.actuators.getTurret();
+                    slidesPosition = robot.actuators.getSlides();
+                    armPivotPosition = robot.actuators.getArmPivot();
+                    armHopperPosition = robot.actuators.getArmHopper();
+                    robot.actuators.justFinishedAMacro = false;
+                }
+                turretPosition += driver2.getLeftStick().getX() * TURRET_SPEED;
+                slidesPosition += driver2.getRightStick().getY() * SLIDES_SPEED;
+
+                if (driver2.getDUp().isPressed()) {
+                    armPivotPosition += ARM_PIVOT_SPEED;
+                } else if (driver2.getDDown().isPressed()) {
+                    armPivotPosition -= ARM_PIVOT_SPEED;
+                }
+                if (driver2.getDLeft().isPressed()) {
+                    armHopperPosition += ARM_HOPPER_SPEED;
+                } else if (driver2.getDRight().isPressed()) {
+                    armHopperPosition -= ARM_HOPPER_SPEED;
+                }
+
+                turretPosition = clamp(turretPosition, TURRET_MIN, TURRET_MAX);
+                slidesPosition = clamp(slidesPosition, SLIDES_MIN, SLIDES_MAX);
+                armHopperPosition = clamp(armHopperPosition, ARM_HOPPER_MIN, ARM_HOPPER_MAX);
+                armPivotPosition = clamp(armPivotPosition, ARM_PIVOT_MIN, ARM_PIVOT_MAX);
+
+                robot.actuators.setTurret(turretPosition);
+                robot.actuators.setSlides(slidesPosition);
+                robot.actuators.setArmHopper(armHopperPosition);
+                robot.actuators.setArmPivot(armPivotPosition);
+
+
             }
-            turretPosition += driver2.getLeftStick().getX() * TURRET_SPEED;
-            slidesPosition += driver2.getRightStick().getY() * SLIDES_SPEED;
 
-            if (driver2.getDUp().isPressed()) {
-                armPivotPosition += ARM_PIVOT_SPEED;
-            } else if (driver2.getDDown().isPressed()) {
-                armPivotPosition -= ARM_PIVOT_SPEED;
+            // intake
+            if (driver2.getRightBumper().isJustPressed()) {
+                robot.actuators.setIntakePosition((int) (robot.actuators.getIntakePosition() + (robot.actuators.getIntakePosition() % 145.1)));
+            } else if (!driver2.getRightBumper().isPressed()) {
+                if (driver2.getRightTrigger().getValue() > 0.1) {
+                    robot.actuators.setIntakePower(-driver2.getRightTrigger().getValue() * INTAKE_SPEED);
+                } else if (driver2.getLeftTrigger().getValue() > 0.1) {
+                    robot.actuators.setIntakePower(driver2.getLeftTrigger().getValue() * INTAKE_SPEED);
+                } else {
+                    robot.actuators.setIntakePower(0);
+                }
             }
-            if (driver2.getDLeft().isPressed()) {
-                armHopperPosition += ARM_HOPPER_SPEED;
-            } else if (driver2.getDRight().isPressed()) {
-                armHopperPosition -= ARM_HOPPER_SPEED;
+
+            // reset memory
+            if (driver2.getLeftBumper().isJustPressed()) {
+                robot.actuators.clearMemory();
+                //reset turret pos so that the current value becomes the zero point
+                robot.actuators.resetTurret();
+                turretPosition = 0;
+                robot.drive.setPoseEstimate(new Pose2d(10.6875, (alliance == RED ? -65.75 : 65.75), Math.toRadians(0)));
             }
 
-            turretPosition = clamp(turretPosition, TURRET_MIN, TURRET_MAX);
-            slidesPosition = clamp(slidesPosition, SLIDES_MIN, SLIDES_MAX);
-            armHopperPosition = clamp(armHopperPosition, ARM_HOPPER_MIN, ARM_HOPPER_MAX);
-            armPivotPosition = clamp(armPivotPosition, ARM_PIVOT_MIN, ARM_PIVOT_MAX);
+            // cancel macro button
+            if (driver2.getLeftStickButton().isJustPressed() || driver2.getRightStickButton().isJustPressed() || driver1.getLeftStickButton().isJustPressed() || driver1.getRightStickButton().isJustPressed()) {
+                robot.actuators.justCancledMacro = true; //used to deactivate memory
+                robot.actuators.justFinishedAMacro = true; // used in both
+                robot.actuators.setState(0); // used in both
 
-            robot.actuators.setTurret(turretPosition);
-            robot.actuators.setSlides(slidesPosition);
-            robot.actuators.setArmHopper(armHopperPosition);
-            robot.actuators.setArmPivot(armPivotPosition);
+                // new macro variables
+                robot.actuators.runningRetract = false;
+                robot.actuators.runningExtend = false;
+                robot.actuators.retractQueue = false;
 
-
-        }
-
-        // intake
-        if (driver2.getRightBumper().isJustPressed()) {
-            robot.actuators.setIntakePosition((int) (robot.actuators.getIntakePosition() + (robot.actuators.getIntakePosition() % 145.1)));
-        } else if (!driver2.getRightBumper().isPressed()) {
-            if (driver2.getRightTrigger().getValue() > 0.1) {
-                robot.actuators.setIntakePower(-driver2.getRightTrigger().getValue() * INTAKE_SPEED);
-            } else if (driver2.getLeftTrigger().getValue() > 0.1) {
-                robot.actuators.setIntakePower(driver2.getLeftTrigger().getValue() * INTAKE_SPEED);
-            } else {
-                robot.actuators.setIntakePower(0);
+                robot.actuators.clearMemory();
             }
-        }
 
-        // reset memory
-        if (driver2.getLeftBumper().isJustPressed()) {
-            robot.actuators.clearMemory();
-            //reset turret pos so that the current value becomes the zero point
-            robot.actuators.resetTurret();
-            turretPosition = 0;
-            robot.drive.setPoseEstimate(new Pose2d(10.6875, (alliance==RED ? -65.75 : 65.75), Math.toRadians(0)));
-        }
+            // duckies
+            robot.actuators.setDuckies(driver1.getY().isPressed() ? DUCKY_SPEED : 0, alliance);
 
-        // cancel macro button
-        if(driver2.getLeftStickButton().isJustPressed() || driver2.getRightStickButton().isJustPressed() || driver1.getLeftStickButton().isJustPressed() || driver1.getRightStickButton().isJustPressed()) {
-            robot.actuators.justCancledMacro = true; //used to deactivate memory
-            robot.actuators.justFinishedAMacro = true; // used in both
-            robot.actuators.setState(0); // used in both
-
-            // new macro variables
-            robot.actuators.runningRetract = false;
-            robot.actuators.runningExtend = false;
-            robot.actuators.retractQueue = false;
-
-            robot.actuators.clearMemory();
-        }
-
-        // duckies
-        robot.actuators.setDuckies(driver1.getY().isPressed() ? DUCKY_SPEED : 0 , alliance);
-
-        // retractables
-        if (!driver2.getBack().isPressed() && driver2.getY().isJustPressed()) {
-            robot.actuators.intakeRetracted = !robot.actuators.intakeRetracted;
-        }
-        if (!driver1.getBack().isPressed() && driver1.getA().isJustPressed()) {
-            robot.actuators.odoRetracted = !robot.actuators.odoRetracted;
-        }
-
-        robot.actuators.setIntakeServo(robot.actuators.intakeRetracted ? INTAKE_SERVO_UP : INTAKE_SERVO_DOWN);
-        robot.actuators.setOdoServo(robot.actuators.odoRetracted ? ODO_SERVO_UP : ODO_SERVO_DOWN);
-
-        // switch alliance button
-        if (driver1.getBack().isJustPressed()) {
-            if (alliance == RED) {
-                alliance = BLUE;
-            } else if (alliance == BLUE) {
-                alliance = RED;
+            // retractables
+            if (!driver2.getBack().isPressed() && driver2.getY().isJustPressed()) {
+                robot.actuators.intakeRetracted = !robot.actuators.intakeRetracted;
             }
+            if (!driver1.getBack().isPressed() && driver1.getA().isJustPressed()) {
+                robot.actuators.odoRetracted = !robot.actuators.odoRetracted;
+            }
+
+            robot.actuators.setIntakeServo(robot.actuators.intakeRetracted ? INTAKE_SERVO_UP : INTAKE_SERVO_DOWN);
+            robot.actuators.setOdoServo(robot.actuators.odoRetracted ? ODO_SERVO_UP : ODO_SERVO_DOWN);
+
+            // switch alliance button
+            if (driver1.getBack().isJustPressed()) {
+                if (alliance == RED) {
+                    alliance = BLUE;
+                } else if (alliance == BLUE) {
+                    alliance = RED;
+                }
+            }
+
+            robot.actuators.update();
+
+            // telemetry
+            telemetry.addLine("Alliance: " + alliance);
+            telemetry.addLine(robot.getTelemetry());
+            telemetry.update();
         }
-
-        robot.actuators.update();
-
-        // telemetry
-        telemetry.addLine("Alliance: " + alliance);
-        telemetry.addLine(robot.getTelemetry());
-        telemetry.update();
     }
+
 }
+
+
