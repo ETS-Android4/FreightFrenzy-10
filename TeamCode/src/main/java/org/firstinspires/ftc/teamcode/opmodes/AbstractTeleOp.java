@@ -318,7 +318,7 @@ public class AbstractTeleOp extends OpMode {
                 //robot.drive.setPoseEstimate(new Pose2d(10.6875, (alliance == RED ? -65.75 : 65.75), Math.toRadians(0)));
             }
 
-            //reset robot odometry field position
+            //reset robot odometry field position to the start pos for each alliance opmode
             if(driver1.getLeftBumper().isJustPressed() || driver1.getRightBumper().isJustPressed()){
                 robot.drive.setPoseEstimate(new Pose2d(10.6875, (alliance == RED ? -65.75 : 65.75), Math.toRadians(0)));
 
