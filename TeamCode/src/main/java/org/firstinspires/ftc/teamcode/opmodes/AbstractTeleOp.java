@@ -171,7 +171,7 @@ public class AbstractTeleOp extends OpMode {
                 }
 
                 // or if b is pressed, go into automatic mode
-                if (driver1.getB().isJustPressed()) {
+                if (driver1.getB().isJustPressed() && !driver1.getStart().isJustPressed()) {
                     extendTo = SHARED;
                     pathToScore = robot.drive.trajectoryBuilder(robot.drive.getPoseEstimate(), true)
                             .lineToSplineHeading((alliance == RED ? PoseStorage.SCORE_1_SHARED_RED : PoseStorage.SCORE_1_SHARED_BLUE))
@@ -315,6 +315,7 @@ public class AbstractTeleOp extends OpMode {
             //reset turret pos so that the current value becomes the zero point
             robot.actuators.resetTurret();
             turretPosition = 0;
+            robot.drive.setPoseEstimate(new Pose2d(10.6875, (alliance==RED ? -65.75 : 65.75), Math.toRadians(0)));
         }
 
         // cancel macro button
