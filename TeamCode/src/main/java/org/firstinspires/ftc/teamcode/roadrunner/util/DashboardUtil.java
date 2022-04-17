@@ -49,8 +49,8 @@ public class DashboardUtil {
     }
 
     public static void drawRobot(Canvas canvas, Pose2d pose) {
-        Vector2d h = pose.headingVec().times(ROBOT_SIZE.height);
-        Vector2d w = pose.headingVec().times(ROBOT_SIZE.width).rotated(Math.toRadians(90));
+        Vector2d h = pose.headingVec().times(ROBOT_SIZE.height/2.0);
+        Vector2d w = pose.headingVec().times(ROBOT_SIZE.width/2.0).rotated(Math.toRadians(90));
         Vector2d fl = h.plus(w);
         Vector2d fr = h.plus(w.rotated(Math.toRadians(180)));
         Vector2d bl = h.rotated(Math.toRadians(180)).plus(w);
