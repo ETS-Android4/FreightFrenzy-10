@@ -62,8 +62,7 @@ public class Robot {
     }
 
     public String getTelemetry() {
-//        telemetry = String.format(Locale.US, "%s", actuators.getTelemetry());
-        telemetry = String.format(Locale.US, "%s\n%s", actuators.getTelemetry(), lights.getTelemetry());
+        telemetry = String.format(Locale.US, "%s\n%s\n%s", drive.getTelemtry(), actuators.getTelemetry(), lights.getTelemetry());
         return telemetry;
     }
 }

@@ -322,4 +322,8 @@ public class SampleMecanumDrive extends MecanumDrive {
     public void breakFollowing() {
         trajectorySequenceRunner.breakFollowing();
     }
+
+    public String getTelemtry() {
+        return "Pose Estimate: "+getPoseEstimate();
+    }
 }

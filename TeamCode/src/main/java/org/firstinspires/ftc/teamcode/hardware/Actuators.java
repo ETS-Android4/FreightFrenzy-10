@@ -54,6 +54,10 @@ public class Actuators {
     public static double INTAKE_SERVO_SPEED = 0.02;
     public static double DUCKY_SPEED = 1.0;
 
+    public static double INTAKE_SPEED = 0.75;
+    public static double INTAKE_SLOW_SPEED = 0.15;
+
+
     public boolean odoRetracted = false;
     public boolean intakeRetracted;
 
