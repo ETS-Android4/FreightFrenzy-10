@@ -14,9 +14,11 @@ public class Lights {
     public static int RED = 80;
     public static int REDFULL = 3;
     public static int REDSCORING = 5;//5
+    public static int REDINIT = 99;
     public static int BLUE = 93;
     public static int BLUEFULL = 2;
     public static int BLUESCORING = 5;//5
+    public static int BLUEINIT = 99;
 
     private RevBlinkinLedDriver blinkinLedDriver;
     private RevBlinkinLedDriver.BlinkinPattern pattern;

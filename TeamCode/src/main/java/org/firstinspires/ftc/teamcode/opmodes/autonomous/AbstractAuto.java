@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes;
+package org.firstinspires.ftc.teamcode.opmodes.autonomous;
 
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_HOPPER_POSITION;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_PIVOT_POSITION;
@@ -7,13 +7,20 @@ import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SERVO_UP;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SPEED;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.SLIDES_AUTO;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.TURRET_ALLIANCE;
+import static org.firstinspires.ftc.teamcode.hardware.Lights.BLUEINIT;
+import static org.firstinspires.ftc.teamcode.hardware.Lights.REDINIT;
 import static org.firstinspires.ftc.teamcode.util.Alliance.BLUE;
 import static org.firstinspires.ftc.teamcode.util.Alliance.RED;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.hardware.Robot;
+import org.firstinspires.ftc.teamcode.opmodes.PoseStorage;
+import org.firstinspires.ftc.teamcode.opmodes.Step;
 import org.firstinspires.ftc.teamcode.util.Alliance;
 import org.firstinspires.ftc.teamcode.util.BarcodeLocation;
 import org.firstinspires.ftc.teamcode.util.CameraPosition;
@@ -32,14 +39,11 @@ public abstract class AbstractAuto extends LinearOpMode {
     private ArrayList<Step> steps;
     private double currentRuntime;
 
-
-    public BarcodeLocation getTeamElementLocation() {
-        return teamElementLocation;
-    }
-
     // Main method to run all the steps for autonomous
     @Override
     public void runOpMode() {
+//        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
         // initialize robot
         telemetry.addLine("Initializing Robot...");
         telemetry.update();
@@ -50,12 +54,13 @@ public abstract class AbstractAuto extends LinearOpMode {
 
         if (useCamera()) {
             robot = new Robot(hardwareMap, cameraPosition, alliance);
+            robot.lights.setPattern(alliance == RED ? REDINIT : BLUEINIT);
             while (robot.camera.getFrameCount() < 1) {
-                robot.updateLights();
                 idle();
             }
         } else {
             robot = new Robot(hardwareMap, alliance);
+            robot.lights.setPattern(alliance == RED ? REDINIT : BLUEINIT);
         }
 
         robot.actuators.odoRetracted = false;
@@ -83,16 +88,22 @@ public abstract class AbstractAuto extends LinearOpMode {
 
         // wait for start
         while (!(isStarted() || isStopRequested())) {
-//            teamElementLocation = robot.camera.checkTeamElementLocationUsingAprilTags();
             robot.actuators.update();
-            robot.updateLights();
+//            robot.updateLights();
+            telemetry.addLine("Initialized");
             if (useCamera()) {
-                teamElementLocation = robot.camera.checkTeamElementLocation();
-                telemetry.addLine("Initialized");
+                // april tag
+                BarcodeLocation newLocation = robot.camera.checkTeamElementLocationFromAprilTag();
+                // update location if a location is found
+                if (newLocation != BarcodeLocation.UNKNOWN) {
+                    teamElementLocation = newLocation;
+                }
                 telemetry.addLine(String.format(Locale.US, "Location: %s", teamElementLocation));
-                telemetry.addLine(String.format(Locale.US, "Size: %.4f", robot.camera.getTeamElement().getArea()));
-            } else {
-                telemetry.addLine("Initialized");
+//                telemetry.addLine(robot.getTelemetryWithCamera());
+                // opencv
+//                teamElementLocation = robot.camera.checkTeamElementLocation();
+//                telemetry.addLine(String.format(Locale.US, "Location: %s", teamElementLocation));
+//                telemetry.addLine(String.format(Locale.US, "Size: %.4f", robot.camera.getTeamElement().getArea()));
             }
             telemetry.update();
         }
@@ -149,8 +160,11 @@ public abstract class AbstractAuto extends LinearOpMode {
 
     //methods to be implemented in the specific autos
     public abstract void setAlliance();
+
     public abstract void setCameraPosition();
+
     public abstract boolean useCamera();
+
     public abstract void makeTrajectories();
 
     //other methods that do certain tasks
@@ -177,6 +191,7 @@ public abstract class AbstractAuto extends LinearOpMode {
             }
         });
     }
+
     public void followTrajectory(Trajectory trajectory) {
         steps.add(new Step("Following a trajectory") {
             @Override
@@ -199,6 +214,7 @@ public abstract class AbstractAuto extends LinearOpMode {
             }
         });
     }
+
     public void resetIntake(double timeout) {
         steps.add(new Step("Resetting Intake", timeout) {
             @Override
@@ -208,7 +224,8 @@ public abstract class AbstractAuto extends LinearOpMode {
             }
 
             @Override
-            public void whileRunning() {}
+            public void whileRunning() {
+            }
 
             @Override
             public void end() {
@@ -221,6 +238,7 @@ public abstract class AbstractAuto extends LinearOpMode {
             }
         });
     }
+
     public void stopTargetingCamera() {
         steps.add(new Step("Stopping Targeting Camera") {
             @Override
@@ -544,7 +562,7 @@ public abstract class AbstractAuto extends LinearOpMode {
 //                        if (stepTime > 0.2) {
 //                            stepCaseStep++;
 //                        }
-                    // if the retract macro is almost done, start another cycle round
+                        // if the retract macro is almost done, start another cycle round
                     case 6:
                         if (robot.actuators.getState() >= 8) {
                             stepCaseStep++;
@@ -561,7 +579,8 @@ public abstract class AbstractAuto extends LinearOpMode {
             }
 
             @Override
-            public void end() {}
+            public void end() {
+            }
 
             @Override
             public boolean isFinished() {
@@ -570,7 +589,7 @@ public abstract class AbstractAuto extends LinearOpMode {
         });
     }
 
-    public void scorePreloadInAuto(double timeout, Alliance alliance, BarcodeLocation barcodeLocation) {
+    public void scorePreloadInAuto(double timeout, Alliance alliance, BarcodeLocation barcodeLocation, boolean cycling) {
         steps.add(new Step("Cycling", timeout) {
             @Override
             public void start() {
@@ -614,13 +633,15 @@ public abstract class AbstractAuto extends LinearOpMode {
                             stepCaseStep++;
                         }
                         break;
-                        // retract
+                    // retract
                     case 3:
                         robot.actuators.runningRetract = true;
                         stepCaseStep++;
                         break;
                     case 4:
-                        if (robot.actuators.getState() >= 8) { // if the retract macro is almost done, start cycling
+                        if (cycling && robot.actuators.getState() >= 8) { // if the retract macro is almost done, start cycling
+                            stepCaseStep++;
+                        } else if (!robot.actuators.runningRetract) {
                             stepCaseStep++;
                         }
                         break;

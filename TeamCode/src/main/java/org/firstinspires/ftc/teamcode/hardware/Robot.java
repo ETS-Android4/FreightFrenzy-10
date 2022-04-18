@@ -18,7 +18,7 @@ import java.util.Locale;
 public class Robot {
 
     String telemetry;
-    private Alliance alliance;
+    public Alliance alliance;
 
     public SampleMecanumDrive drive;
     public Actuators actuators;
@@ -62,7 +62,12 @@ public class Robot {
     }
 
     public String getTelemetry() {
-        telemetry = String.format(Locale.US, "%s\n%s\n%s", drive.getTelemtry(), actuators.getTelemetry(), lights.getTelemetry());
+        telemetry = String.format(Locale.US, "%s\n%s\n%s", drive.getTelemetry(), actuators.getTelemetry(), lights.getTelemetry());
+        return telemetry;
+    }
+
+    public String getTelemetryWithCamera() {
+        telemetry = String.format(Locale.US, "%s\n%s\n%s\n%s", camera.getTelemetry(), drive.getTelemetry(), actuators.getTelemetry(), lights.getTelemetry());
         return telemetry;
     }
 }

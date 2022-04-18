@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.opmodes;
+package org.firstinspires.ftc.teamcode.opmodes.autonomous;
 
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SPEED;
 import static org.firstinspires.ftc.teamcode.util.Alliance.BLUE;
@@ -14,16 +14,16 @@ import org.firstinspires.ftc.teamcode.roadrunner.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.util.BarcodeLocation;
 import org.firstinspires.ftc.teamcode.util.CameraPosition;
 
-@Autonomous(name = "Blue Duck", group = "Competition", preselectTeleOp = "Blue TeleOp")
-public class BlueDuck extends AbstractAuto {
+@Autonomous(name = "Red Duck", group = "Competition", preselectTeleOp = "Red TeleOp")
+public class RedDuck extends AbstractAuto {
 
     //define the waypoints in this auto
-    public static Pose2d START_POSE = new Pose2d(-34.6875, 65.75, Math.toRadians(-180));
-    public static Pose2d DUCK_SPIN = new Pose2d(-55, 60, Math.toRadians(-180));
-    public static Pose2d DUCK_TRANSITION = new Pose2d(-54.5, 58.5, Math.toRadians(-220));
-    public static Pose2d DUCK_PICKUP = new Pose2d(-54.5, 58, Math.toRadians(-300));
-    public static Pose2d DUCK_SCORE = new Pose2d(-59, 44, Math.toRadians(-180));
-    public static Pose2d PARK = new Pose2d(-60, 36, Math.toRadians(-180));
+    public static Pose2d START_POSE = new Pose2d(-34.6875, -65.75, Math.toRadians(-180));
+    public static Pose2d DUCK_SPIN = new Pose2d(-55, -60, Math.toRadians(-180));
+    public static Pose2d DUCK_TRANSITION = new Pose2d(-54.5, -58.5, Math.toRadians(220));
+    public static Pose2d DUCK_PICKUP = new Pose2d(-54.5, -58, Math.toRadians(300));
+    public static Pose2d DUCK_SCORE = new Pose2d(-59, -36, Math.toRadians(-180));
+    public static Pose2d PARK = new Pose2d(-60, -36, Math.toRadians(-180));
 
     Trajectory spin;
     Trajectory transition;
@@ -33,12 +33,12 @@ public class BlueDuck extends AbstractAuto {
 
     @Override
     public void setAlliance() {
-        this.alliance = RED;
+        this.alliance = BLUE;
     }
 
     @Override
     public void setCameraPosition() {
-        this.cameraPosition = CameraPosition.LEFT;
+        this.cameraPosition = CameraPosition.RIGHT;
     }
 
     @Override
@@ -54,7 +54,7 @@ public class BlueDuck extends AbstractAuto {
                 .lineToLinearHeading(DUCK_SPIN,
                         SampleMecanumDrive.getVelocityConstraint(30, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
                         SampleMecanumDrive.getAccelerationConstraint(DriveConstants.MAX_ACCEL))
-                .build();
+                        .build();
         transition = robot.drive.trajectoryBuilder(spin.end())
                 .lineToLinearHeading(DUCK_TRANSITION,
                         SampleMecanumDrive.getVelocityConstraint(20, DriveConstants.MAX_ANG_VEL, DriveConstants.TRACK_WIDTH),
@@ -89,7 +89,7 @@ public class BlueDuck extends AbstractAuto {
 
     @Override //setup the specific actions in order for this auto
     public void initializeSteps(BarcodeLocation location) {
-        scorePreloadInAuto(1000, alliance, location);
+        scorePreloadInAuto(1000, alliance, location, false);
         followTrajectory(spin);
         addDuckSpinner(4, 0.8);
         addIntake(0, -INTAKE_SPEED);
@@ -97,8 +97,8 @@ public class BlueDuck extends AbstractAuto {
         followTrajectory(pickup);
         addIntake(0, 0);
         followTrajectory(score);
-        addExtend(10000, BLUE, GENERAL);
-        addRetract(10000, BLUE, GENERAL);
+        addExtend(10000, RED, GENERAL);
+        addRetract(10000, RED, GENERAL);
 //        followTrajectory(park);
     }
 }

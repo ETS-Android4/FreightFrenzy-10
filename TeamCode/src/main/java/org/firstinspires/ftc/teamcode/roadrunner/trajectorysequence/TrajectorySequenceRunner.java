@@ -29,6 +29,8 @@ import java.util.List;
 
 @Config
 public class TrajectorySequenceRunner {
+    public TelemetryPacket packet;
+
     public static String COLOR_INACTIVE_TRAJECTORY = "#4caf507a";
     public static String COLOR_INACTIVE_TURN = "#7c4dff7a";
     public static String COLOR_INACTIVE_WAIT = "#dd2c007a";
@@ -194,6 +196,7 @@ public class TrajectorySequenceRunner {
 
         draw(fieldOverlay, currentTrajectorySequence, currentSegment, targetPose, poseEstimate);
 
+//        this.packet = packet;
         dashboard.sendTelemetryPacket(packet);
 
         return driveSignal;

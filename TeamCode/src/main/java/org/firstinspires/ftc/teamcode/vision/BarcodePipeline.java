@@ -29,36 +29,18 @@ import static org.firstinspires.ftc.teamcode.vision.OpenCVUtil.YELLOW_LOWER;
 import static org.firstinspires.ftc.teamcode.vision.OpenCVUtil.YELLOW_UPPER;
 
 // Class for the pipeline that is used to detect the StarterStack
+// This one uses the traditional open cv color matching method
 public class BarcodePipeline extends OpenCvPipeline  {
+    private Detection teamElement;
+
     private Mat blurred = new Mat();
     private Mat hsv = new Mat();
     private Mat yellowMask = new Mat();
-
-    //apriltag stuff
-    private Mat grayMask = new Mat();
-    private ArrayList<AprilTagDetection> detections = new ArrayList<>();
-    private ArrayList<AprilTagDetection> detectionsUpdate = new ArrayList<>();
-    private long nativeApriltagPtr;
-    private final Object detectionsUpdateSync = new Object();
-    Mat cameraMatrix;
-    double fx, fy, cx, cy;
-    double tagsize, tagsizeX, tagsizeY;
-    private float decimation;
-    private boolean needToSetDecimation;
-    private final Object decimationSync = new Object();
-
-    private Detection teamElement;
 
     // Init
     @Override
     public void init(Mat input) {
         teamElement = new Detection(input.size(), 0.01);
-        nativeApriltagPtr = AprilTagDetectorJNI.createApriltagDetector(AprilTagDetectorJNI.TagFamily.TAG_36h11.string, 3, 3);
-    }
-
-    @Override
-    public void finalize() {
-        AprilTagDetectorJNI.releaseApriltagDetector(nativeApriltagPtr);
     }
 
     // Process each frame that is received from the webcam
@@ -69,13 +51,6 @@ public class BarcodePipeline extends OpenCvPipeline  {
         Imgproc.cvtColor(blurred, hsv, Imgproc.COLOR_RGB2HSV);
 
         findTeamElement(input);
-
-
-
-        //aruco stuff
-//        Imgproc.cvtColor(input, grayMask, Imgproc.COLOR_RGB2GRAY);
-//        Core.bitwise_not(grayMask, grayMask);
-////        findTeamElementUsingAprilTags(grayMask);
 
         return input;
     }
@@ -107,36 +82,6 @@ public class BarcodePipeline extends OpenCvPipeline  {
             if (teamElement.getCenter().x < LEFT_BOUNDARY) {
                 return LEFT;
             } else if (teamElement.getCenter().x > RIGHT_BOUNDARY) {
-                return RIGHT;
-            } else {
-                return MIDDLE;
-            }
-        }
-        return UNKNOWN;
-    }
-
-    // Apriltag Stuff
-    private void findTeamElementUsingAprilTags(Mat grayMask) {
-        synchronized (decimationSync) {
-            if(needToSetDecimation) {
-                AprilTagDetectorJNI.setApriltagDetectorDecimation(nativeApriltagPtr, decimation);
-                needToSetDecimation = false;
-            }
-        }
-
-        // Run AprilTag
-        detections = AprilTagDetectorJNI.runAprilTagDetectorSimple(nativeApriltagPtr, grayMask, tagsize, fx, fy, cx, cy);
-
-        synchronized (detectionsUpdateSync) {
-            detectionsUpdate = detections;
-        }
-    }
-
-    public BarcodeLocation getTeamElementLocationUsingAprilTag() {
-        if (detections.size() > 0) {
-            if (detections.get(0).center.x < LEFT_BOUNDARY) {
-                return LEFT;
-            } else if (detections.get(0).center.x > RIGHT_BOUNDARY) {
                 return RIGHT;
             } else {
                 return MIDDLE;

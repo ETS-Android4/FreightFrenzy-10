@@ -18,9 +18,9 @@ public class PoseStorage {
     public static final Pose2d SCORE_2_BLUE = new Pose2d(10.6587, 66.25, Math.toRadians(0));
 
     public static final Pose2d SCORE_1_SHARED_RED = new Pose2d(66.75, -37, Math.toRadians(-90));
-    public static final Pose2d SCORE_1_1_SHARED_RED = new Pose2d(SCORE_1_SHARED_RED.getX()+0.0001, SCORE_1_SHARED_RED.getY(), SCORE_1_SHARED_RED.getHeading());
+    public static final Pose2d SCORE_1_1_SHARED_RED = new Pose2d(SCORE_1_SHARED_RED.getX()+0.0001, SCORE_1_SHARED_RED.getY()+0.0001, SCORE_1_SHARED_RED.getHeading());
     public static final Pose2d SCORE_2_SHARED_RED = new Pose2d(66.75, -12, Math.toRadians(-90));
     public static final Pose2d SCORE_1_SHARED_BLUE = new Pose2d(66.75, 37, Math.toRadians(90));
-    public static final Pose2d SCORE_1_1_SHARED_BLUE = new Pose2d(SCORE_1_SHARED_BLUE.getX()+0.0001, SCORE_1_SHARED_BLUE.getY(), SCORE_1_SHARED_BLUE.getHeading());
+    public static final Pose2d SCORE_1_1_SHARED_BLUE = new Pose2d(SCORE_1_SHARED_BLUE.getX()+0.0001, SCORE_1_SHARED_BLUE.getY()+0.0001, SCORE_1_SHARED_BLUE.getHeading());
     public static final Pose2d SCORE_2_SHARED_BLUE = new Pose2d(66.75, 12, Math.toRadians(90));
 }

@@ -15,7 +15,7 @@ import static org.firstinspires.ftc.teamcode.vision.OpenCVUtil.drawPoint;
 import static org.firstinspires.ftc.teamcode.vision.OpenCVUtil.fillConvexHull;
 import static org.firstinspires.ftc.teamcode.vision.OpenCVUtil.getCenterOfContour;
 
-// Class for a Detection
+// Class for a Detection using opencv color matching
 public class  Detection {
     private double minAreaPx;
     private double maxAreaPx;

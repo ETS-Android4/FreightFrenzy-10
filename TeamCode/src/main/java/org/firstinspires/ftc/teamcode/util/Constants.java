@@ -27,8 +27,8 @@ public class Constants {
     public static final Size BLUR_SIZE = new Size(7, 7);
 
     // CV Camera Constants
-    public static final int WEBCAM_WIDTH = 320;
-    public static final int WEBCAM_HEIGHT = 240;
+    public static final int WEBCAM_WIDTH = 800;//320
+    public static final int WEBCAM_HEIGHT = 448;//240
     public static final OpenCvCameraRotation WEBCAM_ROTATION = OpenCvCameraRotation.UPRIGHT;
 
     // CV Invalid Detection Constants

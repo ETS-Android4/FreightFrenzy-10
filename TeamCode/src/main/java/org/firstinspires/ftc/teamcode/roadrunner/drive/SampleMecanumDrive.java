@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.roadrunner.drive;
 import androidx.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.drive.DriveSignal;
 import com.acmerobotics.roadrunner.drive.MecanumDrive;
@@ -323,7 +324,11 @@ public class SampleMecanumDrive extends MecanumDrive {
         trajectorySequenceRunner.breakFollowing();
     }
 
-    public String getTelemtry() {
+    public TelemetryPacket getPacket() {
+        return trajectorySequenceRunner.packet;
+    }
+
+    public String getTelemetry() {
         return "Pose Estimate: "+getPoseEstimate();
     }
 }

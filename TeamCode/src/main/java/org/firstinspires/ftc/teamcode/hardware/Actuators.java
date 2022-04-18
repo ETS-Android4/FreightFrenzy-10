@@ -71,7 +71,7 @@ public class Actuators {
     public static PIDCoefficients INTAKE_COEFFICIENTS = new PIDCoefficients(0.005, 0, 0.0001);
 
     public static double TURRET_TOLERANCE = 30;
-    public static double SLIDES_TOLERANCE = 30;
+    public static double SLIDES_TOLERANCE = 20;
     public static double INTAKE_TOLERANCE = 30;
 
     public static boolean INTAKE_PID_MODE = false;
@@ -133,7 +133,7 @@ public class Actuators {
     public static int TURRET_SHARED = -900;
     public static int TURRET_ALLIANCE = 680;
 
-    public static int SLIDES_CAP = 140;
+    public static int SLIDES_GENERAL = 800;
     public static int SLIDES_AUTO = 150;
     public static int SLIDES_SHARED = 30;
     public static int SLIDES_ALLIANCE_LOW = 691;
@@ -150,7 +150,7 @@ public class Actuators {
         TURRET_SHARED = -900;
         TURRET_ALLIANCE = 680;
 
-        SLIDES_CAP = 140;
+        SLIDES_GENERAL = 800;
         SLIDES_SHARED = 30;
         SLIDES_ALLIANCE_LOW = 691;
         SLIDES_ALLIANCE_MID = 635;
@@ -334,7 +334,7 @@ public class Actuators {
                 // arm full
                 case 0:
                     if (depoPos == GENERAL) {
-                        setArmPivot(ARM_PIVOT_POSITION.getAlmostGeneral());
+                        setArmPivot(ARM_PIVOT_POSITION.getAlmostHigh());
                     } else if (depoPos == SHARED) {
                         setArmPivot(ARM_PIVOT_POSITION.getAlmostShared());
                     } else if (depoPos == LOW) {
@@ -360,7 +360,7 @@ public class Actuators {
                         setIntakeServo(INTAKE_SERVO_UP);
                     }
                     if (depoPos == GENERAL) {
-                        setArmHopper(ARM_HOPPER_POSITION.getAlmostGeneral());
+                        setArmHopper(ARM_HOPPER_POSITION.getAlmostHigh());
                     } else if (depoPos == SHARED) {
                         setArmHopper(ARM_HOPPER_POSITION.getAlmostShared());
                     } else if (depoPos == LOW) {
@@ -396,7 +396,7 @@ public class Actuators {
                 case 4:
                     if (turretController.atSetPoint()) {
                         if (depoPos == GENERAL) {
-                            setSlides(SLIDES_CAP);
+                            setSlides(SLIDES_GENERAL);
                         } else if (depoPos == SHARED) {
                             setSlides(SLIDES_SHARED);
                         } else if (depoPos == LOW) {
@@ -469,10 +469,10 @@ public class Actuators {
                         }
                     }
 
-                    if (depoPos == GENERAL) { // this is meant to be used for capping, so it doesn't need to drop off
-                        state = 4;
-                        break;
-                    }
+//                    if (depoPos == GENERAL) { // this is meant to be used for capping, so it doesn't need to drop off
+//                        state = 4;
+//                        break;
+//                    }
 
                     if (depoPos == SHARED) {
                         setArmHopper(ARM_HOPPER_POSITION.getShared());
@@ -483,7 +483,7 @@ public class Actuators {
                     } else if (depoPos == MID) {
                         setArmHopper(ARM_HOPPER_POSITION.getMid());
                         setArmPivot(ARM_PIVOT_POSITION.getMid());
-                    } else if (depoPos == HIGH) {
+                    } else if (depoPos == HIGH || depoPos == GENERAL) {
                         setArmHopper(ARM_HOPPER_POSITION.getHigh());
                         setArmPivot(ARM_PIVOT_POSITION.getHigh());
                     }
@@ -495,18 +495,20 @@ public class Actuators {
                     break;
                 // wait for freight to fall out
                 case 1:
-                    //if (!hopperIsFull()) {
-                    if(getHopperDistance()>30) {
-                        intakeRetracted = false;
-                        setIntakeServo(INTAKE_SERVO_DOWN);
-                        state++;
+                    if (currentTime > time + 0.15) {
+                        //if (!hopperIsFull()) {
+                        if(getHopperDistance()>30) {
+                            intakeRetracted = false;
+                            setIntakeServo(INTAKE_SERVO_DOWN);
+                            state++;
+                        }
                     }
                     break;
                 // move hopper out of danger grabbing zone
                 case 2:
                     if (depoPos == GENERAL) {
-                        setArmHopper(ARM_HOPPER_POSITION.getAlmostGeneral());
-                        setArmPivot(ARM_PIVOT_POSITION.getAlmostGeneral());
+                        setArmHopper(ARM_HOPPER_POSITION.getAlmostHigh());
+                        setArmPivot(ARM_PIVOT_POSITION.getAlmostHigh());
                     } else if (depoPos == SHARED) {
                         setArmHopper(ARM_HOPPER_POSITION.getUp());
                         setArmPivot(ARM_PIVOT_POSITION.getUp());
@@ -536,8 +538,7 @@ public class Actuators {
                 case 4:
                     // update variable to keep track of blocks for when to rumble
                     hasBlock = false;
-
-                    setSlides(30);
+                    setSlides(40);
                     time = currentTime;
                     state++;
                     break;

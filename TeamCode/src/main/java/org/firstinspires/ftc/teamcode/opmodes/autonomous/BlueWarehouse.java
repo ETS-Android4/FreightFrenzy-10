@@ -1,7 +1,6 @@
-package org.firstinspires.ftc.teamcode.opmodes;
+package org.firstinspires.ftc.teamcode.opmodes.autonomous;
 
 import static org.firstinspires.ftc.teamcode.util.Alliance.BLUE;
-import static org.firstinspires.ftc.teamcode.util.Alliance.RED;
 import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.RIGHT;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -146,7 +145,7 @@ public class BlueWarehouse extends AbstractAuto {
 
     @Override //setup the specific actions in order for this auto
     public void initializeSteps(BarcodeLocation location) {
-        scorePreloadInAuto(1000, alliance, location);
+        scorePreloadInAuto(1000, alliance, location, true);
         cycleBlockInAuto(1000, intake1, score1, alliance, RIGHT);
         cycleBlockInAuto(1000, intake2, score2, alliance, RIGHT);
         cycleBlockInAuto(1000, intake3, score3, alliance, RIGHT);
