@@ -55,7 +55,7 @@ public class Actuators {
     public static double DUCKY_SPEED = 1.0;
 
     public static double INTAKE_SPEED = 0.75;
-    public static double INTAKE_SLOW_SPEED = 0.15;
+    public static double INTAKE_SLOW_SPEED = 0.75;
 
 
     public boolean odoRetracted = false;
@@ -104,13 +104,13 @@ public class Actuators {
     public boolean justCancledMacro = false;
     public DepositPosition justFinishedPos = HIGH;
 
-    public static double EXTEND_ARM = 0.7;
+    public static double EXTEND_ARM = 1;
     public static double EXTEND_TURRET = 0.4;
     public static double EXTEND_SLIDES = 0.4;
     public static double RETRACT_WAIT_FOR_HOPPER = 0.2;
     public static double RETRACT_SLIDES = 0.4;
     public static double RETRACT_TURRET = 0.4;
-    public static double RETRACT_DOWN = 0.4;
+    public static double RETRACT_DOWN = 0.6;
 
     private int state;
     private double time;
@@ -141,9 +141,9 @@ public class Actuators {
     public static int SLIDES_ALLIANCE_HIGH = 780;
 
 
-    public static double ARM_PIVOT_INTERMEDIATE_POSITION = 0.5;
+    public static double ARM_PIVOT_INTERMEDIATE_POSITION = 0.5; //recent recal, hopper +0.06 , pivot unchanged
     public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.9, 0.9, 0.9, 0.48, 0.48, 0.09, 0.01, 0.1, 0.24, 0.8, 0.09, 0.01, 0.1, 0.24);
-    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.55, 0.55, 0.55, 0.4, 0.55, 0.2, 0.24, 0.2, 0.25, 0.99, 0.66, 0.48, 0.48, 0.6);
+    public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.55+0.06, 0.55+0.06, 0.55+0.06, 0.4+0.06, 0.55+0.06, 0.2+0.06, 0.24+0.06, 0.2+0.06, 0.25+0.06, 0.99, 0.66+0.06, 0.48+0.06, 0.48+0.06, 0.6+0.06);
 
     public void clearMemory() {
         TURRET_GENERAL = -130;
@@ -157,7 +157,7 @@ public class Actuators {
         SLIDES_ALLIANCE_HIGH = 780;
 
         ARM_PIVOT_POSITION = new ArmPosition(0.9, 0.9, 0.9, 0.48, 0.48, 0.09, 0.01, 0.1, 0.24, 0.8, 0.09, 0.01, 0.1, 0.24);
-        ARM_HOPPER_POSITION = new ArmPosition(0.55, 0.55, 0.55, 0.4, 0.55, 0.2, 0.24, 0.2, 0.25, 0.99, 0.66, 0.48, 0.48, 0.6);
+        ARM_HOPPER_POSITION = new ArmPosition(0.55+0.06, 0.55+0.06, 0.55+0.06, 0.4+0.06, 0.55+0.06, 0.2+0.06, 0.24+0.06, 0.2+0.06, 0.25+0.06, 0.99, 0.66+0.06, 0.48+0.06, 0.48+0.06, 0.6+0.06);
     }
 
     public Actuators(HardwareMap hardwareMap) {
@@ -200,6 +200,8 @@ public class Actuators {
     }
 
     public void resetTurret(){
+        turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        turret.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         turretController.reset();
     };
 
@@ -333,6 +335,7 @@ public class Actuators {
             switch(state) {
                 // arm full
                 case 0:
+                    setSlides(0);
                     if (depoPos == GENERAL) {
                         setArmPivot(ARM_PIVOT_POSITION.getAlmostHigh());
                     } else if (depoPos == SHARED) {
@@ -349,13 +352,13 @@ public class Actuators {
                     break;
                 // hopper full
                 case 1:
-                    if (currentTime > time + EXTEND_ARM /2.0) {
+                    if (currentTime > time + 0.5) {
                         time = currentTime;
                         state++;
                     }
                     break;
                 case 2:
-                    if (currentTime > time + 0.3) {
+                    if (currentTime > time + 0.2) {
                         intakeRetracted = true;
                         setIntakeServo(INTAKE_SERVO_UP);
                     }
@@ -370,7 +373,7 @@ public class Actuators {
                     } else if (depoPos == HIGH) {
                         setArmHopper(ARM_HOPPER_POSITION.getAlmostHigh());
                     }
-                    if (currentTime > time + EXTEND_ARM /2.0) {
+                    if (currentTime > time + 0.3) {
                         time = currentTime;
                         state++;
                     }
@@ -538,7 +541,7 @@ public class Actuators {
                 case 4:
                     // update variable to keep track of blocks for when to rumble
                     hasBlock = false;
-                    setSlides(40);
+                    setSlides(0);
                     time = currentTime;
                     state++;
                     break;
@@ -560,7 +563,6 @@ public class Actuators {
                     break;
                 // return arm down
                 case 8:
-                    setSlides(0);
                     setArmPivot(ARM_PIVOT_POSITION.getDown());
                     setArmHopper(ARM_HOPPER_POSITION.getDown());
                     time = currentTime;

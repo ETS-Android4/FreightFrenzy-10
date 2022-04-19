@@ -18,11 +18,15 @@ import org.firstinspires.ftc.teamcode.util.CameraPosition;
 public class BlueDuck extends AbstractAuto {
 
     //define the waypoints in this auto
+//    public static Pose2d START_POSE = new Pose2d(-24, 48, Math.toRadians(-90));
+//    public static Pose2d DUCK_SPIN = new Pose2d(-24, -48, Math.toRadians(-90));
+
+
     public static Pose2d START_POSE = new Pose2d(-34.6875, 65.75, Math.toRadians(-180));
     public static Pose2d DUCK_SPIN = new Pose2d(-55, 60, Math.toRadians(-180));
     public static Pose2d DUCK_TRANSITION = new Pose2d(-54.5, 58.5, Math.toRadians(-220));
     public static Pose2d DUCK_PICKUP = new Pose2d(-54.5, 58, Math.toRadians(-300));
-    public static Pose2d DUCK_SCORE = new Pose2d(-59, 44, Math.toRadians(-180));
+    public static Pose2d DUCK_SCORE = new Pose2d(-59, 36, Math.toRadians(-180));
     public static Pose2d PARK = new Pose2d(-60, 36, Math.toRadians(-180));
 
     Trajectory spin;

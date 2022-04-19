@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_HOPPER_POSIT
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_PIVOT_POSITION;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SERVO_DOWN;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SERVO_UP;
+import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SLOW_SPEED;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SPEED;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.SLIDES_AUTO;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.TURRET_ALLIANCE;
@@ -497,32 +498,32 @@ public abstract class AbstractAuto extends LinearOpMode {
             public void whileRunning() {
                 stepTime = currentRuntime - stepStartTime;
                 switch (stepCaseStep) {
-                    // while retracting, reset intake
+                    // while retracting, reverse intake
                     case 0:
-                        robot.actuators.setIntakePosition((int) (robot.actuators.getIntakePosition() + (robot.actuators.getIntakePosition() % 145.1)));
+//                        robot.actuators.setIntakePosition((int) (robot.actuators.getIntakePosition() + (robot.actuators.getIntakePosition() % 145.1)));
+//                        if (robot.actuators.getState() >= 2) {
+//                            robot.actuators.setIntakePower(INTAKE_SLOW_SPEED);
+//                            stepCaseStep++;
+//                        }
                         stepCaseStep++;
                         break;
                     // continue retracting
                     case 1:
-                        // reset intake while retracting, then stop when arm is about to come down
-                        if (robot.actuators.getState() >= 6) {
-                            robot.actuators.setIntakePower(0);
-                        }
-
                         // continue moving into warehouse
                         if (!robot.drive.isBusy()) {
                             robot.drive.followTrajectoryAsync(trajectoryIn);
                         }
-                        // if the retract macro is done, start up intake and
+                        // if the retract macro is done, start up intake and move in
                         if (!robot.actuators.runningRetract) {
-                            robot.actuators.setIntakePower(-INTAKE_SPEED);
+                            robot.actuators.setIntakePower(-INTAKE_SLOW_SPEED);
                             stepCaseStep++;
                         }
                         break;
                     // wait for block and drive out
                     case 2:
                         //if (robot.actuators.hopperIsFull()) {
-                        if (robot.actuators.getHopperDistance() < 15) {
+                        if (robot.actuators.getHopperDistance() < 14) {
+                            robot.actuators.setIntakePower(INTAKE_SLOW_SPEED);
                             robot.drive.breakFollowing();
                             stepStartTime = currentRuntime;
                             stepCaseStep++;
@@ -530,7 +531,7 @@ public abstract class AbstractAuto extends LinearOpMode {
                         break;
                     // after a bit, stop intake and extend while going out
                     case 3:
-                        if (stepTime > 0.15) {
+                        if (stepTime > 0.2) {
                             robot.actuators.setIntakePower(0);
                             robot.drive.followTrajectoryAsync(trajectoryOut);
                             robot.actuators.runningExtend = true;
@@ -541,11 +542,11 @@ public abstract class AbstractAuto extends LinearOpMode {
                     // while going out, bring up the intake, and retract when done extending
                     case 4:
                         // reverse intake
-                        if (stepTime > 0.9) {
-                            robot.actuators.setIntakePower(0);
-                        } else if (stepTime > 0.5) {
-                            robot.actuators.setIntakePower(0.5);
-                        }
+//                        if (stepTime > 0.9) {
+//                            robot.actuators.setIntakePower(0);
+//                        } else if (stepTime > 0.75) {
+//                            robot.actuators.setIntakePower(INTAKE_SLOW_SPEED);
+//                        }
 
                         // start retract when done extending
                         if (!robot.actuators.runningExtend) {
@@ -555,9 +556,17 @@ public abstract class AbstractAuto extends LinearOpMode {
                         }
                         break;
                     case 5:
-                        robot.actuators.setIntakePower(0);
-                        robot.actuators.setIntakePosition((int) (robot.actuators.getIntakePosition() + (robot.actuators.getIntakePosition() % 145.1)));
-                        stepCaseStep++;
+                        // reset intake while retracting, then stop when arm is about to come down
+                        if (robot.actuators.getState() >= 8) {
+                            robot.actuators.setIntakePower(0);
+                            stepCaseStep++;
+                        } else if (robot.actuators.getState() >= 4) {
+                            robot.actuators.setIntakePosition((int) (robot.actuators.getIntakePosition() + (robot.actuators.getIntakePosition() % 145.1)));
+                        }
+
+//                        robot.actuators.setIntakePower(0);
+//                        robot.actuators.setIntakePosition((int) (robot.actuators.getIntakePosition() + (robot.actuators.getIntakePosition() % 145.1)));
+//                        stepCaseStep++;
 //                        robot.actuators.setIntakePower(0);
 //                        if (stepTime > 0.2) {
 //                            stepCaseStep++;

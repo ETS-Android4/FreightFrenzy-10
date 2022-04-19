@@ -28,7 +28,7 @@ public class RedWarehouse extends AbstractAuto {
     public static Pose2d PARK = new Pose2d(39, -66.25, Math.toRadians(0));
 
     public int intake_speed = 35;
-    public int creep_speed = 8;
+    public int creep_speed = 5;
 
     Trajectory intake1;
     Trajectory intake2;

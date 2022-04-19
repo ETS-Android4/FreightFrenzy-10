@@ -27,8 +27,8 @@ public class BlueWarehouse extends AbstractAuto {
     public static Pose2d SCORE = new Pose2d(10.6875, 66.25, Math.toRadians(0));
     public static Pose2d PARK = new Pose2d(39, 66.25, Math.toRadians(0));
 
-    public int intake_speed = 30;
-    public int creep_speed = 15;
+    public int intake_speed = 35;
+    public int creep_speed = 5;
 
     Trajectory intake1;
     Trajectory intake2;
@@ -49,7 +49,7 @@ public class BlueWarehouse extends AbstractAuto {
 
     @Override
     public void setCameraPosition() {
-        this.cameraPosition = CameraPosition.LEFT;
+        this.cameraPosition = CameraPosition.RIGHT;
     }
 
     @Override

@@ -161,7 +161,7 @@ public class AbstractTeleOp extends OpMode {
 
                 robot.drive.setWeightedDrivePower(new Pose2d(x, y, z));
 
-                // if x is pressed, go into automatic mode
+                // if x is pressed, go into automatic alliance mode
                 if (driver1.getX().isJustPressed()) {
                     extendTo = HIGH;
                     pathToScore = robot.drive.trajectoryBuilder(robot.drive.getPoseEstimate(), true)
@@ -176,7 +176,7 @@ public class AbstractTeleOp extends OpMode {
                     currentMode = Mode.AUTOMATIC_CONTROL;
                 }
 
-                // or if b is pressed, go into automatic mode
+                // or if b is pressed, go into automatic shared mode
                 if (driver1.getB().isJustPressed() && !driver1.getStart().isPressed()) {
                     extendTo = SHARED;
                     pathToScore = robot.drive.trajectoryBuilder(robot.drive.getPoseEstimate(), true)
@@ -185,7 +185,7 @@ public class AbstractTeleOp extends OpMode {
                                 robot.actuators.setIntakePower(0);
                                 robot.actuators.runningExtend = true;
                             })
-                            .splineToSplineHeading(alliance == RED ? PoseStorage.SCORE_1_1_SHARED_RED : PoseStorage.SCORE_1_1_SHARED_BLUE, alliance == RED ? Math.toRadians(-180) : Math.toRadians(-180))
+                            .splineToSplineHeading(alliance == RED ? PoseStorage.SCORE_1_1_SHARED_RED : PoseStorage.SCORE_1_1_SHARED_BLUE, alliance == RED ? Math.toRadians(90) : Math.toRadians(-90))
                             .lineToSplineHeading(alliance == RED ? PoseStorage.SCORE_2_SHARED_RED : PoseStorage.SCORE_2_SHARED_BLUE)
                             .build();
                     currentMode = Mode.AUTOMATIC_CONTROL;
@@ -272,14 +272,14 @@ public class AbstractTeleOp extends OpMode {
             slidesPosition += driver2.getRightStick().getY() * SLIDES_SPEED;
 
             if (driver2.getDUp().isPressed()) {
-                armPivotPosition += ARM_PIVOT_SPEED;
-            } else if (driver2.getDDown().isPressed()) {
                 armPivotPosition -= ARM_PIVOT_SPEED;
+            } else if (driver2.getDDown().isPressed()) {
+                armPivotPosition += ARM_PIVOT_SPEED;
             }
             if (driver2.getDLeft().isPressed()) {
-                armHopperPosition += ARM_HOPPER_SPEED;
-            } else if (driver2.getDRight().isPressed()) {
                 armHopperPosition -= ARM_HOPPER_SPEED;
+            } else if (driver2.getDRight().isPressed()) {
+                armHopperPosition += ARM_HOPPER_SPEED;
             }
 
             turretPosition = clamp(turretPosition, TURRET_MIN, TURRET_MAX);
