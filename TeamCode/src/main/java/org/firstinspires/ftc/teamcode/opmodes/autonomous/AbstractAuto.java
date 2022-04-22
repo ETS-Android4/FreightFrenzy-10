@@ -14,6 +14,7 @@ import static org.firstinspires.ftc.teamcode.util.Alliance.BLUE;
 import static org.firstinspires.ftc.teamcode.util.Alliance.RED;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
@@ -30,8 +31,10 @@ import org.firstinspires.ftc.teamcode.util.DepositPosition;
 import java.util.ArrayList;
 import java.util.Locale;
 
+@Config
 public abstract class AbstractAuto extends LinearOpMode {
 
+    public static double TIMEOUT = 1.0;
     Alliance alliance;
     CameraPosition cameraPosition;
     public Robot robot;
@@ -39,6 +42,7 @@ public abstract class AbstractAuto extends LinearOpMode {
     private BarcodeLocation teamElementLocation = BarcodeLocation.RIGHT;
     private ArrayList<Step> steps;
     private double currentRuntime;
+    private double timeSinceLastDetection = 0;
 
     // Main method to run all the steps for autonomous
     @Override
@@ -87,8 +91,14 @@ public abstract class AbstractAuto extends LinearOpMode {
         robot.actuators.setArmPivot(ARM_PIVOT_POSITION.getGeneral());
         robot.actuators.setArmHopper(ARM_HOPPER_POSITION.getGeneral());
 
+        currentRuntime = getRuntime();
+        double timeOfLastDetection = currentRuntime;
+        double timeSinceLastDetection = 0;
+
         // wait for start
         while (!(isStarted() || isStopRequested())) {
+            currentRuntime = getRuntime();
+
             robot.actuators.update();
 //            robot.updateLights();
             telemetry.addLine("Initialized");
@@ -98,8 +108,14 @@ public abstract class AbstractAuto extends LinearOpMode {
                 // update location if a location is found
                 if (newLocation != BarcodeLocation.UNKNOWN) {
                     teamElementLocation = newLocation;
+                    timeOfLastDetection = currentRuntime;
+                } else {
+                    timeSinceLastDetection = currentRuntime - timeOfLastDetection;
+                } if (timeSinceLastDetection > TIMEOUT) {
+                    teamElementLocation = BarcodeLocation.UNKNOWN;
                 }
-                telemetry.addLine(String.format(Locale.US, "Location: %s", teamElementLocation));
+
+                telemetry.addLine(String.format(Locale.US, "Location: %s\nLast Seen: %s", teamElementLocation, timeSinceLastDetection));
 //                telemetry.addLine(robot.getTelemetryWithCamera());
                 // opencv
 //                teamElementLocation = robot.camera.checkTeamElementLocation();
@@ -140,6 +156,10 @@ public abstract class AbstractAuto extends LinearOpMode {
                 stepTimeout = step.getTimeout() != -1 ? currentRuntime + step.getTimeout() : Double.MAX_VALUE;
                 step.start();
             }
+
+            // update turret and slides position
+            PoseStorage.slidesPosition = robot.actuators.getSlides();
+            PoseStorage.turretPosition = robot.actuators.getTurret();
 
             // while the step is running display telemetry
             step.whileRunning();
@@ -561,7 +581,7 @@ public abstract class AbstractAuto extends LinearOpMode {
                             robot.actuators.setIntakePower(0);
                             stepCaseStep++;
                         } else if (robot.actuators.getState() >= 4) {
-                            robot.actuators.setIntakePosition((int) (robot.actuators.getIntakePosition() + (robot.actuators.getIntakePosition() % 145.1)));
+//                            robot.actuators.setIntakePosition((int) (robot.actuators.getIntakePosition() + (robot.actuators.getIntakePosition() % 145.1)));
                         }
 
 //                        robot.actuators.setIntakePower(0);

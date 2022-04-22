@@ -130,7 +130,7 @@ public class Actuators {
     // macro positions
     // IF YOU EDIT THESE MACRO POSITIONS, COPY THEM TO THE CLEARMEMORY FUNCTION LINE 189!!!!
     public static int TURRET_GENERAL = -130;
-    public static int TURRET_SHARED = -900;
+    public static int TURRET_SHARED = -663;
     public static int TURRET_ALLIANCE = 680;
 
     public static int SLIDES_GENERAL = 800;
@@ -147,7 +147,7 @@ public class Actuators {
 
     public void clearMemory() {
         TURRET_GENERAL = -130;
-        TURRET_SHARED = -900;
+        TURRET_SHARED = -663;
         TURRET_ALLIANCE = 680;
 
         SLIDES_GENERAL = 800;
@@ -158,6 +158,9 @@ public class Actuators {
 
         ARM_PIVOT_POSITION = new ArmPosition(0.9, 0.9, 0.9, 0.48, 0.48, 0.09, 0.01, 0.1, 0.24, 0.8, 0.09, 0.01, 0.1, 0.24);
         ARM_HOPPER_POSITION = new ArmPosition(0.55+0.06, 0.55+0.06, 0.55+0.06, 0.4+0.06, 0.55+0.06, 0.2+0.06, 0.24+0.06, 0.2+0.06, 0.25+0.06, 0.99, 0.66+0.06, 0.48+0.06, 0.48+0.06, 0.6+0.06);
+
+//        ARM_PIVOT_POSITION = new ArmPosition(0.9, 0.9, 0.9, 0.48, 0.48, 0.09, 0.01, 0.1, 0.24, 0.8, 0.09, 0.01, 0.1, 0.24);
+//        ARM_HOPPER_POSITION = new ArmPosition(0.55+0.06, 0.55+0.06, 0.55+0.06, 0.4+0.06, 0.55+0.06, 0.2+0.06, 0.24+0.06, 0.2+0.06, 0.25+0.06, 0.99, 0.66+0.06, 0.48+0.06, 0.48+0.06, 0.6+0.06);
     }
 
     public Actuators(HardwareMap hardwareMap) {
@@ -172,9 +175,9 @@ public class Actuators {
         this.odoServo = hardwareMap.get(Servo.class, ODO_SERVO);
         this.colorSensor = hardwareMap.get(RevColorSensorV3.class, COLOR);
 
-        this.turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        this.slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        this.intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        this.turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        this.slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        this.intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         this.turret.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         this.slides.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -339,7 +342,7 @@ public class Actuators {
                     if (depoPos == GENERAL) {
                         setArmPivot(ARM_PIVOT_POSITION.getAlmostHigh());
                     } else if (depoPos == SHARED) {
-                        setArmPivot(ARM_PIVOT_POSITION.getAlmostShared());
+                        setArmPivot(ARM_PIVOT_POSITION.getUp());
                     } else if (depoPos == LOW) {
                         setArmPivot(ARM_PIVOT_POSITION.getAlmostLow());
                     } else if (depoPos == MID) {
@@ -365,7 +368,7 @@ public class Actuators {
                     if (depoPos == GENERAL) {
                         setArmHopper(ARM_HOPPER_POSITION.getAlmostHigh());
                     } else if (depoPos == SHARED) {
-                        setArmHopper(ARM_HOPPER_POSITION.getAlmostShared());
+                        setArmHopper(ARM_HOPPER_POSITION.getUp());
                     } else if (depoPos == LOW) {
                         setArmHopper(ARM_HOPPER_POSITION.getAlmostLow());
                     } else if (depoPos == MID) {
@@ -397,6 +400,10 @@ public class Actuators {
                     state++;
                     break;
                 case 4:
+                    if (depoPos == SHARED && currentTime > time + 0.1) {
+                        setArmPivot(ARM_PIVOT_POSITION.getAlmostShared());
+                        setArmHopper(ARM_HOPPER_POSITION.getAlmostShared());
+                    }
                     if (turretController.atSetPoint()) {
                         if (depoPos == GENERAL) {
                             setSlides(SLIDES_GENERAL);

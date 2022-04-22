@@ -268,7 +268,11 @@ public class AbstractTeleOp extends OpMode {
                 armHopperPosition = robot.actuators.getArmHopper();
                 robot.actuators.justFinishedAMacro = false;
             }
-            turretPosition += driver2.getLeftStick().getX() * TURRET_SPEED;
+            if (slidesPosition > 500) {
+                turretPosition += driver2.getLeftStick().getX() * 5;
+            } else {
+                turretPosition += driver2.getLeftStick().getX() * 15;
+            }
             slidesPosition += driver2.getRightStick().getY() * SLIDES_SPEED;
 
             if (driver2.getDUp().isPressed()) {

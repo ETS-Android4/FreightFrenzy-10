@@ -21,6 +21,9 @@
 
 package org.firstinspires.ftc.teamcode.vision;
 
+import static org.firstinspires.ftc.teamcode.vision.OpenCVUtil.LEFT_BOUNDARY_APRILTAG;
+import static org.firstinspires.ftc.teamcode.vision.OpenCVUtil.RIGHT_BOUNDARY_APRILTAG;
+
 import org.opencv.calib3d.Calib3d;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -130,6 +133,8 @@ public class AprilTagDetectionPipeline extends OpenCvPipeline
             drawAxisMarker(input, tagsizeY/2.0, 6, pose.rvec, pose.tvec, cameraMatrix);
             draw3dCubeMarker(input, tagsizeX, tagsizeX, tagsizeY, 5, pose.rvec, pose.tvec, cameraMatrix);
         }
+        Imgproc.line(input, new Point(LEFT_BOUNDARY_APRILTAG,0), new Point(LEFT_BOUNDARY_APRILTAG,800), green, 2);
+        Imgproc.line(input, new Point(RIGHT_BOUNDARY_APRILTAG,0), new Point(RIGHT_BOUNDARY_APRILTAG,800), green, 2);
 
         return input;
     }

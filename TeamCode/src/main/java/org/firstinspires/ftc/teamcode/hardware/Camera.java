@@ -10,6 +10,8 @@ import static org.firstinspires.ftc.teamcode.util.Constants.WEBCAM_LEFT;
 import static org.firstinspires.ftc.teamcode.util.Constants.WEBCAM_RIGHT;
 import static org.firstinspires.ftc.teamcode.util.Constants.WEBCAM_ROTATION;
 import static org.firstinspires.ftc.teamcode.util.Constants.WEBCAM_WIDTH;
+import static org.firstinspires.ftc.teamcode.vision.OpenCVUtil.LEFT_BOUNDARY_APRILTAG;
+import static org.firstinspires.ftc.teamcode.vision.OpenCVUtil.RIGHT_BOUNDARY_APRILTAG;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -147,9 +149,9 @@ public class Camera {
                 }
                 for (AprilTagDetection detection : detections) {
                     if (detection.id == 0) {
-                        if (detection.center.x < 200) {
+                        if (detection.center.x < LEFT_BOUNDARY_APRILTAG) {
                             return LEFT;
-                        } else if (detection.center.x > 600) {
+                        } else if (detection.center.x > RIGHT_BOUNDARY_APRILTAG) {
                             return RIGHT;
                         } else {
                             return MIDDLE;

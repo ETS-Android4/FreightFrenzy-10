@@ -45,6 +45,17 @@ public class MeepMeepTesting {
                                 .lineToSplineHeading(SCORE_2_RED)
                                 .build()
                 );
+        RoadRunnerBotEntity blueWarehouseBot = new DefaultBotBuilder(meepMeep)
+                .setColorScheme(new ColorSchemeBlueDark())
+                .setConstraints(30, 30, Math.toRadians(60), Math.toRadians(60), 11)
+                .followTrajectorySequence(drive ->
+                        drive.trajectorySequenceBuilder(new Pose2d(45, 56, Math.toRadians(-45)))
+                                .setReversed(true)
+                                .lineToSplineHeading(SCORE_1_BLUE)
+                                .splineToSplineHeading(SCORE_1_1_BLUE, Math.toRadians(180))
+                                .lineToSplineHeading(SCORE_2_BLUE)
+                                .build()
+                );
 
         RoadRunnerBotEntity redSharedBot = new DefaultBotBuilder(meepMeep)
                 .setColorScheme(new ColorSchemeRedDark())
@@ -76,6 +87,7 @@ public class MeepMeepTesting {
 
                 // Add bot entities
                 .addEntity(redWarehouseBot)
+                .addEntity(blueWarehouseBot)
                 .addEntity(redSharedBot)
                 .addEntity(blueSharedBot)
                 .start();
