@@ -525,7 +525,7 @@ public class Actuators {
                 // wait for freight to fall out
                 case 1:
                         //if (!hopperIsFull()) {
-                        if(getHopperDistance()>30) {
+                        if((depoPos != SHARED && getHopperDistance()>30) || (depoPos == SHARED && getHopperDistance()>60)) {
                             intakeRetracted = false;
                             setIntakeServo(INTAKE_SERVO_DOWN);
                             state++;
