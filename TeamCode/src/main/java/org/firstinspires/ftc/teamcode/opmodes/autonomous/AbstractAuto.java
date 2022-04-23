@@ -551,8 +551,11 @@ public abstract class AbstractAuto extends LinearOpMode {
                         break;
                     // after a bit, stop intake and extend while going out
                     case 3:
-                        if (stepTime > 0.2) {
+                        if (stepTime > 0.1) {
                             robot.actuators.setIntakePower(0);
+                        }
+                        if (stepTime > 0.2) {
+//                            robot.actuators.setIntakePower(-0.15);
                             robot.drive.followTrajectoryAsync(trajectoryOut);
                             robot.actuators.runningExtend = true;
                             stepStartTime = currentRuntime;
@@ -577,8 +580,8 @@ public abstract class AbstractAuto extends LinearOpMode {
                         break;
                     case 5:
                         // reset intake while retracting, then stop when arm is about to come down
-                        if (robot.actuators.getState() >= 8) {
-                            robot.actuators.setIntakePower(0);
+                        if (robot.actuators.getState() >= 2) {
+                            robot.actuators.setIntakePower(INTAKE_SPEED);
                             stepCaseStep++;
                         } else if (robot.actuators.getState() >= 4) {
 //                            robot.actuators.setIntakePosition((int) (robot.actuators.getIntakePosition() + (robot.actuators.getIntakePosition() % 145.1)));
