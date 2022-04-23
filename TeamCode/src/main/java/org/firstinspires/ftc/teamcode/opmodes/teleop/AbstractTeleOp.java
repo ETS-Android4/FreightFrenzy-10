@@ -96,7 +96,12 @@ public class AbstractTeleOp extends OpMode {
 
         // set the pose from auto
         if (PoseStorage.POSE_IS_DEFAULT) {
+            PoseStorage.intakeOffset = 0;
+            PoseStorage.slidesOffset = 0;
+            PoseStorage.turretOffset = 0;
             PoseStorage.CURRENT_POSE = alliance == RED ? PoseStorage.START_RED : PoseStorage.START_BLUE;
+            PoseStorage.hopperPosition = ARM_HOPPER_POSITION.getInit();
+            PoseStorage.pivotPosition = ARM_PIVOT_POSITION.getInit();
         }
         robot.drive.setPoseEstimate(PoseStorage.CURRENT_POSE);
         PoseStorage.POSE_IS_DEFAULT = true;

@@ -145,7 +145,7 @@ public class Actuators {
 
 
     public static double ARM_PIVOT_INTERMEDIATE_POSITION = 0.5; //recent recal, hopper +0.06 , pivot unchanged
-    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.9, 0.9, 0.9, 0.48, 0.48, 0.09, 0.01, 0.1, 0.24, 0.8, 0.09, 0.01, 0.1, 0.24);
+    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.9, 0.9, 0.9, 0.48, 0.48, 0.09, 0.01, 0.1, 0.24, 0.8, 0.09, 0.01, 0.1, 0.24); //
     public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.55+0.06, 0.55+0.06, 0.55+0.06, 0.4+0.06, 0.55+0.06, 0.2+0.06, 0.24+0.06, 0.2+0.06, 0.25+0.06, 0.99, 0.66+0.06, 0.48+0.06, 0.48+0.06, 0.6+0.06);
 
     public void clearMemory() {
