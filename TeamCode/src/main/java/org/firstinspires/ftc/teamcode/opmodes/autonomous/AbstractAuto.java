@@ -5,18 +5,18 @@ import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_PIVOT_POSITI
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SERVO_DOWN;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SERVO_UP;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SLOW_SPEED;
-import static org.firstinspires.ftc.teamcode.hardware.Actuators.INTAKE_SPEED;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.SLIDES_AUTO;
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.TURRET_ALLIANCE;
 import static org.firstinspires.ftc.teamcode.hardware.Lights.BLUEINIT;
 import static org.firstinspires.ftc.teamcode.hardware.Lights.REDINIT;
 import static org.firstinspires.ftc.teamcode.util.Alliance.BLUE;
 import static org.firstinspires.ftc.teamcode.util.Alliance.RED;
+import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.LEFT;
+import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.MIDDLE;
+import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.RIGHT;
+import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.UNKNOWN;
 
-import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
-import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -95,6 +95,10 @@ public abstract class AbstractAuto extends LinearOpMode {
         double timeOfLastDetection = currentRuntime;
         double timeSinceLastDetection = 0;
 
+        PoseStorage.slidesOffset = 0;
+        PoseStorage.turretOffset = 0;
+        PoseStorage.intakeOffset = 0;
+
         // wait for start
         while (!(isStarted() || isStopRequested())) {
             currentRuntime = getRuntime();
@@ -106,13 +110,18 @@ public abstract class AbstractAuto extends LinearOpMode {
                 // april tag
                 BarcodeLocation newLocation = robot.camera.checkTeamElementLocationFromAprilTag();
                 // update location if a location is found
-                if (newLocation != BarcodeLocation.UNKNOWN) {
-                    teamElementLocation = newLocation;
+//                if (newLocation != BarcodeLocation.UNKNOWN && teamElementLocation != BarcodeLocation.MIDDLE) {
+                //if ((newLocation == MIDDLE && teamElementLocation == UNKNOWN) || (newLocation != UNKNOWN && newLocation != MIDDLE)) {
+                if (newLocation != UNKNOWN) { //if we can see it
+                    teamElementLocation = newLocation; //then we know where it is
                     timeOfLastDetection = currentRuntime;
-                } else {
-                    timeSinceLastDetection = currentRuntime - timeOfLastDetection;
-                } if (timeSinceLastDetection > TIMEOUT) {
-                    teamElementLocation = BarcodeLocation.UNKNOWN;
+                } else { //either flicker or out of frame
+                    timeSinceLastDetection = currentRuntime - timeOfLastDetection; //check how long has it been
+                    if (timeSinceLastDetection > TIMEOUT) { //if it has been a while, we are out of frame
+                        if (!(teamElementLocation == LEFT || teamElementLocation == RIGHT)) {
+                            teamElementLocation = BarcodeLocation.UNKNOWN;
+                        }
+                    }
                 }
 
                 telemetry.addLine(String.format(Locale.US, "Location: %s\nLast Seen: %s", teamElementLocation, timeSinceLastDetection));
@@ -158,8 +167,9 @@ public abstract class AbstractAuto extends LinearOpMode {
             }
 
             // update turret and slides position
-            PoseStorage.slidesPosition = robot.actuators.getSlides();
-            PoseStorage.turretPosition = robot.actuators.getTurret();
+//            PoseStorage.slidesOffset = robot.actuators.getSlidesDirect();
+//            PoseStorage.turretOffset = robot.actuators.getTurretDirect();
+//            PoseStorage.intakeOffset = robot.actuators.getIntakePositionDirect();
 
             // while the step is running display telemetry
             step.whileRunning();
@@ -172,6 +182,12 @@ public abstract class AbstractAuto extends LinearOpMode {
             telemetry.addLine(robot.getTelemetry());
             telemetry.update();
         }
+        telemetry.addLine("got here yay");
+        telemetry.update();
+        PoseStorage.slidesOffset = robot.actuators.getSlidesDirect();
+        PoseStorage.turretOffset = robot.actuators.getTurretDirect();
+        PoseStorage.intakeOffset = robot.actuators.getIntakePositionDirect();
+
     }
 
     // Load up all of the steps for the autonomous: to be overridden with the specific steps in the specific auto
@@ -542,7 +558,8 @@ public abstract class AbstractAuto extends LinearOpMode {
                     // wait for block and drive out
                     case 2:
                         //if (robot.actuators.hopperIsFull()) {
-                        if (robot.actuators.getHopperDistance() < 14) {
+                        if (robot.actuators.getHopperDistance() < 16) {
+//                            robot.actuators.setIntakePower(0);
                             robot.actuators.setIntakePower(INTAKE_SLOW_SPEED);
                             robot.drive.breakFollowing();
                             stepStartTime = currentRuntime;
@@ -551,8 +568,10 @@ public abstract class AbstractAuto extends LinearOpMode {
                         break;
                     // after a bit, stop intake and extend while going out
                     case 3:
-                        if (stepTime > 0.2) {
+                        if (stepTime > 0.1) {
                             robot.actuators.setIntakePower(0);
+                        }
+                        if (stepTime > 0.2) {
                             robot.drive.followTrajectoryAsync(trajectoryOut);
                             robot.actuators.runningExtend = true;
                             stepStartTime = currentRuntime;
@@ -569,6 +588,10 @@ public abstract class AbstractAuto extends LinearOpMode {
 //                        }
 
                         // start retract when done extending
+                        if (robot.actuators.getState() >= 3) {
+                            robot.actuators.setIntakePower(INTAKE_SLOW_SPEED);
+                        }
+
                         if (!robot.actuators.runningExtend) {
                             robot.actuators.runningRetract = true;
                             stepStartTime = currentRuntime;
@@ -577,8 +600,8 @@ public abstract class AbstractAuto extends LinearOpMode {
                         break;
                     case 5:
                         // reset intake while retracting, then stop when arm is about to come down
-                        if (robot.actuators.getState() >= 8) {
-                            robot.actuators.setIntakePower(0);
+                        if (robot.actuators.getState() >= 5) {
+//                            robot.actuators.setIntakePower(0);
                             stepCaseStep++;
                         } else if (robot.actuators.getState() >= 4) {
 //                            robot.actuators.setIntakePosition((int) (robot.actuators.getIntakePosition() + (robot.actuators.getIntakePosition() % 145.1)));
@@ -593,7 +616,7 @@ public abstract class AbstractAuto extends LinearOpMode {
 //                        }
                         // if the retract macro is almost done, start another cycle round
                     case 6:
-                        if (robot.actuators.getState() >= 8) {
+                        if (robot.actuators.getState() >= 6) {
                             stepCaseStep++;
                         }
                         break;
@@ -636,9 +659,9 @@ public abstract class AbstractAuto extends LinearOpMode {
                         // set hopper in motion because the normal macro waits a bit
                         robot.actuators.setState(4);
                         robot.actuators.runningExtend = true;
-                        if (barcodeLocation == BarcodeLocation.LEFT) {
+                        if (barcodeLocation == LEFT) {
                             robot.actuators.setArmPivot(ARM_PIVOT_POSITION.getAlmostLow());
-                        } else if (barcodeLocation == BarcodeLocation.MIDDLE) {
+                        } else if (barcodeLocation == MIDDLE) {
                             robot.actuators.setArmPivot(ARM_PIVOT_POSITION.getAlmostMid());
                         } else if (barcodeLocation == BarcodeLocation.RIGHT || barcodeLocation == BarcodeLocation.UNKNOWN) {
                             robot.actuators.setArmPivot(ARM_PIVOT_POSITION.getAlmostHigh());
@@ -648,9 +671,9 @@ public abstract class AbstractAuto extends LinearOpMode {
                         break;
                     case 1:
                         if (stepTime > 0) {
-                            if (barcodeLocation == BarcodeLocation.LEFT) {
+                            if (barcodeLocation == LEFT) {
                                 robot.actuators.setArmHopper(ARM_HOPPER_POSITION.getAlmostLow());
-                            } else if (barcodeLocation == BarcodeLocation.MIDDLE) {
+                            } else if (barcodeLocation == MIDDLE) {
                                 robot.actuators.setArmHopper(ARM_HOPPER_POSITION.getAlmostMid());
                             } else if (barcodeLocation == BarcodeLocation.RIGHT || barcodeLocation == BarcodeLocation.UNKNOWN) {
                                 robot.actuators.setArmHopper(ARM_HOPPER_POSITION.getAlmostHigh());

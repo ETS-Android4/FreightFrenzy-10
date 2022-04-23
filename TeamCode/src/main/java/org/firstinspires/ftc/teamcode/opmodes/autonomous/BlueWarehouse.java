@@ -25,7 +25,7 @@ public class BlueWarehouse extends AbstractAuto {
     public static Pose2d INTAKE5 = new Pose2d(44, 66.25, Math.toRadians(0));
     public static Pose2d CREEP = new Pose2d(52, 66.25, Math.toRadians(0));
     public static Pose2d SCORE = new Pose2d(10.6875, 66.25, Math.toRadians(0));
-    public static Pose2d PARK = new Pose2d(39, 66.25, Math.toRadians(0));
+    public static Pose2d PARK = new Pose2d(41, 66.25, Math.toRadians(0));
 
     public int intake_speed = 35;
     public int creep_speed = 5;
