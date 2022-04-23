@@ -524,14 +524,13 @@ public class Actuators {
                     break;
                 // wait for freight to fall out
                 case 1:
-                    //if (currentTime > time + 0.15) {
                         //if (!hopperIsFull()) {
                         if(getHopperDistance()>30) {
                             intakeRetracted = false;
                             setIntakeServo(INTAKE_SERVO_DOWN);
                             state++;
                         }
-                    //}
+
                     break;
                 // move hopper out of danger grabbing zone
                 case 2:
@@ -597,9 +596,9 @@ public class Actuators {
                     state++;
                     break;
                 case 9:
-                    //if (currentTime > time + RETRACT_DOWN) {
+                    if (currentTime > time + RETRACT_DOWN) {
                         state++;
-                    //}
+                    }
                     break;
                 case 10:
                     runningRetract = false;

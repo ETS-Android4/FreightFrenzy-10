@@ -275,13 +275,13 @@ public class AbstractTeleOp extends OpMode {
             }
 
             //move the turret
-            turretPosition += (20)*((890-slidesPosition)/890) * driver2.getLeftStick().getX();
+            //turretPosition += (20)*((890-slidesPosition)/890) * driver2.getLeftStick().getX();
 
-//            if (slidesPosition > 500) {
-//                turretPosition += driver2.getLeftStick().getX() * 5;
-//            } else {
-//                turretPosition += driver2.getLeftStick().getX() * 15;
-//            }
+            if (slidesPosition > 500) {
+                turretPosition += driver2.getLeftStick().getX() * 5;
+            } else {
+                turretPosition += driver2.getLeftStick().getX() * 15;
+            }
             //move the slides
             slidesPosition += driver2.getRightStick().getY() * SLIDES_SPEED;
 
