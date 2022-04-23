@@ -108,6 +108,11 @@ public class AbstractTeleOp extends OpMode {
 
         //robot.actuators.odoRetracted = false;
         robot.actuators.setOdoServo(ODO_SERVO_DOWN);
+
+        turretPosition = robot.actuators.getTurret();
+        slidesPosition = robot.actuators.getSlides();
+        armHopperPosition = robot.actuators.getArmHopper();
+        armPivotPosition = robot.actuators.getArmPivot();
     }
 
     @Override
@@ -268,11 +273,16 @@ public class AbstractTeleOp extends OpMode {
                 armHopperPosition = robot.actuators.getArmHopper();
                 robot.actuators.justFinishedAMacro = false;
             }
-            if (slidesPosition > 500) {
-                turretPosition += driver2.getLeftStick().getX() * 5;
-            } else {
-                turretPosition += driver2.getLeftStick().getX() * 15;
-            }
+
+            //move the turret
+            turretPosition += (20)*((890-slidesPosition)/890) * driver2.getLeftStick().getX();
+
+//            if (slidesPosition > 500) {
+//                turretPosition += driver2.getLeftStick().getX() * 5;
+//            } else {
+//                turretPosition += driver2.getLeftStick().getX() * 15;
+//            }
+            //move the slides
             slidesPosition += driver2.getRightStick().getY() * SLIDES_SPEED;
 
             if (driver2.getDUp().isPressed()) {
