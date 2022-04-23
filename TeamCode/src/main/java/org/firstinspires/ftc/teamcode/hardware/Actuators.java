@@ -524,14 +524,13 @@ public class Actuators {
                     break;
                 // wait for freight to fall out
                 case 1:
-                    if (currentTime > time + 0.15) {
                         //if (!hopperIsFull()) {
-                        if(getHopperDistance()>30) {
+                        if((depoPos != SHARED && getHopperDistance()>30) || (depoPos == SHARED && getHopperDistance()>60)) {
                             intakeRetracted = false;
                             setIntakeServo(INTAKE_SERVO_DOWN);
                             state++;
                         }
-                    }
+
                     break;
                 // move hopper out of danger grabbing zone
                 case 2:
@@ -568,18 +567,19 @@ public class Actuators {
                     // update variable to keep track of blocks for when to rumble
                     hasBlock = false;
                     setSlides(0);
+                    setArmPivot(ARM_PIVOT_INTERMEDIATE_POSITION);
                     time = currentTime;
                     state++;
                     break;
                 case 5:
 //                    if (slidesController.atSetPoint()) {
-                    if (getSlides() < 200) {
+                    //if (getSlides() < 200) {
                         state++;
-                    }
+                    //}
                     break;
                 case 6:
                     setTurret(0);
-                    setArmPivot(ARM_PIVOT_INTERMEDIATE_POSITION);
+                    //setArmPivot(ARM_PIVOT_INTERMEDIATE_POSITION);
                     time = currentTime;
                     state++;
                     break;
