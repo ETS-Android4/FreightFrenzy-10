@@ -573,9 +573,9 @@ public class Actuators {
                     break;
                 case 5:
 //                    if (slidesController.atSetPoint()) {
-                    //if (getSlides() < 200) {
+                    if (getSlides() < 200) {
                         state++;
-                    //}
+                    }
                     break;
                 case 6:
                     setTurret(0);

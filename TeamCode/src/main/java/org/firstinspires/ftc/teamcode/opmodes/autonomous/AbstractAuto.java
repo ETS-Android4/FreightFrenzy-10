@@ -72,6 +72,10 @@ public abstract class AbstractAuto extends LinearOpMode {
 
         makeTrajectories();
 
+        PoseStorage.slidesOffset = 0;
+        PoseStorage.turretOffset = 0;
+        PoseStorage.intakeOffset = 0;
+
         // set up into box
         robot.actuators.setArmPivot(ARM_PIVOT_POSITION.getAlmostGeneral());
         robot.actuators.setArmHopper(ARM_HOPPER_POSITION.getAlmostGeneral());
@@ -95,9 +99,6 @@ public abstract class AbstractAuto extends LinearOpMode {
         double timeOfLastDetection = currentRuntime;
         double timeSinceLastDetection = 0;
 
-        PoseStorage.slidesOffset = 0;
-        PoseStorage.turretOffset = 0;
-        PoseStorage.intakeOffset = 0;
 
         // wait for start
         while (!(isStarted() || isStopRequested())) {
@@ -187,7 +188,8 @@ public abstract class AbstractAuto extends LinearOpMode {
         PoseStorage.slidesOffset = robot.actuators.getSlidesDirect();
         PoseStorage.turretOffset = robot.actuators.getTurretDirect();
         PoseStorage.intakeOffset = robot.actuators.getIntakePositionDirect();
-
+        PoseStorage.hopperPosition = robot.actuators.getArmHopper() == ARM_HOPPER_POSITION.getDown() ? ARM_HOPPER_POSITION.getDown() : ARM_HOPPER_POSITION.getUp();
+        PoseStorage.pivotPosition = robot.actuators.getArmPivot() == ARM_PIVOT_POSITION.getDown() ? ARM_PIVOT_POSITION.getDown() : ARM_PIVOT_POSITION.getUp();
     }
 
     // Load up all of the steps for the autonomous: to be overridden with the specific steps in the specific auto

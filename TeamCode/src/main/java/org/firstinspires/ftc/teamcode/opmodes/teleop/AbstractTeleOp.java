@@ -114,10 +114,14 @@ public class AbstractTeleOp extends OpMode {
         //robot.actuators.odoRetracted = false;
         robot.actuators.setOdoServo(ODO_SERVO_DOWN);
 
-        turretPosition = robot.actuators.getTurret();
-        slidesPosition = robot.actuators.getSlides();
-        armHopperPosition = robot.actuators.getArmHopper();
-        armPivotPosition = robot.actuators.getArmPivot();
+//        turretPosition = robot.actuators.getTurret();
+//        slidesPosition = robot.actuators.getSlides();
+//        armHopperPosition = robot.actuators.getArmHopper();
+//        armPivotPosition = robot.actuators.getArmPivot();
+//        turretPosition = 0;
+//        slidesPosition = 0;
+//        armHopperPosition = ARM_HOPPER_POSITION.getDown();
+//        armPivotPosition = ARM_PIVOT_POSITION.getDown();
     }
 
     @Override
