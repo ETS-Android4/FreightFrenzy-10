@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_HOPPER_POSITION;
+import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_PIVOT_POSITION;
+
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 
@@ -24,6 +27,10 @@ public class PoseStorage {
     public static final Pose2d SCORE_1_1_SHARED_BLUE = new Pose2d(SCORE_1_SHARED_BLUE.getX(), SCORE_1_SHARED_BLUE.getY() + 0.0001, SCORE_1_SHARED_BLUE.getHeading());
     public static final Pose2d SCORE_2_SHARED_BLUE = new Pose2d(66.75, 12, Math.toRadians(90));
 
-    public static int slidesPosition = 0;
-    public static int turretPosition = 0;
+    public static int slidesOffset = 0;
+    public static int turretOffset = 0;
+    public static int intakeOffset = 0;
+
+    public static double hopperPosition = ARM_HOPPER_POSITION.getInit();
+    public static double pivotPosition = ARM_PIVOT_POSITION.getInit();
 }

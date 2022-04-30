@@ -96,7 +96,12 @@ public class AbstractTeleOp extends OpMode {
 
         // set the pose from auto
         if (PoseStorage.POSE_IS_DEFAULT) {
+            PoseStorage.intakeOffset = 0;
+            PoseStorage.slidesOffset = 0;
+            PoseStorage.turretOffset = 0;
             PoseStorage.CURRENT_POSE = alliance == RED ? PoseStorage.START_RED : PoseStorage.START_BLUE;
+            PoseStorage.hopperPosition = ARM_HOPPER_POSITION.getInit();
+            PoseStorage.pivotPosition = ARM_PIVOT_POSITION.getInit();
         }
         robot.drive.setPoseEstimate(PoseStorage.CURRENT_POSE);
         PoseStorage.POSE_IS_DEFAULT = true;
@@ -108,6 +113,15 @@ public class AbstractTeleOp extends OpMode {
 
         //robot.actuators.odoRetracted = false;
         robot.actuators.setOdoServo(ODO_SERVO_DOWN);
+
+//        turretPosition = robot.actuators.getTurret();
+//        slidesPosition = robot.actuators.getSlides();
+//        armHopperPosition = robot.actuators.getArmHopper();
+//        armPivotPosition = robot.actuators.getArmPivot();
+//        turretPosition = 0;
+//        slidesPosition = 0;
+//        armHopperPosition = ARM_HOPPER_POSITION.getDown();
+//        armPivotPosition = ARM_PIVOT_POSITION.getDown();
     }
 
     @Override
@@ -268,11 +282,16 @@ public class AbstractTeleOp extends OpMode {
                 armHopperPosition = robot.actuators.getArmHopper();
                 robot.actuators.justFinishedAMacro = false;
             }
+
+            //move the turret
+            //turretPosition += (20)*((890-slidesPosition)/890) * driver2.getLeftStick().getX();
+
             if (slidesPosition > 500) {
                 turretPosition += driver2.getLeftStick().getX() * 5;
             } else {
                 turretPosition += driver2.getLeftStick().getX() * 15;
             }
+            //move the slides
             slidesPosition += driver2.getRightStick().getY() * SLIDES_SPEED;
 
             if (driver2.getDUp().isPressed()) {

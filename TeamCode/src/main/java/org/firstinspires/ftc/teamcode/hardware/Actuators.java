@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
 import static androidx.core.math.MathUtils.clamp;
+import static org.firstinspires.ftc.teamcode.opmodes.PoseStorage.intakeOffset;
+import static org.firstinspires.ftc.teamcode.opmodes.PoseStorage.slidesOffset;
+import static org.firstinspires.ftc.teamcode.opmodes.PoseStorage.turretOffset;
 import static org.firstinspires.ftc.teamcode.util.Alliance.BLUE;
 import static org.firstinspires.ftc.teamcode.util.Alliance.RED;
 import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.LEFT;
@@ -54,8 +57,8 @@ public class Actuators {
     public static double INTAKE_SERVO_SPEED = 0.02;
     public static double DUCKY_SPEED = 1.0;
 
-    public static double INTAKE_SPEED = 0.75;
-    public static double INTAKE_SLOW_SPEED = 0.75;
+    public static double INTAKE_SPEED = 0.6;
+    public static double INTAKE_SLOW_SPEED = 0.6;
 
 
     public boolean odoRetracted = false;
@@ -142,7 +145,7 @@ public class Actuators {
 
 
     public static double ARM_PIVOT_INTERMEDIATE_POSITION = 0.5; //recent recal, hopper +0.06 , pivot unchanged
-    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.9, 0.9, 0.9, 0.48, 0.48, 0.09, 0.01, 0.1, 0.24, 0.8, 0.09, 0.01, 0.1, 0.24);
+    public static ArmPosition ARM_PIVOT_POSITION = new ArmPosition(0.9, 0.9, 0.9, 0.48, 0.48, 0.09, 0.01, 0.1, 0.24, 0.8, 0.09, 0.01, 0.1, 0.24); //
     public static ArmPosition ARM_HOPPER_POSITION = new ArmPosition(0.55+0.06, 0.55+0.06, 0.55+0.06, 0.4+0.06, 0.55+0.06, 0.2+0.06, 0.24+0.06, 0.2+0.06, 0.25+0.06, 0.99, 0.66+0.06, 0.48+0.06, 0.48+0.06, 0.6+0.06);
 
     public void clearMemory() {
@@ -194,32 +197,46 @@ public class Actuators {
 
     // turret
     public int getTurret() {
+        return turret.getCurrentPosition()+turretOffset;
+    }
+
+    public int getTurretDirect() {
         return turret.getCurrentPosition();
     }
 
     public void setTurret(int position) {
         //position = clamp(position, TURRET_MIN, TURRET_MAX);
-        turretController.setSetPoint(position);
+        turretController.setSetPoint(position-turretOffset);
     }
 
     public void resetTurret(){
         turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         turret.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         turretController.reset();
+        turretOffset = 0;
     };
 
     // slides
     public int getSlides() {
+        return slides.getCurrentPosition()+slidesOffset;
+    }
+
+    public int getSlidesDirect() {
         return slides.getCurrentPosition();
     }
 
     public void setSlides(int position) {
+        position -= slidesOffset;
         position = Math.min(Math.max(position, SLIDES_MIN), SLIDES_MAX);
         slidesController.setSetPoint(position);
     }
 
     // intake
     public int getIntakePosition() {
+        return intake.getCurrentPosition()+intakeOffset;
+    }
+
+    public int getIntakePositionDirect() {
         return intake.getCurrentPosition();
     }
 
@@ -247,10 +264,10 @@ public class Actuators {
         slidesController.setTolerance(SLIDES_TOLERANCE);
         intakeController.setTolerance(INTAKE_TOLERANCE);
 
-        turret.setPower(turretController.calculate(turret.getCurrentPosition()));
-        slides.setPower(slidesController.calculate(slides.getCurrentPosition()));
+        turret.setPower(turretController.calculate(getTurret()));
+        slides.setPower(slidesController.calculate(getSlides()));
         if (INTAKE_PID_MODE) {
-            this.intake.setPower(intakeController.calculate(intake.getCurrentPosition()));
+            this.intake.setPower(intakeController.calculate(getIntakePosition()));
         }
     }
 
@@ -361,7 +378,7 @@ public class Actuators {
                     }
                     break;
                 case 2:
-                    if (currentTime > time + 0.2) {
+                    if (depoPos == SHARED && currentTime > time + 0.2) {
                         intakeRetracted = true;
                         setIntakeServo(INTAKE_SERVO_UP);
                     }
@@ -405,6 +422,8 @@ public class Actuators {
                         setArmHopper(ARM_HOPPER_POSITION.getAlmostShared());
                     }
                     if (turretController.atSetPoint()) {
+                        intakeRetracted = true;
+                        setIntakeServo(INTAKE_SERVO_UP);
                         if (depoPos == GENERAL) {
                             setSlides(SLIDES_GENERAL);
                         } else if (depoPos == SHARED) {
@@ -505,14 +524,13 @@ public class Actuators {
                     break;
                 // wait for freight to fall out
                 case 1:
-                    if (currentTime > time + 0.15) {
                         //if (!hopperIsFull()) {
-                        if(getHopperDistance()>30) {
+                        if((depoPos != SHARED && getHopperDistance()>30) || (depoPos == SHARED && getHopperDistance()>60)) {
                             intakeRetracted = false;
                             setIntakeServo(INTAKE_SERVO_DOWN);
                             state++;
                         }
-                    }
+
                     break;
                 // move hopper out of danger grabbing zone
                 case 2:
@@ -549,17 +567,19 @@ public class Actuators {
                     // update variable to keep track of blocks for when to rumble
                     hasBlock = false;
                     setSlides(0);
+                    setArmPivot(ARM_PIVOT_INTERMEDIATE_POSITION);
                     time = currentTime;
                     state++;
                     break;
                 case 5:
-                    if (slidesController.atSetPoint()) {
+//                    if (slidesController.atSetPoint()) {
+                    if (getSlides() < 200) {
                         state++;
                     }
                     break;
                 case 6:
                     setTurret(0);
-                    setArmPivot(ARM_PIVOT_INTERMEDIATE_POSITION);
+                    //setArmPivot(ARM_PIVOT_INTERMEDIATE_POSITION);
                     time = currentTime;
                     state++;
                     break;
@@ -601,9 +621,9 @@ public class Actuators {
             "IntakeServo: pos %.2f\n" +
             "OdoServo:    pos %.2f\n" +
             "Hopper:      dist %.2f",
-            turret.getCurrentPosition(), turret.getPower(), turretController.getPositionError(),
-            slides.getCurrentPosition(), slides.getPower(), slidesController.getPositionError(),
-            intake.getCurrentPosition(), intake.getPower(), intakeController.getPositionError(),
+            getTurret(), turret.getPower(), turretController.getPositionError(),
+            getSlides(), slides.getPower(), slidesController.getPositionError(),
+            getIntakePosition(), intake.getPower(), intakeController.getPositionError(),
             hopperServo.getPosition(),
             pivotServo.getPosition(),
             leftDucky.getPower(), rightDucky.getPower(),
