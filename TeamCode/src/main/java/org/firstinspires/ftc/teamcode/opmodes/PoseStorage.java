@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_HOPPER_POSITION;
-import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_PIVOT_POSITION;
+//import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_HOPPER_POSITION;
+//import static org.firstinspires.ftc.teamcode.hardware.Actuators.ARM_PIVOT_POSITION;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
@@ -31,6 +31,6 @@ public class PoseStorage {
     public static int turretOffset = 0;
     public static int intakeOffset = 0;
 
-    public static double hopperPosition = ARM_HOPPER_POSITION.getInit();
-    public static double pivotPosition = ARM_PIVOT_POSITION.getInit();
+//    public static double hopperPosition = ARM_HOPPER_POSITION.getInit();
+//    public static double pivotPosition = ARM_PIVOT_POSITION.getInit();
 }
