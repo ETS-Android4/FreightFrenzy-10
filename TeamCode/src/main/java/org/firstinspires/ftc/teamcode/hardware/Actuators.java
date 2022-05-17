@@ -130,8 +130,8 @@ public class Actuators {
     // telemetry
     public String getTelemetry() {
         return String.format(Locale.US, "" +
-            "time = %s",
-            timeElapsed
+                        "time = %s",
+                timeElapsed
         );
     }
 }

@@ -11,7 +11,6 @@ import org.firstinspires.ftc.teamcode.util.controller.Controller;
 @Config
 public class SpeedBump extends OpMode{
 
-    public int state = 0;
 
     Alliance alliance;
 
@@ -28,7 +27,6 @@ public class SpeedBump extends OpMode{
             telemetry.addLine("Initializing Robot...");
             telemetry.update();
 
-//            setAlliance();
 
             driver1 = new Controller(gamepad1);
             driver2 = new Controller(gamepad2);
