@@ -1,48 +1,21 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
-import static androidx.core.math.MathUtils.clamp;
-import static org.firstinspires.ftc.teamcode.opmodes.PoseStorage.intakeOffset;
-import static org.firstinspires.ftc.teamcode.opmodes.PoseStorage.slidesOffset;
-import static org.firstinspires.ftc.teamcode.opmodes.PoseStorage.turretOffset;
-import static org.firstinspires.ftc.teamcode.util.Alliance.BLUE;
-import static org.firstinspires.ftc.teamcode.util.Alliance.RED;
-import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.LEFT;
-import static org.firstinspires.ftc.teamcode.util.BarcodeLocation.MIDDLE;
-//import static org.firstinspires.ftc.teamcode.util.Constants.COLOR;
-//import static org.firstinspires.ftc.teamcode.util.Constants.HOPPER_SERVO;
-//import static org.firstinspires.ftc.teamcode.util.Constants.INTAKE;
 import static org.firstinspires.ftc.teamcode.util.Constants.INTAKE_SERVO;
-//import static org.firstinspires.ftc.teamcode.util.Constants.LEFT_DUCKY;
 import static org.firstinspires.ftc.teamcode.util.Constants.ODO_SERVO;
-//import static org.firstinspires.ftc.teamcode.util.Constants.RIGHT_DUCKY;
-//import static org.firstinspires.ftc.teamcode.util.Constants.SLIDES;
-//import static org.firstinspires.ftc.teamcode.util.Constants.PIVOT_SERVO;
-//import static org.firstinspires.ftc.teamcode.util.Constants.TURRET;
 import static org.firstinspires.ftc.teamcode.util.Constants.WHEEL_BL;
 import static org.firstinspires.ftc.teamcode.util.Constants.WHEEL_BR;
 import static org.firstinspires.ftc.teamcode.util.Constants.WHEEL_FL;
 import static org.firstinspires.ftc.teamcode.util.Constants.WHEEL_FR;
-import static org.firstinspires.ftc.teamcode.util.DepositPosition.GENERAL;
-import static org.firstinspires.ftc.teamcode.util.DepositPosition.HIGH;
-import static org.firstinspires.ftc.teamcode.util.DepositPosition.LOW;
-import static org.firstinspires.ftc.teamcode.util.DepositPosition.MID;
-import static org.firstinspires.ftc.teamcode.util.DepositPosition.SHARED;
+
 
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.arcrobotics.ftclib.controller.PIDController;
-import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.util.Alliance;
-import org.firstinspires.ftc.teamcode.util.ArmPosition;
-import org.firstinspires.ftc.teamcode.util.BarcodeLocation;
-import org.firstinspires.ftc.teamcode.util.DepositPosition;
 
 import java.util.Locale;
 
@@ -76,9 +49,6 @@ public class Actuators {
     private PIDController slidesController;
     private PIDController intakeController;
 
-
-
-
     private int state;
     private double time;
 
@@ -95,35 +65,22 @@ public class Actuators {
     private Servo intakeServo;
     private Servo odoServo;
 
-
-
     public Actuators(HardwareMap hardwareMap) {
         this.driveBR = hardwareMap.get(DcMotor.class, WHEEL_BR);
         this.driveBL = hardwareMap.get(DcMotor.class, WHEEL_BL);
         this.driveFR = hardwareMap.get(DcMotor.class, WHEEL_FR);
         this.driveFL = hardwareMap.get(DcMotor.class, WHEEL_FL);
 
-
-//        this.hopperServo = hardwareMap.get(Servo.class, HOPPER_SERVO);
-//        this.pivotServo = hardwareMap.get(Servo.class, PIVOT_SERVO);
-//        this.leftDucky = hardwareMap.get(CRServo.class, LEFT_DUCKY);
-//        this.rightDucky = hardwareMap.get(CRServo.class, RIGHT_DUCKY);
         this.intakeServo = hardwareMap.get(Servo.class, INTAKE_SERVO);
         this.odoServo = hardwareMap.get(Servo.class, ODO_SERVO);
-
-
-//        this.turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        this.slides.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        this.intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
 
     }
 
     public void startup(){
-        driveBR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        driveBL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        driveFR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        driveFL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        driveBR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        driveBL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        driveFR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        driveFL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         //driveBR.setDirection(DcMotorSimple.Direction.FORWARD);
     }
