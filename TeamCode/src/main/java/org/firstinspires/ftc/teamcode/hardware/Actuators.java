@@ -88,10 +88,10 @@ public class Actuators {
     // pid update for motor and slides
     public void update(double x, double y, double z) {
         double powerFL, powerFR, powerBL, powerBR, temp;
-        powerBR = (   +x   -y   +z   ) ;
-        powerBL = (   -x   +y   +z   ) ;
-        powerFR = (   +x   +y   +z   ) ;
-        powerFL = (   -x   -y   +z   ) ;
+        powerBR = (   +x   -y*0   +z   ) ;
+        powerBL = (   -x   +y*0   +z   ) ;
+        powerFR = (   +x   +y*0   +z   ) ;
+        powerFL = (   -x   -y*0   +z   ) ;
 
         temp = Math.abs(Math.max(Math.max(powerBR,powerBL),Math.max(powerFR,powerFL)));
         if(Math.abs(temp)>1){
