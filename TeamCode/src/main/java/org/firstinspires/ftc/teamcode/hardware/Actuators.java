@@ -1,7 +1,7 @@
 package org.firstinspires.ftc.teamcode.hardware;
 
-import static org.firstinspires.ftc.teamcode.util.Constants.INTAKE_SERVO;
-import static org.firstinspires.ftc.teamcode.util.Constants.ODO_SERVO;
+//import static org.firstinspires.ftc.teamcode.util.Constants.INTAKE_SERVO;
+//import static org.firstinspires.ftc.teamcode.util.Constants.ODO_SERVO;
 import static org.firstinspires.ftc.teamcode.util.Constants.WHEEL_BL;
 import static org.firstinspires.ftc.teamcode.util.Constants.WHEEL_BR;
 import static org.firstinspires.ftc.teamcode.util.Constants.WHEEL_FL;
@@ -53,8 +53,8 @@ public class Actuators {
     private DcMotor driveBL;
     private DcMotor driveBR;
 
-    private Servo intakeServo;
-    private Servo odoServo;
+//    private Servo intakeServo;
+//    private Servo odoServo;
 
     public Actuators(HardwareMap hardwareMap) {
         this.driveBR = hardwareMap.get(DcMotor.class, WHEEL_BR);
@@ -62,8 +62,8 @@ public class Actuators {
         this.driveFR = hardwareMap.get(DcMotor.class, WHEEL_FR);
         this.driveFL = hardwareMap.get(DcMotor.class, WHEEL_FL);
 
-        this.intakeServo = hardwareMap.get(Servo.class, INTAKE_SERVO);
-        this.odoServo = hardwareMap.get(Servo.class, ODO_SERVO);
+        //this.intakeServo = hardwareMap.get(Servo.class, INTAKE_SERVO);
+        //this.odoServo = hardwareMap.get(Servo.class, ODO_SERVO);
 
     }
 
@@ -102,22 +102,22 @@ public class Actuators {
 
 
     // intake servo
-    public double getIntakeServo() {
-        return intakeServo.getPosition();
-    }
-
-    public void setIntakeServo(double position) {
-        intakeServo.setPosition(position);
-    }
-
-    // odometry
-    public double getOdoServo() {
-        return odoServo.getPosition();
-    }
-
-    public void setOdoServo(double position) {
-        odoServo.setPosition(position);
-    }
+//    public double getIntakeServo() {
+//        return intakeServo.getPosition();
+//    }
+//
+//    public void setIntakeServo(double position) {
+//        intakeServo.setPosition(position);
+//    }
+//
+//    // odometry
+//    public double getOdoServo() {
+//        return odoServo.getPosition();
+//    }
+//
+//    public void setOdoServo(double position) {
+//        odoServo.setPosition(position);
+//    }
 
 
     // telemetry

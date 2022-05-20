@@ -76,7 +76,7 @@ public class AbstractTeleOp extends OpMode {
         robot.actuators.intakeStartPos = 0;
 
         //robot.actuators.odoRetracted = false;
-        robot.actuators.setOdoServo(0.01);
+        //robot.actuators.setOdoServo(0.01);
 
 //        turretPosition = robot.actuators.getTurret();
 //        slidesPosition = robot.actuators.getSlides();

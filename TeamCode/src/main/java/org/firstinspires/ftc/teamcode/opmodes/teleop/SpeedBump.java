@@ -35,7 +35,7 @@ public class SpeedBump extends OpMode{
 
             robot = new Robot(hardwareMap, alliance);
 
-            robot.actuators.setOdoServo(0.01);
+            //robot.actuators.setOdoServo(0.01);
 
             robot.actuators.startup();
 
@@ -103,8 +103,8 @@ public class SpeedBump extends OpMode{
                 robot.actuators.odoRetracted = !robot.actuators.odoRetracted;
             }
 
-            robot.actuators.setIntakeServo(robot.actuators.intakeRetracted ? 0.01 : 0.99);
-            robot.actuators.setOdoServo(robot.actuators.odoRetracted ? 0.01 : 0.99);
+            //robot.actuators.setIntakeServo(robot.actuators.intakeRetracted ? 0.01 : 0.99);
+            //robot.actuators.setOdoServo(robot.actuators.odoRetracted ? 0.01 : 0.99);
 
 
             //robot.actuators.update();
