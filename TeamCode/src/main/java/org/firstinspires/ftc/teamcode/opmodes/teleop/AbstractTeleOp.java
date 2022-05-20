@@ -2,8 +2,6 @@ package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
 
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.SLIDES_SPEED;
-//import static org.firstinspires.ftc.teamcode.hardware.Lights.BLUEINIT;
-//import static org.firstinspires.ftc.teamcode.hardware.Lights.REDINIT;
 import static org.firstinspires.ftc.teamcode.util.Alliance.RED;
 import static org.firstinspires.ftc.teamcode.util.DepositPosition.HIGH;
 
@@ -26,12 +24,6 @@ import org.firstinspires.ftc.teamcode.util.controller.Controller;
 @Config
 public class AbstractTeleOp extends OpMode {
 
-    enum Mode {
-        DRIVER_CONTROL,
-        AUTOMATIC_CONTROL
-    }
-
-    Mode currentMode = Mode.DRIVER_CONTROL;
 
     public int state = 0;
 
@@ -112,24 +104,23 @@ public class AbstractTeleOp extends OpMode {
 
 
         // drive base
-        switch (currentMode) {
-            case DRIVER_CONTROL:
-                // normal driver stuff
-                double x, y, z;
 
-                //new stuff with "exponential" speed
+        // normal driver stuff
+        double x, y, z;
 
-                //get the initial values
-                x = driver1.getLeftStick().getY();
-                y = -driver1.getLeftStick().getX();
-                z = -driver1.getRightStick().getX();
+        //new stuff with "exponential" speed
 
-                //transform the linear controller output into the nonlinear curve
-                x = 0.152 * Math.tan(1.42 * x); // blue desmos curve
-                //y =  0.2*Math.tan(1.3734*y)  ;
-                z = 0.152 * Math.tan(1.42 * z);
+        //get the initial values
+        x = driver1.getLeftStick().getY();
+        y = -driver1.getLeftStick().getX();
+        z = -driver1.getRightStick().getX();
 
-                //old stuff with boost button
+        //transform the linear controller output into the nonlinear curve
+        x = 0.152 * Math.tan(1.42 * x); // blue desmos curve
+        //y =  0.2*Math.tan(1.3734*y)  ;
+        z = 0.152 * Math.tan(1.42 * z);
+
+        //old stuff with boost button
 //                if (driver1.getLeftBumper().isPressed()) {
 //                    x = driver1.getLeftStick().getY();
 //                    y = -driver1.getLeftStick().getX();
@@ -140,34 +131,9 @@ public class AbstractTeleOp extends OpMode {
 //                    z = -driver1.getRightStick().getX(); //* DRIVE_SPEED;
 //                }
 
-                robot.drive.setWeightedDrivePower(new Pose2d(x, y, z));
+        robot.drive.setWeightedDrivePower(new Pose2d(x, y, z));
 
-
-
-
-
-                // if drive finishes its task, cede control to the driver
-                if (state == 2) {
-                    currentMode = Mode.DRIVER_CONTROL;
-                    state = 0;
-                }
-
-                // if x is pressed, we break out of the automatic following
-                if (driver1.getLeftStickButton().isJustPressed() || driver1.getRightStickButton().isJustPressed() || driver2.getLeftStickButton().isJustPressed() || driver2.getRightStickButton().isJustPressed()) {
-                    robot.drive.breakFollowing();
-                    currentMode = Mode.DRIVER_CONTROL;
-                }
-                break;
-        }
         robot.drive.update();
-//        PoseStorage.CURRENT_POSE = robot.drive.getPoseEstimate();
-
-
-
-
-
-            //move the turret
-            //turretPosition += (20)*((890-slidesPosition)/890) * driver2.getLeftStick().getX();
 
             if (slidesPosition > 500) {
                 turretPosition += driver2.getLeftStick().getX() * 5;
