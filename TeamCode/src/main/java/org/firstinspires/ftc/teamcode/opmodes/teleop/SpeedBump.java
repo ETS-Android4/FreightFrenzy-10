@@ -87,7 +87,7 @@ public class SpeedBump extends OpMode{
                 z = z/temp;
             }
 
-            robot.drive.setWeightedDrivePower(new Pose2d(x, y, z));
+            robot.drive.setWeightedDrivePower(new Pose2d(x, -y, z));
             robot.actuators.update(x,y,z);
 
 

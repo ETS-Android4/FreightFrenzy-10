@@ -79,8 +79,8 @@ public class Actuators {
     // pid update for motor and slides
     public void update(double x, double y, double z) {
         double powerFL, powerFR, powerBL, powerBR, temp;
-        powerBR = (   +x     +z   ) ;
-        powerBL = (   -x     +z   ) ;
+        powerBR = (   -x     +z   ) ;
+        powerBL = (   +x     +z   ) ;
         powerFR = (   +x     +z   ) ;
         powerFL = (   -x     +z   ) ;
 
