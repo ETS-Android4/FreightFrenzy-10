@@ -2,8 +2,8 @@ package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
 
 import static org.firstinspires.ftc.teamcode.hardware.Actuators.SLIDES_SPEED;
-import static org.firstinspires.ftc.teamcode.hardware.Lights.BLUEINIT;
-import static org.firstinspires.ftc.teamcode.hardware.Lights.REDINIT;
+//import static org.firstinspires.ftc.teamcode.hardware.Lights.BLUEINIT;
+//import static org.firstinspires.ftc.teamcode.hardware.Lights.REDINIT;
 import static org.firstinspires.ftc.teamcode.util.Alliance.RED;
 import static org.firstinspires.ftc.teamcode.util.DepositPosition.HIGH;
 
@@ -67,7 +67,7 @@ public class AbstractTeleOp extends OpMode {
         driver2 = new Controller(gamepad2);
 
         robot = new Robot(hardwareMap, alliance);
-        robot.lights.setPattern(alliance == RED ? REDINIT : BLUEINIT);
+        //robot.lights.setPattern(alliance == RED ? REDINIT : BLUEINIT);
 
         // set the pose from auto
         if (PoseStorage.POSE_IS_DEFAULT) {
@@ -105,7 +105,7 @@ public class AbstractTeleOp extends OpMode {
 
     @Override
     public void loop() {
-        robot.updateLights();
+        //robot.updateLights();
         driver1.update();
         driver2.update();
 
@@ -189,7 +189,7 @@ public class AbstractTeleOp extends OpMode {
 //        robot.actuators.setOdoServo(robot.actuators.odoRetracted ? ODO_SERVO_UP : ODO_SERVO_DOWN);
 
 
-        robot.actuators.update();
+        //robot.actuators.update();
 
         // telemetry
         telemetry.addLine("Alliance: " + alliance);

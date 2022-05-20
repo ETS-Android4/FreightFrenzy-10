@@ -44,11 +44,6 @@ public class Actuators {
     public boolean odoRetracted = false;
     public boolean intakeRetracted;
 
-    // pid variables
-    private PIDController turretController;
-    private PIDController slidesController;
-    private PIDController intakeController;
-
     private int state;
     private double time;
 
@@ -58,10 +53,6 @@ public class Actuators {
     private DcMotor driveBL;
     private DcMotor driveBR;
 
-    private Servo hopperServo;
-    private Servo pivotServo;
-    private CRServo leftDucky;
-    private CRServo rightDucky;
     private Servo intakeServo;
     private Servo odoServo;
 
@@ -88,12 +79,14 @@ public class Actuators {
     // pid update for motor and slides
     public void update(double x, double y, double z) {
         double powerFL, powerFR, powerBL, powerBR, temp;
-        powerBR = (   +x   -y*0   +z   ) ;
-        powerBL = (   -x   +y*0   +z   ) ;
-        powerFR = (   +x   +y*0   +z   ) ;
-        powerFL = (   -x   -y*0   +z   ) ;
+        powerBR = (   +x     +z   ) ;
+        powerBL = (   -x     +z   ) ;
+        powerFR = (   +x     +z   ) ;
+        powerFL = (   -x     +z   ) ;
 
-        temp = Math.abs(Math.max(Math.max(powerBR,powerBL),Math.max(powerFR,powerFL)));
+        temp = Math.max(Math.max(Math.abs(x+y+z),Math.abs(x+y-z)),Math.max(Math.abs(x-y+z),Math.abs(x-y-z)));
+        temp = Math.max(Math.max(Math.max(Math.abs(powerBR),Math.abs(powerBL)),Math.max(Math.abs(powerFR),Math.abs(powerFL))),temp);
+
         if(Math.abs(temp)>1){
             powerBR = powerBR/temp;
             powerBL = powerBL/temp;
