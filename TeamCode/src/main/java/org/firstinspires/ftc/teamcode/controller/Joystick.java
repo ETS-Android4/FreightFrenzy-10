@@ -1,8 +1,7 @@
-package org.firstinspires.ftc.teamcode.opmodes.controller;
-
-import static org.firstinspires.ftc.teamcode.oldutil.Configurables.DEADZONE;
+package org.firstinspires.ftc.teamcode.controller;
 
 public class Joystick {
+    public static double DEADZONE = 0.1;
     double x = 0;
     double y = 0;
 
