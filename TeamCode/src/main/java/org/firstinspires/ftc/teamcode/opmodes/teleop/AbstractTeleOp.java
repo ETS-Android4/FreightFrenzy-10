@@ -131,7 +131,7 @@ public class AbstractTeleOp extends OpMode {
 //                    z = -driver1.getRightStick().getX(); //* DRIVE_SPEED;
 //                }
 
-        robot.drive.setWeightedDrivePower(new Pose2d(x, y, z));
+        robot.drive.setWeightedDrivePower(new Pose2d(x, -y, z));
 
         robot.drive.update();
 

@@ -81,8 +81,8 @@ public class Actuators {
         double powerFL, powerFR, powerBL, powerBR, temp;
         powerBR = (   -x     +z   ) ;
         powerBL = (   +x     +z   ) ;
-        powerFR = (   +x     +z   ) ;
-        powerFL = (   -x     +z   ) ;
+        powerFR = (   -x     +z   ) ;
+        powerFL = (   -x     -z   ) ;
 
         temp = Math.max(Math.max(Math.abs(x+y+z),Math.abs(x+y-z)),Math.max(Math.abs(x-y+z),Math.abs(x-y-z)));
         temp = Math.max(Math.max(Math.max(Math.abs(powerBR),Math.abs(powerBL)),Math.max(Math.abs(powerFR),Math.abs(powerFL))),temp);
